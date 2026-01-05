@@ -6,12 +6,22 @@ var endpointRegistry = new EndpointRegistry();
 endpointRegistry.AddEndpoint(new Endpoint
 {
     Method = "GET",
+    Path = "/",
+    ApplicationFunction = async (webContext, cancellationToken) =>
+    {
+        webContext.StaticFileRelativePath = "/index.html";
+        await Task.CompletedTask;
+    }
+});
+endpointRegistry.AddEndpoint(new Endpoint
+{
+    Method = "GET",
     Path = "/api/health",
     ApplicationFunction = async (webContext, cancellationToken) =>
     {
         webContext.WebResponse.StatusCode = 200;
         webContext.WebResponse.ResponsePhrase = "OK";
-        await webContext.WebResponse.WriteToBody("Healthy");
+        await webContext.WebResponse.WriteToBody("Healthy", cancellationToken);
     }
 });
 
