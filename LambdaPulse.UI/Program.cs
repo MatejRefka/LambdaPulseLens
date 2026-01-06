@@ -21,7 +21,8 @@ endpointRegistry.AddEndpoint(new Endpoint
     {
         webContext.WebResponse.StatusCode = 200;
         webContext.WebResponse.ResponsePhrase = "OK";
-        await webContext.WebResponse.WriteToBody("Healthy", cancellationToken);
+
+        await webContext.WebResponse.WriteStringToBody("Healthy", cancellationToken);
     }
 });
 
