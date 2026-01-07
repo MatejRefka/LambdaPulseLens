@@ -22,7 +22,13 @@ endpointRegistry.AddEndpoint(new Endpoint
         webContext.WebResponse.StatusCode = 200;
         webContext.WebResponse.ResponsePhrase = "OK";
 
-        await webContext.WebResponse.WriteStringToBody("Healthy", cancellationToken);
+        if (string.Equals(webContext.NegotiatedMimeType, "text/plain", StringComparison.OrdinalIgnoreCase))
+        {
+            await webContext.WebResponse.WriteStringToBody("Healthy", cancellationToken);
+            return;
+        }
+
+        await webContext.WebResponse.WriteJsonToBody(new { Health = "Healthy" }, cancellationToken);
     }
 });
 
