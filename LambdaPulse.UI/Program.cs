@@ -71,6 +71,12 @@ var webServer = ServerBuilder.Build(
                 await webContext.WebResponse.WriteJsonToBody(response, ct);
             }
         });
-    });
+    }
+    ,
+    configureServices: container =>
+    {
+        //services can be overridden here
+    }
+);
 
 await webServer.StartServer();
