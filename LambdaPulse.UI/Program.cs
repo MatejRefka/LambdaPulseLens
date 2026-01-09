@@ -31,6 +31,25 @@ endpointRegistry.AddEndpoint(new Endpoint
         await webContext.WebResponse.WriteJsonToBody(new { Health = "Healthy" }, cancellationToken);
     }
 });
+endpointRegistry.AddEndpoint(new Endpoint
+{
+    Method = "GET",
+    Path = "/api/users/{userId}/orders/{orderId}",
+    ApplicationFunction = async (webContext, ct) =>
+    {
+        // Accessing the path parameter
+        var userId = webContext.Endpoint!.PathParameters["userId"];
+        var orderId = webContext.Endpoint!.PathParameters["orderId"];
+
+        var response = new
+        {
+            UserId = userId,
+            OrderId = orderId
+        };
+
+        await webContext.WebResponse.WriteJsonToBody(response, ct);
+    }
+});
 
 var webServer = ServerBuilder.Build(endpointRegistry);
 await webServer.StartServer();
