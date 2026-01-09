@@ -1,6 +1,6 @@
-﻿using LambdaPulse.Server;
-using LambdaPulse.Server.Services.Http.Routing;
-using LambdaPulse.Server.Utility.Extensions;
+﻿using LambdaPulse.Server.Features.Routing;
+using LambdaPulse.Server.Hosting;
+using LambdaPulse.Server.Shared.Extensions;
 
 var endpointRegistry = new EndpointRegistry();
 endpointRegistry.AddEndpoint(new Endpoint
@@ -10,7 +10,6 @@ endpointRegistry.AddEndpoint(new Endpoint
     ApplicationFunction = async (webContext, cancellationToken) =>
     {
         webContext.StaticFileRelativePath = "/index.html";
-        await Task.CompletedTask;
     }
 });
 endpointRegistry.AddEndpoint(new Endpoint
@@ -58,11 +57,13 @@ endpointRegistry.AddEndpoint(new Endpoint
     {
         var userId = "current user";
         var orderId = webContext.Endpoint!.PathParameters["orderId"];
+        var pageNumber = webContext.WebRequest.QueryParameters["page"];
 
         var response = new
         {
             UserId = userId,
-            OrderId = orderId
+            OrderId = orderId,
+            PageNumber = pageNumber
         };
 
         await webContext.WebResponse.WriteJsonToBody(response, ct);

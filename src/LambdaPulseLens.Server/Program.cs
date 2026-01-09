@@ -1,4 +1,4 @@
-﻿using LambdaPulse.Server;
+﻿using LambdaPulse.Server.Hosting;
 
 var server = ServerBuilder.Build();
 
