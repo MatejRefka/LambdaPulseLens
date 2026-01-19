@@ -12,7 +12,8 @@ var webServer = ServerBuilder.Build(
             ApplicationFunction = async (webContext, cancellationToken) =>
             {
                 webContext.StaticFileRelativePath = "/index.html";
-            }
+            },
+            AllowAnonymous = true
         });
         endpointRegistry.AddEndpoint(new Endpoint
         {
@@ -30,7 +31,8 @@ var webServer = ServerBuilder.Build(
                 }
 
                 await webContext.WebResponse.WriteJsonToBody(new { Health = "Healthy" }, cancellationToken);
-            }
+            },
+            AllowAnonymous = false
         });
         endpointRegistry.AddEndpoint(new Endpoint
         {
@@ -49,7 +51,8 @@ var webServer = ServerBuilder.Build(
                 };
 
                 await webContext.WebResponse.WriteJsonToBody(response, ct);
-            }
+            },
+            RequiredRole = "Orders"
         });
         endpointRegistry.AddEndpoint(new Endpoint
         {
@@ -69,7 +72,8 @@ var webServer = ServerBuilder.Build(
                 };
 
                 await webContext.WebResponse.WriteJsonToBody(response, ct);
-            }
+            },
+            RequiredRole = "Orders"
         });
     },
     configureServices: container =>
