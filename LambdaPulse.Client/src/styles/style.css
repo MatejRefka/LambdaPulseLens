@@ -1,1 +1,51 @@
 @import "tailwindcss";
+
+@theme {
+  --font-sans: "Montserrat", sans-serif;
+  --color-dark-indigo: #181925;
+  --color-indigo: #2b2d42;
+  --color-dark-grey: #454b56;
+  --color-grey: #8d99ae;
+  --color-platinum: #edf2f4;
+  --color-strawberry: #ef233c;
+  --color-vivid-red: #d90429;
+}
+
+@layer base {
+  h2 {
+    @apply font-extrabold text-4xl text-indigo;
+  }
+  a {
+    @apply underline cursor-pointer;
+  }
+}
+
+@layer components {
+  .landing-page-layout {
+    @apply min-h-screen flex items-center justify-center bg-platinum;
+  }
+
+  .form-card {
+    @apply flex-1 py-14 flex flex-col items-center justify-center shadow-2xl bg-white;
+  }
+
+  .card-wrapper {
+    @apply flex w-full max-w-3xl bg-transparent;
+  }
+
+  .input-field {
+    @apply w-80 mx-auto block px-4 py-2.5 bg-platinum rounded-xs text-indigo focus:border-transparent focus:outline-none;
+  }
+
+  .btn-primary {
+    @apply w-40 py-2.5 rounded-4xl text-white cursor-pointer bg-strawberry hover:bg-vivid-red transition-colors duration-200;
+  }
+
+  .btn-secondary {
+    @apply w-40 py-2.5 rounded-4xl text-white cursor-pointer bg-strawberry hover:bg-vivid-red transition-colors duration-200 border-white border-2;
+  }
+
+  .btn-icon {
+    @apply w-12 h-12 rounded-full flex items-center justify-center cursor-pointer border-2 border-platinum;
+  }
+}

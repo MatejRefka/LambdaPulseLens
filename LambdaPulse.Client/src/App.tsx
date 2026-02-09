@@ -1,10 +1,10 @@
-import Message from "./components/Message";
+import { LoginPage } from "./pages/LoginPage";
 
 function App() {
   return (
-    <div>
-      <Message />
-    </div>
+    <LoginPage
+      onRedirectToRegister={() => console.log("Redirected to Register page!")}
+    ></LoginPage>
   );
 }
 
