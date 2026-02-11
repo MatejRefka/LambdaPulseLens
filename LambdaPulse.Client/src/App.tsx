@@ -1,10 +1,10 @@
-import { LoginPage } from "./pages/LoginPage";
+// import { LoginPage } from "./pages/LoginPage";
+import { RegisterPage } from "./pages/RegisterPage";
 
 function App() {
   return (
-    <LoginPage
-      onRedirectToRegister={() => console.log("Redirected to Register page!")}
-    ></LoginPage>
+    <RegisterPage onRedirectToLogin={() => console.log("Redirected to Login page!")} />
+    // <LoginPage onRedirectToRegister={() => console.log("Redirected to Register page!")} />
   );
 }
 

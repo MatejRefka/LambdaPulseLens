@@ -54,7 +54,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onRedirectToRegister }) =>
             Create your account to start exploring the Lambda Pulse web server.
           </p>
           <div className="mt-6 flex justify-center">
-            <Button type="button" onClick={onRedirectToRegister} variant="secondary" className="w-40">
+            <Button type="button" variant="secondary" className="w-40" onClick={onRedirectToRegister}>
               Sign up
             </Button>
           </div>
