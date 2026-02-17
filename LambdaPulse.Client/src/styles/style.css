@@ -21,20 +21,28 @@
 }
 
 @layer components {
-  .landing-page-layout {
+  .auth-page-layout {
     @apply min-h-screen flex items-center justify-center bg-platinum;
   }
 
-  .form-card {
+  .auth-form-card {
     @apply flex-1 py-14 flex flex-col items-center justify-center shadow-2xl bg-white;
   }
 
-  .card-wrapper {
+  .auth-card-wrapper {
     @apply flex w-full max-w-3xl bg-transparent;
   }
 
   .input-field {
     @apply w-full mx-auto block px-4 py-2.5 bg-platinum rounded-xs text-indigo focus:border-transparent focus:outline-none;
+  }
+
+  .input-field-error {
+    @apply border-vivid-red border focus:ring-vivid-red;
+  }
+
+  .input-field-error-message {
+    @apply text-vivid-red text-xs mt-1 ml-1 text-left;
   }
 
   .btn-primary {

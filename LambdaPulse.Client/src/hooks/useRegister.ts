@@ -1,14 +1,20 @@
-import { useState, type FormEvent } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { registerSchema, type RegisterFormInputs } from "../schemas/authSchemas";
 
 export const useRegister = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting }
+  } = useForm<RegisterFormInputs>({
+    resolver: zodResolver(registerSchema),
+    mode: "onBlur"
+  });
 
-  const handleRegisterSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    console.log("user registered!");
+  const onSubmit = (data: RegisterFormInputs) => {
+    console.log("Validated...", data);
   };
 
-  return { email, setEmail, password, setPassword, confirmPassword, setConfirmPassword, handleRegisterSubmit };
+  return { register, handleSubmit, errors, isSubmitting, onSubmit };
 };

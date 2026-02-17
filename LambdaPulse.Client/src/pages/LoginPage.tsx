@@ -9,14 +9,14 @@ interface LoginPageProps {
   onRedirectToRegister: () => void;
 }
 
-export const LoginPage: React.FC<LoginPageProps> = ({ onRedirectToRegister }) => {
-  const { email, setEmail, password, setPassword, handleLoginSubmit } = useLogin();
+export const LoginPage = ({ onRedirectToRegister }: LoginPageProps) => {
+  const { register, handleSubmit, errors, isSubmitting, onSubmit } = useLogin();
 
   return (
-    <div className="landing-page-layout">
-      <div className="card-wrapper rounded-2xl overflow-hidden shadow-2xl">
+    <div className="auth-page-layout">
+      <div className="auth-card-wrapper rounded-2xl overflow-hidden shadow-2xl">
         {/*left card: login form*/}
-        <div className="form-card">
+        <div className="auth-form-card">
           <h2 className="text-center">Sign in</h2>
           <div className="flex justify-center gap-3 m-4">
             <Button variant="icon" className="w-12 h-12">
@@ -30,25 +30,20 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onRedirectToRegister }) =>
             </Button>
           </div>
           <p className="text-center mb-2">or use your account</p>
-          <form onSubmit={handleLoginSubmit} className="flex flex-col gap-4 w-80">
-            <Input type="email" placeholder="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-            <Input
-              type="password"
-              placeholder="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-80">
+            <Input type="email" placeholder="email" {...register("email")} error={errors.email?.message} />
+            <Input type="password" placeholder="password" {...register("password")} error={errors.password?.message} />
             <button type="button" className="text-sm text-right pr-2 -mt-2 underline">
               Forgot password?
             </button>
-            <Button type="submit" variant="primary" className="mt-6 mx-auto w-40">
-              Sign in
+            <Button type="submit" variant="primary" className="mt-6 mx-auto w-40" disabled={isSubmitting}>
+              {isSubmitting ? "Signing in..." : "Sign in"}
             </Button>
           </form>
         </div>
 
         {/*right card: welcome message + sign up*/}
-        <div className="form-card bg-strawberry">
+        <div className="auth-form-card bg-strawberry">
           <h2 className="text-center text-white">Get started</h2>
           <p className="w-80 text-white mt-4 text-center">
             Create your account to start exploring the Lambda Pulse web server.

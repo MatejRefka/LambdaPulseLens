@@ -1,13 +1,17 @@
-import { useState, type FormEvent } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema, type LoginFormInputs } from "../schemas/authSchemas";
 
 export const useLogin = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting }
+  } = useForm<LoginFormInputs>({ resolver: zodResolver(loginSchema), mode: "onBlur" });
 
-  const handleLoginSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    console.log("User login!", { email, password });
+  const onSubmit = (data: LoginFormInputs) => {
+    console.log("User login", data);
   };
 
-  return { email, setEmail, password, setPassword, handleLoginSubmit };
+  return { register, handleSubmit, errors, isSubmitting, onSubmit };
 };
