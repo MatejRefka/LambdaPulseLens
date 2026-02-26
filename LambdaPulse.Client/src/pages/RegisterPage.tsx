@@ -14,7 +14,7 @@ export const RegisterPage = ({ onRedirectToLogin }: RegisterPageProps) => {
 
   return (
     <div className="auth-page-layout">
-      <div className="auth-card-wrapper rounded-2xl overflow-hidden shadow-2xl">
+      <div className="auth-card-wrapper overflow-hidden rounded-2xl shadow-2xl">
         {/*left card: welcome back message + sign In */}
         <div className="auth-form-card bg-strawberry">
           <h2 className="text-center text-white">Welcome Back</h2>
