@@ -1,4 +1,4 @@
-import { DashboardPage } from "./pages/Dashboard";
+import { DashboardPage } from "./pages/DashboardPage";
 //import { LoginPage } from "./pages/LoginPage";
 //import { RegisterPage } from "./pages/RegisterPage";
 
