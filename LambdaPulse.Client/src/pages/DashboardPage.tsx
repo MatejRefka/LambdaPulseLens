@@ -9,8 +9,10 @@ export const DashboardPage = () => {
 
   return (
     <div className="h-screen w-screen flex overflow-hidden bg-surface-10 text-white">
+      {/*sidebar*/}
       <Sidebar traces={mockTraces} selectedTraceId={selectedTrace.id} onSelectTrace={setSelectedTrace} />
 
+      {/*trace inspector*/}
       <TraceInspector trace={selectedTrace} />
     </div>
   );

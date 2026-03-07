@@ -7,7 +7,8 @@ interface TraceInspectorProps {
 
 export const TraceInspector = ({ trace }: TraceInspectorProps) => {
   return (
-    <main className="flex-1 flex flex-col overflow-hidden relative bg-surface-10">
+    <div className="flex-1 flex flex-col overflow-hidden relative bg-surface-10">
+      {/*header*/}
       <TraceHeader trace={trace} />
 
       {/*pipeline container*/}
@@ -16,6 +17,6 @@ export const TraceInspector = ({ trace }: TraceInspectorProps) => {
           <p>Content: killer pipeline</p>
         </div>
       </div>
-    </main>
+    </div>
   );
 };

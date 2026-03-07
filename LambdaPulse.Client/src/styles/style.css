@@ -36,10 +36,6 @@
   h2 {
     @apply font-extrabold text-4xl;
   }
-
-  a {
-    @apply underline cursor-pointer;
-  }
 }
 
 @layer components {
