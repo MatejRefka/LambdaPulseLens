@@ -2,22 +2,22 @@
 
 @theme {
   --font-sans: "Montserrat", sans-serif;
-  --color-primary-10: #d90429;
-  --color-primary-20: #e23d3e;
-  --color-primary-30: #ea5b53;
-  --color-primary-40: #f1756a;
-  --color-primary-50: #f68d81;
+  --color-brand-10: #d90429;
+  --color-brand-20: #ef233c;
 
-  --color-surface-10: #1c1c1c;
-  --color-surface-20: #313131;
-  --color-surface-30: #474747;
-  --color-surface-40: #5f5f5f;
-  --color-surface-50: #777777;
-  --color-surface-60: #919191;
+  --color-primary: #08090a;
+  --color-secondary: #fefffe;
 
-  --color-success-10: #22946e;
-  --color-success-20: #47d5a6;
-  --color-success-30: #9ae8ce;
+  --color-surface-10: #101213;
+  --color-surface-20: #191b1d;
+  --color-surface-30: #212427;
+  --color-surface-40: #32373b;
+  --color-surface-50: #50585e;
+
+  --color-success: #62a87c;
+  --color-danger: #ef233c;
+  --color-warning: #e09f3e;
+  --color-info: #058ed9;
 
   --color-dark-indigo: #181925;
   --color-indigo: #2b2d42;

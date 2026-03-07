@@ -252,7 +252,7 @@ export const mockTraces: Trace[] = [
       cookies: {}
     },
     response: {
-      statusCode: 200,
+      statusCode: 100,
       responsePhrase: "OK",
       headers: { "Content-Type": "text/css", "Cache-Control": "public, max-age=31536000" },
       cookies: { session_id: "xyz_123" }

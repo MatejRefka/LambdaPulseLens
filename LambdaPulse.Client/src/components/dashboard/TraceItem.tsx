@@ -9,8 +9,9 @@ interface TraceItemProps {
 
 export const TraceItem = ({ trace, isSelected, onClick }: TraceItemProps) => {
   const traceContainerStyle = isSelected
-    ? "bg-surface-50 border-surface-50 text-black shadow-md"
+    ? "bg-surface-50 border-surface-50 text-primary font-medium shadow-md"
     : "border-surface-40 cursor-pointer hover:bg-surface-30 hover:border-surface-30";
+  const textStyle = isSelected ? "text-primary font-medium" : "text-secondary";
 
   return (
     <button
@@ -20,7 +21,11 @@ export const TraceItem = ({ trace, isSelected, onClick }: TraceItemProps) => {
       {/*method + status code*/}
       <div className="flex justify-between items-center mb-1">
         <span className="text-sm font-bold">{trace.request.method}</span>
-        <TraceItemStatusBadge statusCode={trace.response.statusCode} responsePhrase={trace.response.responsePhrase} />
+        <TraceItemStatusBadge
+          statusCode={trace.response.statusCode}
+          responsePhrase={trace.response.responsePhrase}
+          isSelected={isSelected}
+        />
       </div>
 
       {/*path*/}
@@ -29,7 +34,7 @@ export const TraceItem = ({ trace, isSelected, onClick }: TraceItemProps) => {
       </div>
 
       {/*duration + timestamp*/}
-      <div className={`text-xs mt-1 flex justify-between ${isSelected ? "text-black" : "text-surface-60"}`}>
+      <div className={`text-xs mt-1 flex justify-between ${textStyle}`}>
         <span>{trace.durationMs}ms</span>
         <span>{new Date(trace.timestampStart).toLocaleTimeString()}</span>
       </div>
