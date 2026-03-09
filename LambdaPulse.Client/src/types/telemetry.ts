@@ -16,7 +16,6 @@ export interface Step {
   timestampStart: string;
   durationMs: number;
   notes?: string;
-  tags: string[];
 }
 
 export interface WebRequest {

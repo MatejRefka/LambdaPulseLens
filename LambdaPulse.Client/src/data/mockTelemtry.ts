@@ -1,165 +1,376 @@
 import type { Trace } from "../types/telemetry";
+const now = Date.now();
 
 export const mockTraces: Trace[] = [
   {
     id: 1001,
-    timestampStart: new Date().toISOString(),
-    durationMs: 14,
+    timestampStart: new Date(now - 60000).toISOString(),
+    durationMs: 45,
     request: {
       method: "GET",
-      path: "/api/dashboard/stats",
+      path: "/api/users/profile",
       protocol: "HTTP/1.1",
-      headers: { Accept: "application/json", "User-Agent": "LambdaPulse-UI" },
-      cookies: { session_id: "xyz_123" }
+      headers: { Accept: "application/json", Authorization: "Bearer eyJhb..." },
+      cookies: {}
     },
     response: {
       statusCode: 200,
       responsePhrase: "OK",
-      headers: { "Content-Type": "application/json", "X-Powered-By": "LambdaPulse" },
-      cookies: { session_id: "xyz_123" },
-      body: JSON.stringify({ activeUsers: 42, cpuUsage: "12%" }, null, 2)
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: 42, role: "Admin" }),
+      cookies: { session_id: "xyz_123" }
     },
     pipeline: [
       {
         order: 1,
         middleware: "ExceptionMiddleware",
         phase: "Enter",
-        timestampStart: "2026-02-18T20:52:13.001Z",
-        durationMs: 0.1,
-        tags: ["system"]
+        timestampStart: new Date(now - 60000).toISOString(),
+        durationMs: 0.1
       },
       {
         order: 2,
-        middleware: "RoutingMiddleware",
+        middleware: "LoggingMiddleware",
         phase: "Enter",
-        timestampStart: "2026-02-18T20:52:13.002Z",
-        durationMs: 1.2,
-        tags: ["routing"]
+        timestampStart: new Date(now - 59999).toISOString(),
+        durationMs: 0.5
       },
       {
         order: 3,
-        middleware: "AuthMiddleware",
+        middleware: "RequestLimitsMiddleware",
         phase: "Enter",
-        timestampStart: "2026-02-18T20:52:13.004Z",
-        durationMs: 4.5,
-        notes: "Token Validated",
-        tags: ["security"]
+        timestampStart: new Date(now - 59998).toISOString(),
+        durationMs: 0.1
       },
       {
         order: 4,
-        middleware: "EndpointMiddleware",
+        middleware: "ConnectionMiddleware",
         phase: "Enter",
-        timestampStart: "2026-02-18T20:52:13.009Z",
-        durationMs: 7.0,
-        notes: "Executing Handler",
-        tags: ["execution"]
+        timestampStart: new Date(now - 59998).toISOString(),
+        durationMs: 0.1
       },
       {
         order: 5,
-        middleware: "EndpointMiddleware",
-        phase: "Exit",
-        timestampStart: "2026-02-18T20:52:13.016Z",
-        durationMs: 0.2,
-        tags: ["execution"]
+        middleware: "HttpsRedirectionMiddleware",
+        phase: "Enter",
+        timestampStart: new Date(now - 59997).toISOString(),
+        durationMs: 0.1
       },
       {
         order: 6,
-        middleware: "AuthMiddleware",
-        phase: "Exit",
-        timestampStart: "2026-02-18T20:52:13.017Z",
-        durationMs: 0.1,
-        tags: ["security"]
+        middleware: "HstsMiddleware",
+        phase: "Enter",
+        timestampStart: new Date(now - 59997).toISOString(),
+        durationMs: 0.1
       },
       {
         order: 7,
-        middleware: "RoutingMiddleware",
-        phase: "Exit",
-        timestampStart: "2026-02-18T20:52:13.018Z",
-        durationMs: 0.1,
-        tags: ["routing"]
+        middleware: "SecurityMiddleware",
+        phase: "Enter",
+        timestampStart: new Date(now - 59996).toISOString(),
+        durationMs: 0.2
       },
       {
         order: 8,
+        middleware: "CookieMiddleware",
+        phase: "Enter",
+        timestampStart: new Date(now - 59996).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        order: 9,
+        middleware: "CsrfMiddleware",
+        phase: "Enter",
+        timestampStart: new Date(now - 59995).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        order: 10,
+        middleware: "ResponseCompressionMiddleware",
+        phase: "Enter",
+        timestampStart: new Date(now - 59995).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        order: 11,
+        middleware: "CachingMiddleware",
+        phase: "Enter",
+        timestampStart: new Date(now - 59994).toISOString(),
+        durationMs: 1.5,
+        notes: "Cache miss"
+      },
+      {
+        order: 12,
+        middleware: "StaticFilesMiddleware",
+        phase: "Enter",
+        timestampStart: new Date(now - 59992).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        order: 13,
+        middleware: "StaticPagesMiddleware",
+        phase: "Enter",
+        timestampStart: new Date(now - 59992).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        order: 14,
+        middleware: "RoutingMiddleware",
+        phase: "Enter",
+        timestampStart: new Date(now - 59991).toISOString(),
+        durationMs: 1.2,
+        notes: "Matched route: GetUserProfile"
+      },
+      {
+        order: 15,
+        middleware: "CorsMiddleware",
+        phase: "Enter",
+        timestampStart: new Date(now - 59990).toISOString(),
+        durationMs: 0.2
+      },
+      {
+        order: 16,
+        middleware: "JwtMiddleware",
+        phase: "Enter",
+        timestampStart: new Date(now - 59989).toISOString(),
+        durationMs: 2.5,
+        notes: "Token signature validated"
+      },
+      {
+        order: 17,
+        middleware: "AuthenticationMiddleware",
+        phase: "Enter",
+        timestampStart: new Date(now - 59986).toISOString(),
+        durationMs: 0.5
+      },
+      {
+        order: 18,
+        middleware: "AuthorizationMiddleware",
+        phase: "Enter",
+        timestampStart: new Date(now - 59985).toISOString(),
+        durationMs: 0.5
+      },
+      {
+        order: 19,
+        middleware: "ContentNegotiationMiddleware",
+        phase: "Enter",
+        timestampStart: new Date(now - 59984).toISOString(),
+        durationMs: 0.2
+      },
+      {
+        order: 20,
+        middleware: "InvokeMiddleware",
+        phase: "Enter",
+        timestampStart: new Date(now - 59984).toISOString(),
+        durationMs: 35.0,
+        notes: "Executing Controller Action"
+      },
+      {
+        order: 21,
+        middleware: "TerminationMiddleware",
+        phase: "Enter",
+        timestampStart: new Date(now - 59949).toISOString(),
+        durationMs: 0.1,
+        notes: "Pipeline core reached"
+      },
+      {
+        order: 22,
+        middleware: "TerminationMiddleware",
+        phase: "Exit",
+        timestampStart: new Date(now - 59948).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        order: 23,
+        middleware: "InvokeMiddleware",
+        phase: "Exit",
+        timestampStart: new Date(now - 59948).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        order: 24,
+        middleware: "ContentNegotiationMiddleware",
+        phase: "Exit",
+        timestampStart: new Date(now - 59947).toISOString(),
+        durationMs: 0.5,
+        notes: "Formatted to JSON"
+      },
+      {
+        order: 25,
+        middleware: "ResponseCompressionMiddleware",
+        phase: "Exit",
+        timestampStart: new Date(now - 59946).toISOString(),
+        durationMs: 1.0,
+        notes: "Compressed via GZIP"
+      },
+      {
+        order: 26,
+        middleware: "LoggingMiddleware",
+        phase: "Exit",
+        timestampStart: new Date(now - 59945).toISOString(),
+        durationMs: 0.2
+      },
+      {
+        order: 27,
         middleware: "ExceptionMiddleware",
         phase: "Exit",
-        timestampStart: "2026-02-18T20:52:13.019Z",
-        durationMs: 0.8,
-        tags: ["system"]
+        timestampStart: new Date(now - 59945).toISOString(),
+        durationMs: 0.1
       }
     ]
   },
   {
     id: 1002,
-    timestampStart: new Date(Date.now() - 5000).toISOString(),
-    durationMs: 3,
+    timestampStart: new Date(now - 45000).toISOString(),
+    durationMs: 4,
     request: {
-      method: "POST",
-      path: "/api/admin/config",
+      method: "GET",
+      path: "/assets/styles.css",
       protocol: "HTTP/1.1",
-      headers: { "Content-Type": "application/json" },
-      cookies: {},
-      body: JSON.stringify({ newSetting: "enable_god_mode" })
+      headers: { Accept: "text/css" },
+      cookies: {}
     },
     response: {
-      statusCode: 401,
-      responsePhrase: "Unauthorized",
-      headers: { "Content-Type": "text/plain" },
-      cookies: { session_id: "xyz_123" },
-      body: "Unauthorized: Missing Session"
+      statusCode: 200,
+      responsePhrase: "OK",
+      headers: { "Content-Type": "text/css" },
+      cookies: { session_id: "xyz_123" }
     },
     pipeline: [
       {
         order: 1,
         middleware: "ExceptionMiddleware",
         phase: "Enter",
-        timestampStart: "2026-02-18T20:52:08.001Z",
-        durationMs: 0.1,
-        tags: ["system"]
+        timestampStart: new Date(now - 45000).toISOString(),
+        durationMs: 0.1
       },
       {
         order: 2,
-        middleware: "RoutingMiddleware",
+        middleware: "LoggingMiddleware",
         phase: "Enter",
-        timestampStart: "2026-02-18T20:52:08.002Z",
-        durationMs: 1.0,
-        tags: ["routing"]
+        timestampStart: new Date(now - 44999).toISOString(),
+        durationMs: 0.2
       },
       {
         order: 3,
-        middleware: "AuthMiddleware",
-        phase: "ShortCircuit",
-        timestampStart: "2026-02-18T20:52:08.004Z",
-        durationMs: 1.5,
-        notes: "Missing Session Cookie - Aborting",
-        tags: ["security", "error"]
+        middleware: "CachingMiddleware",
+        phase: "Enter",
+        timestampStart: new Date(now - 44998).toISOString(),
+        durationMs: 0.5
       },
       {
         order: 4,
-        middleware: "RoutingMiddleware",
-        phase: "Exit",
-        timestampStart: "2026-02-18T20:52:08.006Z",
-        durationMs: 0.1,
-        tags: ["routing"]
+        middleware: "StaticFilesMiddleware",
+        phase: "ShortCircuit",
+        timestampStart: new Date(now - 44997).toISOString(),
+        durationMs: 2.5,
+        notes: "File found. Writing directly to stream."
       },
       {
         order: 5,
+        middleware: "CachingMiddleware",
+        phase: "Exit",
+        timestampStart: new Date(now - 44994).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        order: 6,
+        middleware: "LoggingMiddleware",
+        phase: "Exit",
+        timestampStart: new Date(now - 44994).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        order: 7,
         middleware: "ExceptionMiddleware",
         phase: "Exit",
-        timestampStart: "2026-02-18T20:52:08.007Z",
-        durationMs: 0.3,
-        tags: ["system"]
+        timestampStart: new Date(now - 44993).toISOString(),
+        durationMs: 0.1
       }
     ]
   },
   {
     id: 1003,
-    timestampStart: new Date(Date.now() - 15000).toISOString(), // 15 seconds ago
-    durationMs: 45,
+    timestampStart: new Date(now - 30000).toISOString(),
+    durationMs: 8,
     request: {
-      method: "GET",
-      path: "/api/users/999",
+      method: "POST",
+      path: "/api/admin/settings",
       protocol: "HTTP/1.1",
-      headers: { Accept: "application/json", Authorization: "Bearer token..." },
+      headers: { "Content-Type": "application/json" },
+      cookies: {},
+      body: '{"theme":"dark"}'
+    },
+    response: {
+      statusCode: 401,
+      responsePhrase: "Unauthorized",
+      headers: {},
+      cookies: { session_id: "xyz_123" },
+      body: "Missing Authentication Token"
+    },
+    pipeline: [
+      {
+        order: 1,
+        middleware: "ExceptionMiddleware",
+        phase: "Enter",
+        timestampStart: new Date(now - 30000).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        order: 2,
+        middleware: "RoutingMiddleware",
+        phase: "Enter",
+        timestampStart: new Date(now - 29999).toISOString(),
+        durationMs: 1.0
+      },
+      {
+        order: 3,
+        middleware: "JwtMiddleware",
+        phase: "Enter",
+        timestampStart: new Date(now - 29998).toISOString(),
+        durationMs: 0.5,
+        notes: "No Bearer token found in headers."
+      },
+      {
+        order: 4,
+        middleware: "AuthenticationMiddleware",
+        phase: "ShortCircuit",
+        timestampStart: new Date(now - 29997).toISOString(),
+        durationMs: 0.5,
+        notes: "Rejecting request: 401 Unauthorized."
+      },
+      {
+        order: 5,
+        middleware: "JwtMiddleware",
+        phase: "Exit",
+        timestampStart: new Date(now - 29996).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        order: 6,
+        middleware: "RoutingMiddleware",
+        phase: "Exit",
+        timestampStart: new Date(now - 29996).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        order: 7,
+        middleware: "ExceptionMiddleware",
+        phase: "Exit",
+        timestampStart: new Date(now - 29995).toISOString(),
+        durationMs: 0.1
+      }
+    ]
+  },
+  {
+    id: 1004,
+    timestampStart: new Date(now - 15000).toISOString(),
+    durationMs: 65,
+    request: {
+      method: "PUT",
+      path: "/api/orders/99",
+      protocol: "HTTP/1.1",
+      headers: { "Content-Type": "application/json" },
       cookies: {}
     },
     response: {
@@ -167,121 +378,52 @@ export const mockTraces: Trace[] = [
       responsePhrase: "Internal Server Error",
       headers: { "Content-Type": "application/json" },
       cookies: { session_id: "xyz_123" },
-      body: JSON.stringify({ error: "NullReferenceException" })
+      body: '{"error": "Database connection timeout"}'
     },
     pipeline: [
       {
         order: 1,
         middleware: "ExceptionMiddleware",
         phase: "Enter",
-        timestampStart: "2026-02-21T16:30:00.001Z",
-        durationMs: 0.1,
-        tags: ["system"]
+        timestampStart: new Date(now - 15000).toISOString(),
+        durationMs: 0.1
       },
       {
         order: 2,
         middleware: "RoutingMiddleware",
         phase: "Enter",
-        timestampStart: "2026-02-21T16:30:00.002Z",
-        durationMs: 0.8,
-        tags: ["routing"]
+        timestampStart: new Date(now - 14999).toISOString(),
+        durationMs: 1.5
       },
       {
         order: 3,
-        middleware: "AuthMiddleware",
+        middleware: "InvokeMiddleware",
         phase: "Enter",
-        timestampStart: "2026-02-21T16:30:00.003Z",
-        durationMs: 2.1,
-        notes: "Bearer token valid",
-        tags: ["security"]
+        timestampStart: new Date(now - 14997).toISOString(),
+        durationMs: 50.0
       },
       {
         order: 4,
-        middleware: "EndpointMiddleware",
-        phase: "Enter",
-        timestampStart: "2026-02-21T16:30:00.006Z",
-        durationMs: 38.0,
-        notes: "Executing GetUser",
-        tags: ["execution"]
+        middleware: "InvokeMiddleware",
+        phase: "Exception",
+        timestampStart: new Date(now - 14947).toISOString(),
+        durationMs: 2.0,
+        notes: "SqlException: Timeout expired."
       },
       {
         order: 5,
-        middleware: "EndpointMiddleware",
-        phase: "Exception",
-        timestampStart: "2026-02-21T16:30:00.044Z",
-        durationMs: 0.5,
-        notes: "Unhandled NullReferenceException in DB call",
-        tags: ["execution", "error"]
+        middleware: "RoutingMiddleware",
+        phase: "Exit",
+        timestampStart: new Date(now - 14945).toISOString(),
+        durationMs: 0.1
       },
       {
         order: 6,
-        middleware: "AuthMiddleware",
-        phase: "Exit",
-        timestampStart: "2026-02-21T16:30:00.045Z",
-        durationMs: 0.1,
-        tags: ["security"]
-      },
-      {
-        order: 7,
-        middleware: "RoutingMiddleware",
-        phase: "Exit",
-        timestampStart: "2026-02-21T16:30:00.045Z",
-        durationMs: 0.1,
-        tags: ["routing"]
-      },
-      {
-        order: 8,
         middleware: "ExceptionMiddleware",
         phase: "Exit",
-        timestampStart: "2026-02-21T16:30:00.046Z",
-        durationMs: 3.3,
-        notes: "Caught exception, formatting 500 JSON response",
-        tags: ["system", "error"]
-      }
-    ]
-  },
-  {
-    id: 1004,
-    timestampStart: new Date(Date.now() - 30000).toISOString(), // 30 seconds ago
-    durationMs: 2,
-    request: {
-      method: "GET",
-      path: "/assets/styles/main.css",
-      protocol: "HTTP/1.1",
-      headers: { Accept: "text/css" },
-      cookies: {}
-    },
-    response: {
-      statusCode: 100,
-      responsePhrase: "OK",
-      headers: { "Content-Type": "text/css", "Cache-Control": "public, max-age=31536000" },
-      cookies: { session_id: "xyz_123" }
-    },
-    pipeline: [
-      {
-        order: 1,
-        middleware: "ExceptionMiddleware",
-        phase: "Enter",
-        timestampStart: "2026-02-21T16:29:45.001Z",
-        durationMs: 0.1,
-        tags: ["system"]
-      },
-      {
-        order: 2,
-        middleware: "StaticFilesMiddleware",
-        phase: "ShortCircuit",
-        timestampStart: "2026-02-21T16:29:45.002Z",
-        durationMs: 1.8,
-        notes: "File found, writing directly to response stream",
-        tags: ["io", "static"]
-      },
-      {
-        order: 3,
-        middleware: "ExceptionMiddleware",
-        phase: "Exit",
-        timestampStart: "2026-02-21T16:29:45.004Z",
-        durationMs: 0.1,
-        tags: ["system"]
+        timestampStart: new Date(now - 14944).toISOString(),
+        durationMs: 5.0,
+        notes: "Caught SqlException. Modifying response to 500."
       }
     ]
   }
