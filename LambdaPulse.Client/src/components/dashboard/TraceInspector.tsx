@@ -1,4 +1,5 @@
 import type { Trace } from "../../types/telemetry";
+import { InspectorFrame } from "../inspector/InspectorFrame";
 import { TraceHeader } from "./TraceHeader";
 
 interface TraceInspectorProps {
@@ -8,14 +9,9 @@ interface TraceInspectorProps {
 export const TraceInspector = ({ trace }: TraceInspectorProps) => {
   return (
     <div className="flex-1 flex flex-col overflow-hidden relative bg-surface-10">
-      {/*header*/}
-      <TraceHeader trace={trace} />
-
       {/*pipeline container*/}
-      <div className="flex-1 overflow-y-auto pb-6 px-12">
-        <div className="flex flex-col items-center justify-center h-full min-h-100 border border-surface-30 rounded-2xl shadow-2xl">
-          <p>Content: killer pipeline</p>
-        </div>
+      <div className="flex-1 overflow-y-auto pb-12 px-12 mt-6">
+        <InspectorFrame trace={trace} />
       </div>
     </div>
   );
