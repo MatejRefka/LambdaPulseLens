@@ -19,7 +19,6 @@ export const InspectorFrame = ({ trace }: InspectorFrameProps) => {
     return trace.pipeline.find((s) => s.middleware === middlewareName && s.phase === "Exit");
   };
 
-  // Helper to determine if a wire should show the red error state
   const getFlowDirection = (step?: Step) => {
     if (!step) return "request";
     if (step.phase === "ShortCircuit" || step.phase === "Exception") return "error";
@@ -27,44 +26,54 @@ export const InspectorFrame = ({ trace }: InspectorFrameProps) => {
   };
 
   return (
-    <div className="grid grid-cols-5 gap-6 w-full max-w-7xl mx-auto py-4">
+    <div className="grid grid-cols-5 gap-6 w-full max-w-7xl mx-auto h-full">
       {/*column 1, request mw 1 to 10*/}
-      <div className="flex flex-col">
+      <div className="flex flex-col h-full">
+        <VerticalWire isActive={!!getRequestStep(MIDDLEWARE_1_10[0])} flowDirection="request" isFlex />
+
         {MIDDLEWARE_1_10.map((middlewareName, index) => {
           const step = getRequestStep(middlewareName);
           const isLast = index === MIDDLEWARE_1_10.length - 1;
           return (
             <React.Fragment key={`in-col1-${middlewareName}`}>
-              <MiddlewareNode middlewareName={middlewareName} stepData={step} />
+              <MiddlewareNode middlewareName={middlewareName} step={step} />
               {!isLast && <VerticalWire isActive={!!step} flowDirection={getFlowDirection(step)} />}
             </React.Fragment>
           );
         })}
+
+        <VerticalWire isActive={!!getRequestStep(MIDDLEWARE_1_10[9])} flowDirection="request" isFlex />
       </div>
 
       {/*column 2, request mw 11 to 20*/}
-      <div className="flex flex-col mt-12">
+      <div className="flex flex-col h-full">
+        <VerticalWire isActive={!!getRequestStep(MIDDLEWARE_11_20[0])} flowDirection="request" isFlex />
+
         {MIDDLEWARE_11_20.map((middlewareName, index) => {
           const step = getRequestStep(middlewareName);
           const isLast = index === MIDDLEWARE_11_20.length - 1;
           return (
             <React.Fragment key={`in-col2-${middlewareName}`}>
-              <MiddlewareNode middlewareName={middlewareName} stepData={step} />
+              <MiddlewareNode middlewareName={middlewareName} step={step} />
               {!isLast && <VerticalWire isActive={!!step} flowDirection={getFlowDirection(step)} />}
             </React.Fragment>
           );
         })}
+
+        <VerticalWire isActive={!!getRequestStep(MIDDLEWARE_11_20[9])} flowDirection="request" isFlex />
       </div>
 
       {/*column 3, termination mw*/}
-      <div className="flex flex-col items-center justify-end pb-12">
+      <div className="flex flex-col items-center justify-end pb-12 h-full">
         <VerticalWire isActive={!!getRequestStep(MIDDLEWARE_TERMINATION)} flowDirection="request" />
-        <MiddlewareNode middlewareName={MIDDLEWARE_TERMINATION} stepData={getRequestStep(MIDDLEWARE_TERMINATION)} />
+        <MiddlewareNode middlewareName={MIDDLEWARE_TERMINATION} step={getRequestStep(MIDDLEWARE_TERMINATION)} />
         <VerticalWire isActive={!!getResponseStep(MIDDLEWARE_TERMINATION)} flowDirection="response" />
       </div>
 
       {/*column 4, response mw 1-10*/}
-      <div className="flex flex-col mt-12">
+      <div className="flex flex-col h-full">
+        <VerticalWire isActive={!!getResponseStep(MIDDLEWARE_11_20[0])} flowDirection="response" isFlex />
+
         {MIDDLEWARE_11_20.map((middlewareName, index) => {
           const step = getResponseStep(middlewareName);
           const isLast = index === MIDDLEWARE_11_20.length - 1;
@@ -73,15 +82,17 @@ export const InspectorFrame = ({ trace }: InspectorFrameProps) => {
 
           return (
             <React.Fragment key={`out-col4-${middlewareName}`}>
-              <MiddlewareNode middlewareName={middlewareName} stepData={step} />
+              <MiddlewareNode middlewareName={middlewareName} step={step} />
               {!isLast && <VerticalWire isActive={wireActive} flowDirection="response" />}
             </React.Fragment>
           );
         })}
+        <VerticalWire isActive={!!getResponseStep(MIDDLEWARE_11_20[9])} flowDirection="response" isFlex />
       </div>
 
       {/*column 5, response mw 11-20*/}
-      <div className="flex flex-col">
+      <div className="flex flex-col h-full">
+        <VerticalWire isActive={!!getResponseStep(MIDDLEWARE_1_10[0])} flowDirection="response" isFlex />
         {MIDDLEWARE_1_10.map((middlewareName, index) => {
           const step = getResponseStep(middlewareName);
           const isLast = index === MIDDLEWARE_1_10.length - 1;
@@ -90,11 +101,13 @@ export const InspectorFrame = ({ trace }: InspectorFrameProps) => {
 
           return (
             <React.Fragment key={`out-col5-${middlewareName}`}>
-              <MiddlewareNode middlewareName={middlewareName} stepData={step} />
+              <MiddlewareNode middlewareName={middlewareName} step={step} />
               {!isLast && <VerticalWire isActive={wireActive} flowDirection="response" />}
             </React.Fragment>
           );
         })}
+
+        <VerticalWire isActive={!!getResponseStep(MIDDLEWARE_1_10[9])} flowDirection="response" isFlex />
       </div>
     </div>
   );

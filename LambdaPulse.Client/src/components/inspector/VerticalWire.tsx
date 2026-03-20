@@ -1,9 +1,10 @@
 interface VerticalWireProps {
   isActive: boolean;
   flowDirection: "request" | "response" | "error";
+  isFlex?: boolean;
 }
 
-export const VerticalWire = ({ isActive, flowDirection }: VerticalWireProps) => {
+export const VerticalWire = ({ isActive, flowDirection, isFlex = false }: VerticalWireProps) => {
   const getWireStyle = () => {
     //ghost wire
     if (!isActive) return "bg-surface-40 opacity-30";
@@ -22,8 +23,8 @@ export const VerticalWire = ({ isActive, flowDirection }: VerticalWireProps) => 
   };
 
   return (
-    <div className="flex justify-center my-0.5">
-      <div className={`w-0.5 h-4 transition-all duration-300 ${getWireStyle()}`}></div>
+    <div className={`flex justify-center ${isFlex ? "flex-1" : "my-0.5"}`}>
+      <div className={`w-0.5 transition-all duration-300 ${isFlex ? "h-full" : "h-4"} ${getWireStyle()}`}></div>
     </div>
   );
 };

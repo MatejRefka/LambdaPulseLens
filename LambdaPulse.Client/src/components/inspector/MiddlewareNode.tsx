@@ -2,17 +2,17 @@ import type { Step } from "../../types/telemetry";
 
 interface MiddlewareNodeProps {
   middlewareName: string;
-  stepData?: Step;
+  step?: Step;
 }
 
-export const MiddlewareNode = ({ middlewareName, stepData }: MiddlewareNodeProps) => {
-  const isActive = !!stepData;
+export const MiddlewareNode = ({ middlewareName, step }: MiddlewareNodeProps) => {
+  const isActive = !!step;
 
   const getNodeStyle = () => {
     if (!isActive) {
       return "opacity-30 border-surface-40 bg-transparent text-surface-60 border-dashed";
     }
-    switch (stepData.phase) {
+    switch (step.phase) {
       case "Enter":
         return "opacity-100 border-blue-500/50 bg-blue-500/10 text-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.15)]";
       case "Exit":
@@ -26,35 +26,59 @@ export const MiddlewareNode = ({ middlewareName, stepData }: MiddlewareNodeProps
     }
   };
 
+  const displayName = middlewareName.replace("Middleware", "");
+  const hasNotes = isActive && !!step.notes;
+
   return (
-    <div className={`p-3 rounded-lg border transition-all duration-300 w-full ${getNodeStyle()}`}>
-      <div className="flex justify-between items-start gap-2">
+    <div
+      className={`relative flex flex-col justify-center px-3 h-14 rounded-lg border transition-all duration-300 w-full overflow-hidden ${getNodeStyle()}`}
+    >
+      {/*top row*/}
+      <div className="flex justify-between items-center gap-2">
         {/*middleware name*/}
-        <span className={`text-sm font-bold truncate ${isActive ? "" : "font-medium"}`} title={middlewareName}>
-          {middlewareName.replace("Middleware", "")} {/* Optional: Strip "Middleware" to save space */}
+        <span className={`text-sm truncate ${isActive ? "font-bold" : "font-medium"}`} title={displayName}>
+          {displayName}
         </span>
 
         {/*duration*/}
         {isActive && (
-          <data value={stepData.durationMs} className="font-mono text-xs opacity-90 whitespace-nowrap">
-            {stepData.durationMs}ms
+          <data value={step.durationMs} className="font-mono text-xs opacity-90 whitespace-nowrap">
+            {step.durationMs}ms
           </data>
         )}
       </div>
 
-      {/*notes*/}
-      {isActive && stepData.notes && (
-        <p className="text-xs opacity-80 mt-2 border-l-2 border-current pl-2 truncate" title={stepData.notes}>
-          {stepData.notes}
-        </p>
-      )}
+      {/*bottom row*/}
+      <div className="flex justify-between items-center mt-1 h-4">
+        {/*phase badge*/}
+        {isActive ? (
+          <span
+            className={`text-[10px] uppercase tracking-wider font-bold px-1.5 py-0.5 rounded border ${
+              step.phase === "ShortCircuit" || step.phase === "Exception"
+                ? "border-current opacity-100"
+                : "border-transparent opacity-60"
+            }`}
+          >
+            {step.phase}
+          </span>
+        ) : (
+          <span className="text-[10px]">&nbsp;</span>
+        )}
 
-      {/*phase badge*/}
-      {isActive && (stepData.phase === "ShortCircuit" || stepData.phase === "Exception") && (
-        <div className="mt-2 text-[10px] uppercase tracking-wider font-bold opacity-80 border border-current rounded px-1.5 py-0.5 inline-block">
-          {stepData.phase}
-        </div>
-      )}
+        {/*notes indicator*/}
+        {hasNotes && (
+          <div
+            className="flex items-center gap-1 cursor-help"
+            title="Notes available (Hover/Click functionality coming soon)"
+          >
+            <span className="text-[10px] opacity-70 font-medium tracking-wide">NOTES</span>
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-current opacity-40"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-current opacity-80"></span>
+            </span>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

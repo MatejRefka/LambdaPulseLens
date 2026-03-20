@@ -10,7 +10,7 @@ export const TraceInspector = ({ trace }: TraceInspectorProps) => {
   return (
     <div className="flex-1 flex flex-col overflow-hidden relative bg-surface-10">
       {/*pipeline container*/}
-      <div className="flex-1 overflow-y-auto pb-12 px-12 mt-6">
+      <div className="flex-1 flex flex-col px-12">
         <InspectorFrame trace={trace} />
       </div>
     </div>
