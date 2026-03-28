@@ -51,24 +51,24 @@ export const InspectorFrame = ({ trace }: InspectorFrameProps) => {
         <FlexWireContainer>
           <VerticalWire isActive={!!getRequestStep(MIDDLEWARE_1_10[0])} flowDirection="request" isFlex />
           <WebContextPill type="Request" />
-          <VerticalWire isActive={!!getRequestStep(MIDDLEWARE_1_10[0])} flowDirection="request" isFlex />
+          <VerticalWire isActive={!!getRequestStep(MIDDLEWARE_1_10[0])} flowDirection="request" isFlex showArrow />
         </FlexWireContainer>
       </div>
 
       {/*row 1 col 2, flex wire*/}
       <div className="row-start-1 col-start-2 flex flex-col h-full">
-        <VerticalWire isActive={!!getRequestStep(MIDDLEWARE_11_20[0])} flowDirection="request" isFlex />
+        <VerticalWire isActive={!!getRequestStep(MIDDLEWARE_11_20[0])} flowDirection="request" isFlex showArrow />
       </div>
 
       {/*row 1 col 4, flex wire*/}
       <div className="row-start-1 col-start-4 flex flex-col h-full">
-        <VerticalWire isActive={!!getResponseStep(MIDDLEWARE_11_20[0])} flowDirection="response" isFlex />
+        <VerticalWire isActive={!!getResponseStep(MIDDLEWARE_11_20[0])} flowDirection="response" isFlex showArrow />
       </div>
 
       {/*row 1 col 5, flex wire with Http Response pill*/}
       <div className="row-start-1 col-start-5 flex flex-col h-full">
         <FlexWireContainer>
-          <VerticalWire isActive={!!getResponseStep(MIDDLEWARE_1_10[0])} flowDirection="response" isFlex />
+          <VerticalWire isActive={!!getResponseStep(MIDDLEWARE_1_10[0])} flowDirection="response" isFlex showArrow />
           <WebContextPill type="Response" />
           <VerticalWire isActive={!!getResponseStep(MIDDLEWARE_1_10[0])} flowDirection="response" isFlex />
         </FlexWireContainer>
@@ -182,7 +182,7 @@ export const InspectorFrame = ({ trace }: InspectorFrameProps) => {
           );
         })}
 
-        <VerticalWire isActive={!!getResponseStep(MIDDLEWARE_1_10[9])} flowDirection="response" />
+        <VerticalWire isActive={!!getResponseStep(MIDDLEWARE_1_10[9])} flowDirection="response" showArrow />
       </div>
 
       {/*row 3 col 1, filler wire*/}
@@ -202,7 +202,7 @@ export const InspectorFrame = ({ trace }: InspectorFrameProps) => {
 
       {/*row 4 col 1, flex wire*/}
       <div className="row-start-4 col-start-1  h-full flex flex-col">
-        <VerticalWire isActive={!!getRequestStep(MIDDLEWARE_1_10[9])} flowDirection="request" isFlex />
+        <VerticalWire isActive={!!getRequestStep(MIDDLEWARE_1_10[9])} flowDirection="request" isFlex showArrow />
       </div>
 
       {/*row 4 col 5, flex wire*/}
