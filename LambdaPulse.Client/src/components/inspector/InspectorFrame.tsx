@@ -3,6 +3,7 @@ import type { Step, Trace } from "../../types/telemetry";
 import { MIDDLEWARE_1_10, MIDDLEWARE_11_20, MIDDLEWARE_TERMINATION } from "../../utils/constants";
 import { MiddlewareNode } from "./MiddlewareNode";
 import { VerticalWire } from "./VerticalWire";
+import { ShortCircuitLink } from "../dashboard/ShortCircuitLink";
 
 interface InspectorFrameProps {
   trace: Trace;
@@ -35,6 +36,11 @@ export const InspectorFrame = ({ trace }: InspectorFrameProps) => {
     if (!step) return "request";
     if (step.phase === "ShortCircuit" || step.phase === "Exception") return "error";
     return step.phase === "Enter" ? "request" : "response";
+  };
+
+  const hasShortCircuit = (middlewareName: string) => {
+    const reqStep = getRequestStep(middlewareName);
+    return reqStep?.phase === "ShortCircuit" || reqStep?.phase === "Exception";
   };
 
   return (
@@ -73,10 +79,16 @@ export const InspectorFrame = ({ trace }: InspectorFrameProps) => {
         {MIDDLEWARE_1_10.map((middlewareName, index) => {
           const step = getRequestStep(middlewareName);
           const isLast = index === MIDDLEWARE_1_10.length - 1;
+          const isShortCircuit = hasShortCircuit(middlewareName);
           return (
             <React.Fragment key={`in-col1-${middlewareName}`}>
               <MiddlewareNode middlewareName={middlewareName} step={step} />
-              {!isLast && <VerticalWire isActive={!!step} flowDirection={getFlowDirection(step)} />}
+              {!isLast &&
+                (isShortCircuit ? (
+                  <ShortCircuitLink type="request" />
+                ) : (
+                  <VerticalWire isActive={!!step} flowDirection={getFlowDirection(step)} />
+                ))}
             </React.Fragment>
           );
         })}
@@ -91,10 +103,16 @@ export const InspectorFrame = ({ trace }: InspectorFrameProps) => {
         {MIDDLEWARE_11_20.map((middlewareName, index) => {
           const step = getRequestStep(middlewareName);
           const isLast = index === MIDDLEWARE_11_20.length - 1;
+          const isShortCircuit = hasShortCircuit(middlewareName);
           return (
-            <React.Fragment key={`in-col2-${middlewareName}`}>
+            <React.Fragment key={`in-col1-${middlewareName}`}>
               <MiddlewareNode middlewareName={middlewareName} step={step} />
-              {!isLast && <VerticalWire isActive={!!step} flowDirection={getFlowDirection(step)} />}
+              {!isLast &&
+                (isShortCircuit ? (
+                  <ShortCircuitLink type="request" />
+                ) : (
+                  <VerticalWire isActive={!!step} flowDirection={getFlowDirection(step)} />
+                ))}
             </React.Fragment>
           );
         })}
@@ -107,15 +125,28 @@ export const InspectorFrame = ({ trace }: InspectorFrameProps) => {
         <VerticalWire isActive={!!getResponseStep(MIDDLEWARE_11_20[0])} flowDirection="response" isFlex />
 
         {MIDDLEWARE_11_20.map((middlewareName, index) => {
-          const step = getResponseStep(middlewareName);
           const isLast = index === MIDDLEWARE_11_20.length - 1;
-          const nextNodeBelow = !isLast ? getResponseStep(MIDDLEWARE_11_20[index + 1]) : undefined;
-          const wireActive = !!step && !!nextNodeBelow;
+          const previousMiddleware = !isLast ? MIDDLEWARE_11_20[index + 1] : undefined;
+
+          const responseStep = getResponseStep(middlewareName);
+          const previousResponseStep = previousMiddleware ? getResponseStep(previousMiddleware) : undefined;
+
+          const isShortCircuit = hasShortCircuit(middlewareName);
+          const isPreviousMiddlewareShortCircuit = previousMiddleware ? hasShortCircuit(previousMiddleware) : false;
+
+          const isWireActive = !!responseStep && (!!previousResponseStep || isPreviousMiddlewareShortCircuit);
+
+          const step = isShortCircuit ? getRequestStep(middlewareName) : responseStep;
 
           return (
             <React.Fragment key={`out-col4-${middlewareName}`}>
               <MiddlewareNode middlewareName={middlewareName} step={step} />
-              {!isLast && <VerticalWire isActive={wireActive} flowDirection="response" />}
+              {!isLast &&
+                (isShortCircuit ? (
+                  <ShortCircuitLink type="response" />
+                ) : (
+                  <VerticalWire isActive={isWireActive} flowDirection="response" />
+                ))}
             </React.Fragment>
           );
         })}
@@ -125,15 +156,28 @@ export const InspectorFrame = ({ trace }: InspectorFrameProps) => {
       {/*row 2 col 5, response mw 11-20*/}
       <div className="row-start-2 col-start-5  flex flex-col">
         {MIDDLEWARE_1_10.map((middlewareName, index) => {
-          const step = getResponseStep(middlewareName);
           const isLast = index === MIDDLEWARE_1_10.length - 1;
-          const nextNodeBelow = !isLast ? getResponseStep(MIDDLEWARE_1_10[index + 1]) : undefined;
-          const wireActive = !!step && !!nextNodeBelow;
+          const previousMiddleware = !isLast ? MIDDLEWARE_11_20[index + 1] : undefined;
+
+          const responseStep = getResponseStep(middlewareName);
+          const previousResponseStep = previousMiddleware ? getResponseStep(previousMiddleware) : undefined;
+
+          const isShortCircuit = hasShortCircuit(middlewareName);
+          const isPreviousMiddlewareShortCircuit = previousMiddleware ? hasShortCircuit(previousMiddleware) : false;
+
+          const isWireActive = !!responseStep && (!!previousResponseStep || isPreviousMiddlewareShortCircuit);
+
+          const step = isShortCircuit ? getRequestStep(middlewareName) : responseStep;
 
           return (
             <React.Fragment key={`out-col5-${middlewareName}`}>
               <MiddlewareNode middlewareName={middlewareName} step={step} />
-              {!isLast && <VerticalWire isActive={wireActive} flowDirection="response" />}
+              {!isLast &&
+                (isShortCircuit ? (
+                  <ShortCircuitLink type="response" />
+                ) : (
+                  <VerticalWire isActive={isWireActive} flowDirection="response" />
+                ))}
             </React.Fragment>
           );
         })}

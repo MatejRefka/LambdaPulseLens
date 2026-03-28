@@ -67,10 +67,7 @@ export const MiddlewareNode = ({ middlewareName, step }: MiddlewareNodeProps) =>
 
         {/*notes indicator*/}
         {hasNotes && (
-          <div
-            className="flex items-center gap-1 cursor-help"
-            title="Notes available (Hover/Click functionality coming soon)"
-          >
+          <div className="flex items-center gap-1 cursor-help" title="Feature in development">
             <span className="text-[10px] opacity-70 font-medium tracking-wide">NOTES</span>
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-current opacity-40"></span>
