@@ -1,6 +1,5 @@
 import type { Trace } from "../../types/telemetry";
 import { InspectorFrame } from "../inspector/InspectorFrame";
-import { TraceHeader } from "./TraceHeader";
 
 interface TraceInspectorProps {
   trace: Trace;
