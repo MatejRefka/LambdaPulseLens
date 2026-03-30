@@ -5,33 +5,33 @@ interface MiddlewareNodeProps {
   step?: Step;
 }
 
+const getNodeStyle = (isActive: boolean, phase?: string) => {
+  if (!isActive) {
+    return "opacity-30 border-surface-40 bg-transparent text-surface-60 border-dashed";
+  }
+  switch (phase) {
+    case "Enter":
+      return "opacity-100 border-blue-500/50 bg-blue-500/10 text-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.15)]";
+    case "Exit":
+      return "opacity-100 border-success-30/50 bg-success-10/10 text-success-30 shadow-[0_0_15px_rgba(34,197,94,0.15)]";
+    case "ShortCircuit":
+      return "opacity-100 border-orange-500/50 bg-orange-500/10 text-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.15)]";
+    case "Exception":
+      return "opacity-100 border-primary-50/50 bg-primary-10/10 text-primary-50 shadow-[0_0_15px_rgba(239,68,68,0.2)]";
+    default:
+      return "opacity-100 border-surface-40 bg-surface-30 text-white";
+  }
+};
+
 export const MiddlewareNode = ({ middlewareName, step }: MiddlewareNodeProps) => {
   const isActive = !!step;
-
-  const getNodeStyle = () => {
-    if (!isActive) {
-      return "opacity-30 border-surface-40 bg-transparent text-surface-60 border-dashed";
-    }
-    switch (step.phase) {
-      case "Enter":
-        return "opacity-100 border-blue-500/50 bg-blue-500/10 text-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.15)]";
-      case "Exit":
-        return "opacity-100 border-success-30/50 bg-success-10/10 text-success-30 shadow-[0_0_15px_rgba(34,197,94,0.15)]";
-      case "ShortCircuit":
-        return "opacity-100 border-orange-500/50 bg-orange-500/10 text-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.15)]";
-      case "Exception":
-        return "opacity-100 border-primary-50/50 bg-primary-10/10 text-primary-50 shadow-[0_0_15px_rgba(239,68,68,0.2)]";
-      default:
-        return "opacity-100 border-surface-40 bg-surface-30 text-white";
-    }
-  };
 
   const displayName = middlewareName.replace("Middleware", "");
   const hasNotes = isActive && !!step.notes;
 
   return (
     <div
-      className={`relative flex flex-col justify-center px-3 h-14 rounded-lg border transition-all duration-300 w-full overflow-hidden ${getNodeStyle()}`}
+      className={`relative flex flex-col justify-center px-3 h-14 rounded-lg border transition-all duration-300 w-full overflow-hidden ${getNodeStyle(isActive, step?.phase)}`}
     >
       {/*top row*/}
       <div className="flex justify-between items-center gap-2">
