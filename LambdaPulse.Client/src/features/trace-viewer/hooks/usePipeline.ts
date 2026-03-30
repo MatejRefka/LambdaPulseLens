@@ -1,4 +1,4 @@
-import type { Step, Trace } from "../types/telemetry";
+import type { Step, Trace } from "../../../types/telemetry";
 
 export const usePipeline = (trace: Trace) => {
   const getRequestStep = (middlewareName: string): Step | undefined => {

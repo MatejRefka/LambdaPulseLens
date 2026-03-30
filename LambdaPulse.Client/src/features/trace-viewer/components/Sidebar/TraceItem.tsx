@@ -1,4 +1,4 @@
-import type { Trace } from "../../types/telemetry";
+import type { Trace } from "../../../../types/telemetry";
 import { TraceItemStatusBadge } from "./TraceItemStatusBadge";
 
 interface TraceItemProps {

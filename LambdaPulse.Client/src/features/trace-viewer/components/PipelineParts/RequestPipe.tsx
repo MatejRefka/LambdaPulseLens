@@ -1,8 +1,8 @@
 import React from "react";
-import type { Trace } from "../../types/telemetry";
+import type { Trace } from "../../../../types/telemetry";
 import { MiddlewareNode } from "./MiddlewareNode";
-import { VerticalWire } from "./VerticalWire";
-import { ShortCircuitLink } from "../dashboard/ShortCircuitLink";
+import { Wire } from "../CircuitVisuals/Wire";
+import { ShortCircuitLink } from "../CircuitVisuals/ShortCircuitLink";
 import { usePipeline } from "../../hooks/usePipeline";
 
 interface RequestPipeProps {
@@ -26,7 +26,7 @@ export const RequestPipe = ({ middlewares, trace }: RequestPipeProps) => {
               (isShortCircuit ? (
                 <ShortCircuitLink type="request" />
               ) : (
-                <VerticalWire isActive={!!step} flowDirection={getFlowDirection(step)} />
+                <Wire isActive={!!step} flowDirection={getFlowDirection(step)} />
               ))}
           </React.Fragment>
         );

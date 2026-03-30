@@ -1,11 +1,11 @@
-interface VerticalWireProps {
+interface WireProps {
   isActive: boolean;
   flowDirection: "request" | "response" | "error";
   isFlex?: boolean;
   showArrow?: boolean;
 }
 
-export const VerticalWire = ({ isActive, flowDirection, isFlex = false, showArrow = false }: VerticalWireProps) => {
+export const Wire = ({ isActive, flowDirection, isFlex = false, showArrow = false }: WireProps) => {
   const getWireStyle = () => {
     //ghost wire
     if (!isActive) return "bg-surface-40 opacity-30";

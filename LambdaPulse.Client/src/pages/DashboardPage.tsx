@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { mockTraces } from "../data/mockTelemtry";
 import type { Trace } from "../types/telemetry";
-import { Sidebar } from "../components/dashboard/Sidebar";
-import { TraceInspector } from "../components/dashboard/TraceInspector";
+import { Sidebar } from "../features/trace-viewer/components/Sidebar/Sidebar";
+import { TraceInspector } from "../features/trace-viewer/components/Inspector/TraceInspector";
 
 export const DashboardPage = () => {
   const [selectedTrace, setSelectedTrace] = useState<Trace>(mockTraces[0]);

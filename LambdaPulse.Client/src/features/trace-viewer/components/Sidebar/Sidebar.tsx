@@ -1,5 +1,5 @@
-import type { Trace } from "../../types/telemetry";
-import { BrandLogo } from "../shared/BrandLogo";
+import type { Trace } from "../../../../types/telemetry";
+import { BrandLogo } from "../../../../components/shared/BrandLogo";
 import { TraceItem } from "./TraceItem";
 
 interface SidebarProps {

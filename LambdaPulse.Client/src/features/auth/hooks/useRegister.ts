@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { registerSchema, type RegisterFormInputs } from "../schemas/authSchemas";
+import { registerSchema, type RegisterFormInputs } from "../../../schemas/authSchemas";
 
 export const useRegister = () => {
   const {

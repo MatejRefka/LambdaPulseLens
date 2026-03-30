@@ -1,6 +1,6 @@
 import { Input } from "../components/shared/Input";
 import { Button } from "../components/shared/Button";
-import { useRegister } from "../hooks/useRegister";
+import { useRegister } from "../features/auth/hooks/useRegister";
 import googleIcon from "../assets/icons/google.png";
 import appleIcon from "../assets/icons/apple.png";
 import githubIcon from "../assets/icons/github.png";
