@@ -1,4 +1,5 @@
 import type { Step } from "../../../../types/telemetry";
+import { NotesTooltip } from "./NotesTooltip";
 
 interface MiddlewareNodeProps {
   middlewareName: string;
@@ -27,18 +28,15 @@ export const MiddlewareNode = ({ middlewareName, step }: MiddlewareNodeProps) =>
   const isActive = !!step;
 
   const displayName = middlewareName.replace("Middleware", "");
-  const hasNotes = isActive && !!step.notes;
 
   return (
     <div
-      className={`relative flex flex-col justify-center px-3 h-14 rounded-lg border transition-all duration-300 w-full overflow-hidden ${getNodeStyle(isActive, step?.phase)}`}
+      className={`relative flex flex-col justify-center px-3 h-14 rounded-lg border transition-all duration-300 w-full ${getNodeStyle(isActive, step?.phase)}`}
     >
       {/*top row*/}
       <div className="flex justify-between items-center gap-2">
         {/*middleware name*/}
-        <span className={`text-sm truncate ${isActive ? "font-bold" : "font-medium"}`} title={displayName}>
-          {displayName}
-        </span>
+        <span className={`text-sm truncate ${isActive ? "font-bold" : "font-medium"}`}>{displayName}</span>
 
         {/*duration*/}
         {isActive && (
@@ -65,16 +63,8 @@ export const MiddlewareNode = ({ middlewareName, step }: MiddlewareNodeProps) =>
           <span className="text-[10px]">&nbsp;</span>
         )}
 
-        {/*notes indicator*/}
-        {hasNotes && (
-          <div className="flex items-center gap-1 cursor-help" title="Feature in development">
-            <span className="text-[10px] opacity-70 font-medium tracking-wide">NOTES</span>
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-current opacity-40"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-current opacity-80"></span>
-            </span>
-          </div>
-        )}
+        {/*notes indicator and tooltip*/}
+        {isActive && <NotesTooltip step={step} />}
       </div>
     </div>
   );
