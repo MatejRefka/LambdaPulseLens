@@ -17,11 +17,11 @@ export const TraceItem = ({ trace, isSelected, onClick }: TraceItemProps) => {
   return (
     <button
       onClick={onClick}
-      className={`group w-full text-left p-3 rounded-lg text-text-20 transition-colors ${traceContainerStyle}`}
+      className={`group w-full text-left p-3 rounded-lg transition-colors ${traceContainerStyle}`}
     >
       {/*method + status code*/}
-      <div className=" flex justify-between items-center mb-1">
-        <span className="text-sm font-bold">{trace.request.method}</span>
+      <div className="flex justify-between items-center mb-1">
+        <span className="text-sm font-semibold">{trace.request.method}</span>
         <div className={`text-xs px-2 py-0.5 rounded border ${badgeStyle} ${badgeStyleHover}`}>
           {trace.response.statusCode} {trace.response.responsePhrase}
         </div>

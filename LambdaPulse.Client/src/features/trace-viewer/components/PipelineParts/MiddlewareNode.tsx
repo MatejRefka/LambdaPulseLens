@@ -8,19 +8,21 @@ interface MiddlewareNodeProps {
 
 const getNodeStyle = (isActive: boolean, phase?: string) => {
   if (!isActive) {
-    return "opacity-30 border-surface-40 bg-transparent text-surface-60 border-dashed";
+    return "opacity-50 border-surface-50 bg-transparent text-surface-50 font-normal border-dashed";
   }
+  const activeNode = "bg-surface-20 border-surface-40 border-l-4 shadow-sm";
+
   switch (phase) {
     case "Enter":
-      return "opacity-100 border-blue-500/50 bg-blue-500/10 text-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.15)]";
+      return `${activeNode} border-l-blue-500`;
     case "Exit":
-      return "opacity-100 border-success-30/50 bg-success-10/10 text-success-30 shadow-[0_0_15px_rgba(34,197,94,0.15)]";
+      return `${activeNode} border-l-green-500`;
     case "ShortCircuit":
-      return "opacity-100 border-orange-500/50 bg-orange-500/10 text-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.15)]";
+      return `${activeNode} border-l-orange-500`;
     case "Exception":
-      return "opacity-100 border-primary-50/50 bg-primary-10/10 text-primary-50 shadow-[0_0_15px_rgba(239,68,68,0.2)]";
+      return `${activeNode} border-l-brand-10`;
     default:
-      return "opacity-100 border-surface-40 bg-surface-30 text-white";
+      return `${activeNode} border-l-surface-50`;
   }
 };
 
@@ -36,11 +38,11 @@ export const MiddlewareNode = ({ middlewareName, step }: MiddlewareNodeProps) =>
       {/*top row*/}
       <div className="flex justify-between items-center gap-2">
         {/*middleware name*/}
-        <span className={`text-sm truncate ${isActive ? "font-bold" : "font-medium"}`}>{displayName}</span>
+        <span className="text-sm truncate font-normal">{displayName}</span>
 
         {/*duration*/}
         {isActive && (
-          <data value={step.durationMs} className="font-mono text-xs opacity-90 whitespace-nowrap">
+          <data value={step.durationMs} className="text-xs text-text-30 whitespace-nowrap">
             {step.durationMs}ms
           </data>
         )}
