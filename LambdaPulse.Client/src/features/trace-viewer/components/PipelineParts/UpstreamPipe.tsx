@@ -5,29 +5,28 @@ import { Wire } from "../CircuitVisuals/Wire";
 import { ShortCircuitLink } from "../CircuitVisuals/ShortCircuitLink";
 import { usePipeline } from "../../hooks/usePipeline";
 
-interface ResponsePipeProps {
+interface UpstreamPipeProps {
   middlewares: string[];
   trace: Trace;
 }
 
-export const ResponsePipe = ({ middlewares, trace }: ResponsePipeProps) => {
-  const { getRequestStep, getResponseStep, hasShortCircuit } = usePipeline(trace);
+export const UpstreamPipe = ({ middlewares, trace }: UpstreamPipeProps) => {
+  const { getDownstreamStep, getUpstreamStep, hasShortCircuit } = usePipeline(trace);
   return (
     <>
       {middlewares.map((middlewareName, index) => {
         const isLast = index === middlewares.length - 1;
 
-        // This naturally looks at the correct array now! No more hardcoded arrays.
         const previousMiddleware = !isLast ? middlewares[index + 1] : undefined;
 
-        const responseStep = getResponseStep(middlewareName);
-        const previousResponseStep = previousMiddleware ? getResponseStep(previousMiddleware) : undefined;
+        const upstreamStep = getUpstreamStep(middlewareName);
+        const previousUpstreamStep = previousMiddleware ? getUpstreamStep(previousMiddleware) : undefined;
 
         const isShortCircuit = hasShortCircuit(middlewareName);
         const isPreviousMiddlewareShortCircuit = previousMiddleware ? hasShortCircuit(previousMiddleware) : false;
 
-        const isWireActive = !!responseStep && (!!previousResponseStep || isPreviousMiddlewareShortCircuit);
-        const step = isShortCircuit ? getRequestStep(middlewareName) : responseStep;
+        const isWireActive = !!upstreamStep && (!!previousUpstreamStep || isPreviousMiddlewareShortCircuit);
+        const step = isShortCircuit ? getDownstreamStep(middlewareName) : upstreamStep;
 
         return (
           <React.Fragment key={`out-${middlewareName}`}>

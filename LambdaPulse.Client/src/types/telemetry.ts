@@ -1,3 +1,6 @@
+export type FlowDirection = "downstream" | "upstream";
+export type ExecutionEvent = "success" | "short-circuit" | "exception";
+
 export interface Trace {
   id: number;
   timestampStart: string;
@@ -10,9 +13,9 @@ export interface Trace {
 }
 
 export interface Step {
-  order: number;
   middleware: string;
-  phase: MiddlewarePhase;
+  direction?: FlowDirection;
+  event: ExecutionEvent;
   timestampStart: string;
   durationMs: number;
   notes?: string;
@@ -42,5 +45,3 @@ export interface Headers {
 export interface Cookies {
   [key: string]: string;
 }
-
-export type MiddlewarePhase = "Enter" | "Exit" | "ShortCircuit" | "Exception";

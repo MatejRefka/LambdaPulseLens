@@ -5,17 +5,17 @@ import { Wire } from "../CircuitVisuals/Wire";
 import { ShortCircuitLink } from "../CircuitVisuals/ShortCircuitLink";
 import { usePipeline } from "../../hooks/usePipeline";
 
-interface RequestPipeProps {
+interface DownstreamPipeProps {
   middlewares: string[];
   trace: Trace;
 }
 
-export const RequestPipe = ({ middlewares, trace }: RequestPipeProps) => {
-  const { getRequestStep, getFlowDirection, hasShortCircuit } = usePipeline(trace);
+export const DownstreamPipe = ({ middlewares, trace }: DownstreamPipeProps) => {
+  const { getDownstreamStep, getFlowDirection, hasShortCircuit } = usePipeline(trace);
   return (
     <>
       {middlewares.map((middlewareName, index) => {
-        const step = getRequestStep(middlewareName);
+        const step = getDownstreamStep(middlewareName);
         const isLast = index === middlewares.length - 1;
         const isShortCircuit = hasShortCircuit(middlewareName);
 

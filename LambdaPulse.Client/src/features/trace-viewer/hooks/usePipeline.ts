@@ -1,30 +1,30 @@
 import type { Step, Trace } from "../../../types/telemetry";
 
 export const usePipeline = (trace: Trace) => {
-  const getRequestStep = (middlewareName: string): Step | undefined => {
+  const getDownstreamStep = (middlewareName: string): Step | undefined => {
     return trace.pipeline.find(
-      (step) => step.middleware === middlewareName && ["Enter", "ShortCircuit", "Exception"].includes(step.phase)
+      (step) => step.middleware === middlewareName && (step.direction === "downstream" || !step.direction)
     );
   };
 
-  const getResponseStep = (middlewareName: string): Step | undefined => {
-    return trace.pipeline.find((step) => step.middleware === middlewareName && step.phase === "Exit");
+  const getUpstreamStep = (middlewareName: string): Step | undefined => {
+    return trace.pipeline.find((step) => step.middleware === middlewareName && step.direction === "upstream");
   };
 
-  const getFlowDirection = (step?: Step) => {
+  const getFlowDirection = (step?: Step): "request" | "response" | "error" => {
     if (!step) {
       return "request";
     }
-    if (step.phase === "ShortCircuit" || step.phase === "Exception") {
+    if (step.event === "short-circuit" || step.event === "exception") {
       return "error";
     }
-    return step.phase === "Enter" ? "request" : "response";
+    return step.direction === "downstream" ? "request" : "response";
   };
 
   const hasShortCircuit = (middlewareName: string) => {
-    const requestStep = getRequestStep(middlewareName);
-    return requestStep?.phase === "ShortCircuit" || requestStep?.phase === "Exception";
+    const step = getDownstreamStep(middlewareName);
+    return step?.event === "short-circuit" || step?.event === "exception";
   };
 
-  return { getRequestStep, getResponseStep, getFlowDirection, hasShortCircuit };
+  return { getDownstreamStep, getUpstreamStep, getFlowDirection, hasShortCircuit };
 };
