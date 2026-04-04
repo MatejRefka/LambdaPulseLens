@@ -11,7 +11,7 @@ interface DownstreamPipeProps {
 }
 
 export const DownstreamPipe = ({ middlewares, trace }: DownstreamPipeProps) => {
-  const { getDownstreamStep, getFlowDirection, hasShortCircuit } = usePipeline(trace);
+  const { getDownstreamStep, hasShortCircuit } = usePipeline(trace);
   return (
     <>
       {middlewares.map((middlewareName, index) => {
@@ -24,9 +24,9 @@ export const DownstreamPipe = ({ middlewares, trace }: DownstreamPipeProps) => {
             <MiddlewareNode middlewareName={middlewareName} step={step} />
             {!isLast &&
               (isShortCircuit ? (
-                <ShortCircuitLink type="request" />
+                <ShortCircuitLink direction="downstream" event={step?.event} />
               ) : (
-                <Wire isActive={!!step} flowDirection={getFlowDirection(step)} />
+                <Wire isActive={!!step} direction="downstream" event={step?.event} />
               ))}
           </React.Fragment>
         );

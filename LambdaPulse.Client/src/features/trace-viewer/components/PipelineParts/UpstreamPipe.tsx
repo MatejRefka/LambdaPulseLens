@@ -33,9 +33,9 @@ export const UpstreamPipe = ({ middlewares, trace }: UpstreamPipeProps) => {
             <MiddlewareNode middlewareName={middlewareName} step={step} />
             {!isLast &&
               (isShortCircuit ? (
-                <ShortCircuitLink type="response" />
+                <ShortCircuitLink direction="upstream" event={step?.event} />
               ) : (
-                <Wire isActive={isWireActive} flowDirection="response" />
+                <Wire isActive={isWireActive} direction="upstream" event={step?.event} />
               ))}
           </React.Fragment>
         );

@@ -14,9 +14,9 @@ const getNodeStyle = (isActive: boolean, event?: string) => {
 
   switch (event) {
     case "short-circuit":
-      return `${activeNode} border-l-orange-500`;
+      return `${activeNode} border-l-warning-20`;
     case "error":
-      return `${activeNode} border-l-brand-10`;
+      return `${activeNode} border-l-danger-10`;
     case "success":
     default:
       return `${activeNode} border-l-surface-50`;
@@ -45,7 +45,7 @@ export const MiddlewareNode = ({ middlewareName, step }: MiddlewareNodeProps) =>
       <div className="flex justify-between items-center mt-1 h-4">
         {/*short circuit or error badge*/}
         {isCircuitBreak && (
-          <span className={`text-xs py-0.5 ${step.event === "error" ? "text-brand-10" : "text-orange-500"}`}>
+          <span className={`text-xs py-0.5 ${step.event === "error" ? "text-danger-10" : "text-warning-20"}`}>
             {step.event.replace("-", " ")}
           </span>
         )}
