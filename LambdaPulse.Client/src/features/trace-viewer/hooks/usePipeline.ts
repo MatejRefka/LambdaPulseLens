@@ -15,7 +15,7 @@ export const usePipeline = (trace: Trace) => {
     if (!step) {
       return "request";
     }
-    if (step.event === "short-circuit" || step.event === "exception") {
+    if (step.event === "short-circuit" || step.event === "error") {
       return "error";
     }
     return step.direction === "downstream" ? "request" : "response";
@@ -23,7 +23,7 @@ export const usePipeline = (trace: Trace) => {
 
   const hasShortCircuit = (middlewareName: string) => {
     const step = getDownstreamStep(middlewareName);
-    return step?.event === "short-circuit" || step?.event === "exception";
+    return step?.event === "short-circuit" || step?.event === "error";
   };
 
   return { getDownstreamStep, getUpstreamStep, getFlowDirection, hasShortCircuit };

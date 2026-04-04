@@ -15,7 +15,7 @@ const getNodeStyle = (isActive: boolean, event?: string) => {
   switch (event) {
     case "short-circuit":
       return `${activeNode} border-l-orange-500`;
-    case "exception":
+    case "error":
       return `${activeNode} border-l-brand-10`;
     case "success":
     default:
@@ -26,11 +26,11 @@ const getNodeStyle = (isActive: boolean, event?: string) => {
 export const MiddlewareNode = ({ middlewareName, step }: MiddlewareNodeProps) => {
   const isActive = !!step;
   const displayName = middlewareName.replace("Middleware", "");
-  const isCircuitBreak = step?.event === "short-circuit" || step?.event === "exception";
+  const isCircuitBreak = step?.event === "short-circuit" || step?.event === "error";
 
   return (
     <div
-      className={`relative flex flex-col justify-center px-3 h-14 rounded-lg border transition-all duration-300 w-full ${getNodeStyle(isActive, step?.event)}`}
+      className={`relative flex flex-col justify-center px-3 h-14 rounded-lg border w-full ${getNodeStyle(isActive, step?.event)}`}
     >
       {/*top row*/}
       <div className="flex justify-between items-center gap-2">
@@ -45,9 +45,7 @@ export const MiddlewareNode = ({ middlewareName, step }: MiddlewareNodeProps) =>
       <div className="flex justify-between items-center mt-1 h-4">
         {/*short circuit or error badge*/}
         {isCircuitBreak && (
-          <span
-            className={`text-xs font-medium py-0.5 ${step.event === "exception" ? "text-brand-10" : "text-orange-500"}`}
-          >
+          <span className={`text-xs py-0.5 ${step.event === "error" ? "text-brand-10" : "text-orange-500"}`}>
             {step.event.replace("-", " ")}
           </span>
         )}

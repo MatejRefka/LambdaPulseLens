@@ -671,7 +671,82 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       }
     ]
-  }
+  },
   //trace 4, 500 Internal Server Error
-  //here
+  {
+    id: 1004,
+    timestampStart: new Date(now - 45000).toISOString(),
+    durationMs: 4,
+    request: {
+      method: "GET",
+      path: "/assets/index.js",
+      protocol: "HTTP/1.1",
+      headers: { Accept: "text/css" },
+      cookies: {}
+    },
+    response: {
+      statusCode: 500,
+      responsePhrase: "Internal Server Error",
+      headers: { "Content-Type": "text/css" },
+      cookies: { session_id: "xyz_123" }
+    },
+    pipeline: [
+      {
+        middleware: "ExceptionMiddleware",
+        direction: "downstream",
+        event: "success",
+        timestampStart: new Date(now - 45000).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "LoggingMiddleware",
+        direction: "downstream",
+        event: "success",
+        timestampStart: new Date(now - 44999).toISOString(),
+        durationMs: 0.2
+      },
+      {
+        middleware: "RequestLimitsMiddleware",
+        direction: "downstream",
+        event: "success",
+        timestampStart: new Date(now - 44998).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "ConnectionMiddleware",
+        direction: "downstream",
+        event: "error",
+        timestampStart: new Date(now - 44998).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "ConnectionMiddleware",
+        direction: "upstream",
+        event: "success",
+        timestampStart: new Date(now - 44987).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "RequestLimitsMiddleware",
+        direction: "upstream",
+        event: "success",
+        timestampStart: new Date(now - 44986).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "LoggingMiddleware",
+        direction: "upstream",
+        event: "success",
+        timestampStart: new Date(now - 44986).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "ExceptionMiddleware",
+        direction: "upstream",
+        event: "success",
+        timestampStart: new Date(now - 44985).toISOString(),
+        durationMs: 0.1
+      }
+    ]
+  }
 ];

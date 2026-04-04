@@ -15,10 +15,7 @@ export const TraceItem = ({ trace, isSelected, onClick }: TraceItemProps) => {
   const badgeStyleHover = isSelected ? "group-hover:border-surface-60" : "group-hover:border-surface-30";
 
   return (
-    <button
-      onClick={onClick}
-      className={`group w-full text-left p-3 rounded-lg transition-colors ${traceContainerStyle}`}
-    >
+    <button onClick={onClick} className={`group w-full text-left p-3 rounded-lg ${traceContainerStyle}`}>
       {/*method + status code*/}
       <div className="flex justify-between items-center mb-1">
         <span className="text-sm font-semibold">{trace.request.method}</span>

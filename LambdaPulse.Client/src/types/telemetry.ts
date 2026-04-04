@@ -1,5 +1,5 @@
 export type FlowDirection = "downstream" | "upstream";
-export type ExecutionEvent = "success" | "short-circuit" | "exception";
+export type ExecutionEvent = "success" | "short-circuit" | "error";
 
 export interface Trace {
   id: number;
