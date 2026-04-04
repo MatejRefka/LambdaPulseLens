@@ -748,5 +748,320 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       }
     ]
+  },
+  //trace 6: 500 Internal Server Error, within termination mw
+  {
+    id: 1006,
+    timestampStart: new Date(now - 60000).toISOString(),
+    durationMs: 45,
+    request: {
+      method: "GET",
+      path: "/api/users/orders",
+      protocol: "HTTP/1.1",
+      headers: { Accept: "application/json", Authorization: "Bearer eyJhb..." },
+      cookies: {}
+    },
+    response: {
+      statusCode: 500,
+      responsePhrase: "Internal Server Error",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId: 42, role: "Admin" }),
+      cookies: { session_id: "xyz_123" }
+    },
+    pipeline: [
+      {
+        middleware: "ExceptionMiddleware",
+        direction: "downstream",
+        event: "success",
+        timestampStart: new Date(now - 60000).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "LoggingMiddleware",
+        direction: "downstream",
+        event: "success",
+        timestampStart: new Date(now - 59999).toISOString(),
+        durationMs: 0.5
+      },
+      {
+        middleware: "RequestLimitsMiddleware",
+        direction: "downstream",
+        event: "success",
+        timestampStart: new Date(now - 59998).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "ConnectionMiddleware",
+        direction: "downstream",
+        event: "success",
+        timestampStart: new Date(now - 59998).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "HttpsRedirectionMiddleware",
+        direction: "downstream",
+        event: "success",
+        timestampStart: new Date(now - 59997).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "HstsMiddleware",
+        direction: "downstream",
+        event: "success",
+        timestampStart: new Date(now - 59996).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "SecurityMiddleware",
+        direction: "downstream",
+        event: "success",
+        timestampStart: new Date(now - 59996).toISOString(),
+        durationMs: 0.2
+      },
+      {
+        middleware: "CookieMiddleware",
+        direction: "downstream",
+        event: "success",
+        timestampStart: new Date(now - 59996).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "CsrfMiddleware",
+        direction: "downstream",
+        event: "success",
+        timestampStart: new Date(now - 59995).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "ResponseCompressionMiddleware",
+        direction: "downstream",
+        event: "success",
+        timestampStart: new Date(now - 59995).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "CachingMiddleware",
+        direction: "downstream",
+        event: "success",
+        timestampStart: new Date(now - 59994).toISOString(),
+        durationMs: 1.5,
+        notes: "Cache miss"
+      },
+      {
+        middleware: "StaticFilesMiddleware",
+        direction: "downstream",
+        event: "success",
+        timestampStart: new Date(now - 59992).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "StaticPagesMiddleware",
+        direction: "downstream",
+        event: "success",
+        timestampStart: new Date(now - 59992).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "RoutingMiddleware",
+        direction: "downstream",
+        event: "success",
+        timestampStart: new Date(now - 59991).toISOString(),
+        durationMs: 1.2,
+        notes: "Matched route: GetUserProfile"
+      },
+      {
+        middleware: "CorsMiddleware",
+        direction: "downstream",
+        event: "success",
+        timestampStart: new Date(now - 59990).toISOString(),
+        durationMs: 0.2
+      },
+      {
+        middleware: "JwtMiddleware",
+        direction: "downstream",
+        event: "success",
+        timestampStart: new Date(now - 59989).toISOString(),
+        durationMs: 2.5,
+        notes: "Token signature validated"
+      },
+      {
+        middleware: "AuthenticationMiddleware",
+        direction: "downstream",
+        event: "success",
+        timestampStart: new Date(now - 59986).toISOString(),
+        durationMs: 0.5
+      },
+      {
+        middleware: "AuthorizationMiddleware",
+        direction: "downstream",
+        event: "success",
+        timestampStart: new Date(now - 59985).toISOString(),
+        durationMs: 0.5
+      },
+      {
+        middleware: "ContentNegotiationMiddleware",
+        direction: "downstream",
+        event: "success",
+        timestampStart: new Date(now - 59984).toISOString(),
+        durationMs: 0.2
+      },
+      {
+        middleware: "InvokeMiddleware",
+        direction: "downstream",
+        event: "success",
+        timestampStart: new Date(now - 59984).toISOString(),
+        durationMs: 35.0,
+        notes: "Executing Controller Action"
+      },
+      {
+        middleware: "TerminationMiddleware",
+        event: "error",
+        timestampStart: new Date(now - 59949).toISOString(),
+        durationMs: 0.1,
+        notes: "Error in core"
+      },
+      {
+        middleware: "InvokeMiddleware",
+        direction: "upstream",
+        event: "success",
+        timestampStart: new Date(now - 59948).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "ContentNegotiationMiddleware",
+        direction: "upstream",
+        event: "success",
+        timestampStart: new Date(now - 59947).toISOString(),
+        durationMs: 0.5,
+        notes: "Formatted to JSON"
+      },
+      {
+        middleware: "AuthorizationMiddleware",
+        direction: "upstream",
+        event: "success",
+        timestampStart: new Date(now - 59947).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "AuthenticationMiddleware",
+        direction: "upstream",
+        event: "success",
+        timestampStart: new Date(now - 59946).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "JwtMiddleware",
+        direction: "upstream",
+        event: "success",
+        timestampStart: new Date(now - 59946).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "CorsMiddleware",
+        direction: "upstream",
+        event: "success",
+        timestampStart: new Date(now - 59946).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "RoutingMiddleware",
+        direction: "upstream",
+        event: "success",
+        timestampStart: new Date(now - 59945).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "StaticPagesMiddleware",
+        direction: "upstream",
+        event: "success",
+        timestampStart: new Date(now - 59945).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "StaticFilesMiddleware",
+        direction: "upstream",
+        event: "success",
+        timestampStart: new Date(now - 59945).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "CachingMiddleware",
+        direction: "upstream",
+        event: "success",
+        timestampStart: new Date(now - 59944).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "ResponseCompressionMiddleware",
+        direction: "upstream",
+        event: "success",
+        timestampStart: new Date(now - 59944).toISOString(),
+        durationMs: 1.0,
+        notes: "Compressed via GZIP"
+      },
+      {
+        middleware: "CsrfMiddleware",
+        direction: "upstream",
+        event: "success",
+        timestampStart: new Date(now - 59943).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "CookieMiddleware",
+        direction: "upstream",
+        event: "success",
+        timestampStart: new Date(now - 59943).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "SecurityMiddleware",
+        direction: "upstream",
+        event: "success",
+        timestampStart: new Date(now - 59943).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "HstsMiddleware",
+        direction: "upstream",
+        event: "success",
+        timestampStart: new Date(now - 59942).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "HttpsRedirectionMiddleware",
+        direction: "upstream",
+        event: "success",
+        timestampStart: new Date(now - 59942).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "ConnectionMiddleware",
+        direction: "upstream",
+        event: "success",
+        timestampStart: new Date(now - 59942).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "RequestLimitsMiddleware",
+        direction: "upstream",
+        event: "success",
+        timestampStart: new Date(now - 59941).toISOString(),
+        durationMs: 0.1
+      },
+      {
+        middleware: "LoggingMiddleware",
+        direction: "upstream",
+        event: "success",
+        timestampStart: new Date(now - 59941).toISOString(),
+        durationMs: 0.2
+      },
+      {
+        middleware: "ExceptionMiddleware",
+        direction: "upstream",
+        event: "success",
+        timestampStart: new Date(now - 59940).toISOString(),
+        durationMs: 0.1
+      }
+    ]
   }
 ];
