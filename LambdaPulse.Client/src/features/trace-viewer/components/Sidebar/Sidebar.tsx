@@ -10,7 +10,7 @@ interface SidebarProps {
 
 export const Sidebar = ({ traces, selectedTraceId, onSelectTrace }: SidebarProps) => {
   return (
-    <div className="w-90 flex flex-col bg-surface-20 shadow-xl z-10">
+    <div className="w-85 flex flex-col bg-surface-20 shadow-xl z-10">
       {/*brand logo*/}
       <BrandLogo />
 

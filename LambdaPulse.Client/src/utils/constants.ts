@@ -1,28 +1,28 @@
 export const STATIC_PIPELINE = [
   //col 1
-  "ExceptionMiddleware",
-  "LoggingMiddleware",
-  "RequestLimitsMiddleware",
-  "ConnectionMiddleware",
-  "HttpsRedirectionMiddleware",
-  "HstsMiddleware",
-  "SecurityMiddleware",
-  "CookieMiddleware",
-  "CsrfMiddleware",
-  "ResponseCompressionMiddleware",
+  "Exception",
+  "Logging",
+  "Request Limits",
+  "Connection",
+  "Https Redirection",
+  "Hsts",
+  "Security",
+  "Cookie",
+  "Csrf",
+  "Response Compression",
   //col 2
-  "CachingMiddleware",
-  "StaticFilesMiddleware",
-  "StaticPagesMiddleware",
-  "RoutingMiddleware",
-  "CorsMiddleware",
-  "JwtMiddleware",
-  "AuthenticationMiddleware",
-  "AuthorizationMiddleware",
-  "ContentNegotiationMiddleware",
-  "InvokeMiddleware",
+  "Caching",
+  "Static Files",
+  "Static Pages",
+  "Routing",
+  "Cors",
+  "Jwt",
+  "Authentication",
+  "Authorization",
+  "Content Negotiation",
+  "Invoke",
   //col 3
-  "TerminationMiddleware"
+  "Termination"
 ];
 
 export const MIDDLEWARE_1_10 = STATIC_PIPELINE.slice(0, 10);

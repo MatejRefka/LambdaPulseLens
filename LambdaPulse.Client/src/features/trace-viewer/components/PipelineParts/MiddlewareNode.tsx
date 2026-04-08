@@ -1,5 +1,4 @@
 import type { Step } from "../../../../types/telemetry";
-import { NotesTooltip } from "./NotesTooltip";
 
 interface MiddlewareNodeProps {
   middlewareName: string;
@@ -25,7 +24,7 @@ const getNodeStyle = (isActive: boolean, event?: string) => {
 
 export const MiddlewareNode = ({ middlewareName, step }: MiddlewareNodeProps) => {
   const isActive = !!step;
-  const displayName = middlewareName.replace("Middleware", "");
+  const hasLogs = !!step?.logs;
   const isCircuitBreak = step?.event === "short-circuit" || step?.event === "error";
 
   return (
@@ -33,16 +32,16 @@ export const MiddlewareNode = ({ middlewareName, step }: MiddlewareNodeProps) =>
       className={`relative flex flex-col justify-center px-3 h-14 rounded-lg border w-full ${getNodeStyle(isActive, step?.event)}`}
     >
       {/*top row*/}
-      <div className="flex justify-between items-center gap-2">
+      <div className="flex justify-between items-center">
         {/*middleware name*/}
-        <span className="text-sm truncate font-normal">{displayName}</span>
-
-        {/*duration*/}
-        {isActive && <span className="text-xs text-text-30 whitespace-nowrap">{step.durationMs}ms</span>}
+        <span className="text-sm truncate font-normal">{middlewareName}</span>
       </div>
 
       {/*bottom row*/}
-      <div className="flex justify-between items-center mt-1 h-4">
+      <div className="flex justify-between items-center mt-1 h-5">
+        {/*duration*/}
+        {isActive && <span className="text-xs text-text-30 whitespace-nowrap">{step.durationMs}ms</span>}
+
         {/*short circuit or error badge*/}
         {isCircuitBreak && (
           <span className={`text-xs py-0.5 ${step.event === "error" ? "text-danger-10" : "text-warning-20"}`}>
@@ -51,7 +50,11 @@ export const MiddlewareNode = ({ middlewareName, step }: MiddlewareNodeProps) =>
         )}
 
         {/*notes indicator and tooltip*/}
-        {isActive && <NotesTooltip step={step} />}
+        {isActive && hasLogs && (
+          <button className="text-[10px] text-text-30 tracking-wide border-b border-dotted border-text-30 hover:cursor-pointer hover:text-text-20 transition-colors pb-px">
+            LOGS
+          </button>
+        )}
       </div>
     </div>
   );

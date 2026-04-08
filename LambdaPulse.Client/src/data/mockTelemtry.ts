@@ -23,293 +23,293 @@ export const mockTraces: Trace[] = [
     },
     pipeline: [
       {
-        middleware: "ExceptionMiddleware",
+        middleware: "Exception",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 60000).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "LoggingMiddleware",
+        middleware: "Logging",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59999).toISOString(),
         durationMs: 0.5
       },
       {
-        middleware: "RequestLimitsMiddleware",
+        middleware: "Request Limits",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59998).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "ConnectionMiddleware",
+        middleware: "Connection",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59998).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "HttpsRedirectionMiddleware",
+        middleware: "Https Redirection",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59997).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "HstsMiddleware",
+        middleware: "Hsts",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59996).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "SecurityMiddleware",
+        middleware: "Security",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59996).toISOString(),
         durationMs: 0.2
       },
       {
-        middleware: "CookieMiddleware",
+        middleware: "Cookie",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59996).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "CsrfMiddleware",
+        middleware: "Csrf",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59995).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "ResponseCompressionMiddleware",
+        middleware: "Response Compression",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59995).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "CachingMiddleware",
+        middleware: "Caching",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59994).toISOString(),
         durationMs: 1.5,
-        notes: "Cache miss"
+        logs: ["Cache miss"]
       },
       {
-        middleware: "StaticFilesMiddleware",
+        middleware: "Static Files",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59992).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "StaticPagesMiddleware",
+        middleware: "Static Pages",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59992).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "RoutingMiddleware",
+        middleware: "Routing",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59991).toISOString(),
         durationMs: 1.2,
-        notes: "Matched route: GetUserProfile"
+        logs: ["Matched route: GetUserProfile"]
       },
       {
-        middleware: "CorsMiddleware",
+        middleware: "Cors",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59990).toISOString(),
         durationMs: 0.2
       },
       {
-        middleware: "JwtMiddleware",
+        middleware: "Jwt",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59989).toISOString(),
         durationMs: 2.5,
-        notes: "Token signature validated"
+        logs: ["Token signature validated"]
       },
       {
-        middleware: "AuthenticationMiddleware",
+        middleware: "Authentication",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59986).toISOString(),
         durationMs: 0.5
       },
       {
-        middleware: "AuthorizationMiddleware",
+        middleware: "Authorization",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59985).toISOString(),
         durationMs: 0.5
       },
       {
-        middleware: "ContentNegotiationMiddleware",
+        middleware: "Content Negotiation",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59984).toISOString(),
         durationMs: 0.2
       },
       {
-        middleware: "InvokeMiddleware",
+        middleware: "Invoke",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59984).toISOString(),
         durationMs: 35.0,
-        notes: "Executing Controller Action"
+        logs: ["Executing Controller Action"]
       },
       {
-        middleware: "TerminationMiddleware",
+        middleware: "Termination",
         event: "success",
         timestampStart: new Date(now - 59949).toISOString(),
         durationMs: 0.1,
-        notes: "Pipeline core reached"
+        logs: ["Pipeline core reached"]
       },
       {
-        middleware: "InvokeMiddleware",
+        middleware: "Invoke",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59948).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "ContentNegotiationMiddleware",
+        middleware: "Content Negotiation",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59947).toISOString(),
         durationMs: 0.5,
-        notes: "Formatted to JSON"
+        logs: ["Formatted to JSON"]
       },
       {
-        middleware: "AuthorizationMiddleware",
+        middleware: "Authorization",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59947).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "AuthenticationMiddleware",
+        middleware: "Authentication",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59946).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "JwtMiddleware",
+        middleware: "Jwt",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59946).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "CorsMiddleware",
+        middleware: "Cors",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59946).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "RoutingMiddleware",
+        middleware: "Routing",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59945).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "StaticPagesMiddleware",
+        middleware: "Static Pages",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59945).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "StaticFilesMiddleware",
+        middleware: "Static Files",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59945).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "CachingMiddleware",
+        middleware: "Caching",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59944).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "ResponseCompressionMiddleware",
+        middleware: "Response Compression",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59944).toISOString(),
         durationMs: 1.0,
-        notes: "Compressed via GZIP"
+        logs: ["Compressed via GZIP"]
       },
       {
-        middleware: "CsrfMiddleware",
+        middleware: "Csrf",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59943).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "CookieMiddleware",
+        middleware: "Cookie",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59943).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "SecurityMiddleware",
+        middleware: "Security",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59943).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "HstsMiddleware",
+        middleware: "Hsts",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59942).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "HttpsRedirectionMiddleware",
+        middleware: "Https Redirection",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59942).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "ConnectionMiddleware",
+        middleware: "Connection",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59942).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "RequestLimitsMiddleware",
+        middleware: "Request Limits",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59941).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "LoggingMiddleware",
+        middleware: "Logging",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59941).toISOString(),
         durationMs: 0.2
       },
       {
-        middleware: "ExceptionMiddleware",
+        middleware: "Exception",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59940).toISOString(),
@@ -338,70 +338,70 @@ export const mockTraces: Trace[] = [
     },
     pipeline: [
       {
-        middleware: "ExceptionMiddleware",
+        middleware: "Exception",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 45000).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "LoggingMiddleware",
+        middleware: "Logging",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 44999).toISOString(),
         durationMs: 0.2
       },
       {
-        middleware: "RequestLimitsMiddleware",
+        middleware: "Request Limits",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 44998).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "ConnectionMiddleware",
+        middleware: "Connection",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 44998).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "HttpsRedirectionMiddleware",
+        middleware: "Https Redirection",
         direction: "downstream",
         event: "short-circuit",
         timestampStart: new Date(now - 44997).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "HttpsRedirectionMiddleware",
+        middleware: "Https Redirection",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 44997).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "ConnectionMiddleware",
+        middleware: "Connection",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 44987).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "RequestLimitsMiddleware",
+        middleware: "Request Limits",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 44986).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "LoggingMiddleware",
+        middleware: "Logging",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 44986).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "ExceptionMiddleware",
+        middleware: "Exception",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 44985).toISOString(),
@@ -431,240 +431,240 @@ export const mockTraces: Trace[] = [
     },
     pipeline: [
       {
-        middleware: "ExceptionMiddleware",
+        middleware: "Exception",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 30000).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "LoggingMiddleware",
+        middleware: "Logging",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 29999).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "RequestLimitsMiddleware",
+        middleware: "Request Limits",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 29999).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "ConnectionMiddleware",
+        middleware: "Connection",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 29998).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "HttpsRedirectionMiddleware",
+        middleware: "Https Redirection",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 29998).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "HstsMiddleware",
+        middleware: "Hsts",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 29997).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "SecurityMiddleware",
+        middleware: "Security",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 29997).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "CookieMiddleware",
+        middleware: "Cookie",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 29996).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "CsrfMiddleware",
+        middleware: "Csrf",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 29996).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "ResponseCompressionMiddleware",
+        middleware: "Response Compression",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 29995).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "CachingMiddleware",
+        middleware: "Caching",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 29995).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "StaticFilesMiddleware",
+        middleware: "Static Files",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 29994).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "StaticPagesMiddleware",
+        middleware: "Static Pages",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 29994).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "RoutingMiddleware",
+        middleware: "Routing",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 29993).toISOString(),
         durationMs: 1.0
       },
       {
-        middleware: "CorsMiddleware",
+        middleware: "Cors",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 29992).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "JwtMiddleware",
+        middleware: "Jwt",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 29991).toISOString(),
         durationMs: 0.5,
-        notes: "No Bearer token found in headers."
+        logs: ["No Bearer token found in headers."]
       },
       {
-        middleware: "AuthenticationMiddleware",
+        middleware: "Authentication",
         direction: "downstream",
         event: "short-circuit",
         timestampStart: new Date(now - 29990).toISOString(),
         durationMs: 0.5,
-        notes: "Rejecting request: 401 Unauthorized."
+        logs: ["Rejecting request: 401 Unauthorized."]
       },
       {
-        middleware: "AuthenticationMiddleware",
+        middleware: "Authentication",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 29990).toISOString(),
         durationMs: 0.5
       },
       {
-        middleware: "JwtMiddleware",
+        middleware: "Jwt",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 29989).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "CorsMiddleware",
+        middleware: "Cors",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 29989).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "RoutingMiddleware",
+        middleware: "Routing",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 29988).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "StaticPagesMiddleware",
+        middleware: "Static Pages",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 29988).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "StaticFilesMiddleware",
+        middleware: "Static Files",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 29987).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "CachingMiddleware",
+        middleware: "Caching",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 29987).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "ResponseCompressionMiddleware",
+        middleware: "Response Compression",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 29986).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "CsrfMiddleware",
+        middleware: "Csrf",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 29986).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "CookieMiddleware",
+        middleware: "Cookie",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 29985).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "SecurityMiddleware",
+        middleware: "Security",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 29985).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "HstsMiddleware",
+        middleware: "Hsts",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 29984).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "HttpsRedirectionMiddleware",
+        middleware: "Https Redirection",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 29984).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "ConnectionMiddleware",
+        middleware: "Connection",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 29983).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "RequestLimitsMiddleware",
+        middleware: "Request Limits",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 29983).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "LoggingMiddleware",
+        middleware: "Logging",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 29982).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "ExceptionMiddleware",
+        middleware: "Exception",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 29982).toISOString(),
@@ -692,56 +692,56 @@ export const mockTraces: Trace[] = [
     },
     pipeline: [
       {
-        middleware: "ExceptionMiddleware",
+        middleware: "Exception",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 45000).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "LoggingMiddleware",
+        middleware: "Logging",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 44999).toISOString(),
         durationMs: 0.2
       },
       {
-        middleware: "RequestLimitsMiddleware",
+        middleware: "Request Limits",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 44998).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "ConnectionMiddleware",
+        middleware: "Connection",
         direction: "downstream",
         event: "error",
         timestampStart: new Date(now - 44998).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "ConnectionMiddleware",
+        middleware: "Connection",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 44987).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "RequestLimitsMiddleware",
+        middleware: "Request Limits",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 44986).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "LoggingMiddleware",
+        middleware: "Logging",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 44986).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "ExceptionMiddleware",
+        middleware: "Exception",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 44985).toISOString(),
@@ -770,293 +770,293 @@ export const mockTraces: Trace[] = [
     },
     pipeline: [
       {
-        middleware: "ExceptionMiddleware",
+        middleware: "Exception",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 60000).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "LoggingMiddleware",
+        middleware: "Logging",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59999).toISOString(),
         durationMs: 0.5
       },
       {
-        middleware: "RequestLimitsMiddleware",
+        middleware: "Request Limits",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59998).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "ConnectionMiddleware",
+        middleware: "Connection",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59998).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "HttpsRedirectionMiddleware",
+        middleware: "Https Redirection",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59997).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "HstsMiddleware",
+        middleware: "Hsts",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59996).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "SecurityMiddleware",
+        middleware: "Security",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59996).toISOString(),
         durationMs: 0.2
       },
       {
-        middleware: "CookieMiddleware",
+        middleware: "Cookie",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59996).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "CsrfMiddleware",
+        middleware: "Csrf",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59995).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "ResponseCompressionMiddleware",
+        middleware: "Response Compression",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59995).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "CachingMiddleware",
+        middleware: "Caching",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59994).toISOString(),
         durationMs: 1.5,
-        notes: "Cache miss"
+        logs: ["Cache miss"]
       },
       {
-        middleware: "StaticFilesMiddleware",
+        middleware: "Static Files",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59992).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "StaticPagesMiddleware",
+        middleware: "Static Pages",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59992).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "RoutingMiddleware",
+        middleware: "Routing",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59991).toISOString(),
         durationMs: 1.2,
-        notes: "Matched route: GetUserProfile"
+        logs: ["Matched route: GetUserProfile"]
       },
       {
-        middleware: "CorsMiddleware",
+        middleware: "Cors",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59990).toISOString(),
         durationMs: 0.2
       },
       {
-        middleware: "JwtMiddleware",
+        middleware: "Jwt",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59989).toISOString(),
         durationMs: 2.5,
-        notes: "Token signature validated"
+        logs: ["Token signature validated"]
       },
       {
-        middleware: "AuthenticationMiddleware",
+        middleware: "Authentication",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59986).toISOString(),
         durationMs: 0.5
       },
       {
-        middleware: "AuthorizationMiddleware",
+        middleware: "Authorization",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59985).toISOString(),
         durationMs: 0.5
       },
       {
-        middleware: "ContentNegotiationMiddleware",
+        middleware: "Content Negotiation",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59984).toISOString(),
         durationMs: 0.2
       },
       {
-        middleware: "InvokeMiddleware",
+        middleware: "Invoke",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59984).toISOString(),
         durationMs: 35.0,
-        notes: "Executing Controller Action"
+        logs: ["Executing Controller Action"]
       },
       {
-        middleware: "TerminationMiddleware",
+        middleware: "Termination",
         event: "error",
         timestampStart: new Date(now - 59949).toISOString(),
         durationMs: 0.1,
-        notes: "Error in core"
+        logs: ["Error in core"]
       },
       {
-        middleware: "InvokeMiddleware",
+        middleware: "Invoke",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59948).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "ContentNegotiationMiddleware",
+        middleware: "Content Negotiation",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59947).toISOString(),
         durationMs: 0.5,
-        notes: "Formatted to JSON"
+        logs: ["Formatted to JSON"]
       },
       {
-        middleware: "AuthorizationMiddleware",
+        middleware: "Authorization",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59947).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "AuthenticationMiddleware",
+        middleware: "Authentication",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59946).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "JwtMiddleware",
+        middleware: "Jwt",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59946).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "CorsMiddleware",
+        middleware: "Cors",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59946).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "RoutingMiddleware",
+        middleware: "Routing",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59945).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "StaticPagesMiddleware",
+        middleware: "Static Pages",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59945).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "StaticFilesMiddleware",
+        middleware: "Static Files",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59945).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "CachingMiddleware",
+        middleware: "Caching",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59944).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "ResponseCompressionMiddleware",
+        middleware: "Response Compression",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59944).toISOString(),
         durationMs: 1.0,
-        notes: "Compressed via GZIP"
+        logs: ["Compressed via GZIP"]
       },
       {
-        middleware: "CsrfMiddleware",
+        middleware: "Csrf",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59943).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "CookieMiddleware",
+        middleware: "Cookie",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59943).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "SecurityMiddleware",
+        middleware: "Security",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59943).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "HstsMiddleware",
+        middleware: "Hsts",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59942).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "HttpsRedirectionMiddleware",
+        middleware: "Https Redirection",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59942).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "ConnectionMiddleware",
+        middleware: "Connection",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59942).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "RequestLimitsMiddleware",
+        middleware: "Request Limits",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59941).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "LoggingMiddleware",
+        middleware: "Logging",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59941).toISOString(),
         durationMs: 0.2
       },
       {
-        middleware: "ExceptionMiddleware",
+        middleware: "Exception",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59940).toISOString(),

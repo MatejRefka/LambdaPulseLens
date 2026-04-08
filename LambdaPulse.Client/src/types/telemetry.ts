@@ -18,7 +18,7 @@ export interface Step {
   event: ExecutionEvent;
   timestampStart: string;
   durationMs: number;
-  notes?: string;
+  logs?: string[];
 }
 
 export interface WebRequest {
