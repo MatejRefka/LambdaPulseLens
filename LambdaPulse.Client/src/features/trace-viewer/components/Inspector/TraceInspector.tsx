@@ -1,16 +1,32 @@
 import type { Trace } from "../../../../types/telemetry";
+import { LogTimeline } from "../PipelineParts/LogTimeline";
 import { PipelineLayout } from "./PipelineLayout";
 
 interface TraceInspectorProps {
   trace: Trace;
 }
 
+const ThemeIcon = () => <span className="cursor-pointer hover:text-text-10 transition-colors">🌙</span>;
+const LogoutIcon = () => <span className="cursor-pointer hover:text-text-10 transition-colors">🚪</span>;
+
 export const TraceInspector = ({ trace }: TraceInspectorProps) => {
   return (
-    <div className="flex-1 flex flex-col overflow-hidden relative bg-surface-10">
+    <div className="flex-1 flex overflow-hidden bg-surface-10">
       {/*pipeline container*/}
-      <div className="flex-1 flex flex-col px-12">
+      <div className="flex-1 flex flex-col pl-12 pr-6 overflow-y-auto">
         <PipelineLayout trace={trace} />
+      </div>
+
+      {/*site utilities + log timeline*/}
+      <div className="w-100 shrink-0 flex flex-col">
+        <div className="h-14 shrink-0 px-8 flex justify-end items-center gap-4">
+          <ThemeIcon />
+          <LogoutIcon />
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-6 mt-2">
+          <LogTimeline pipeline={trace.pipeline} />
+        </div>
       </div>
     </div>
   );

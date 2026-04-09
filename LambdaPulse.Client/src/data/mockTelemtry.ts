@@ -55,7 +55,8 @@ export const mockTraces: Trace[] = [
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59997).toISOString(),
-        durationMs: 0.1
+        durationMs: 0.1,
+        logs: ["Forward protocol is https.", "Bypassing redirect."]
       },
       {
         middleware: "Hsts",
@@ -285,7 +286,8 @@ export const mockTraces: Trace[] = [
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59942).toISOString(),
-        durationMs: 0.1
+        durationMs: 0.1,
+        logs: ["Forward protocol is https.", "Bypassing redirect."]
       },
       {
         middleware: "Connection",
@@ -370,7 +372,8 @@ export const mockTraces: Trace[] = [
         direction: "downstream",
         event: "short-circuit",
         timestampStart: new Date(now - 44997).toISOString(),
-        durationMs: 0.1
+        durationMs: 0.1,
+        logs: ["Forward protocol is https.", "Bypassing redirect."]
       },
       {
         middleware: "Https Redirection",
@@ -549,7 +552,9 @@ export const mockTraces: Trace[] = [
         event: "short-circuit",
         timestampStart: new Date(now - 29990).toISOString(),
         durationMs: 0.5,
-        logs: ["Rejecting request: 401 Unauthorized."]
+        logs: [
+          "Rejecting request: 401 Unauthorized. 401 Unauthorized. 401 Unauthorized. 401 Unauthorized. 401 Unauthorized."
+        ]
       },
       {
         middleware: "Authentication",

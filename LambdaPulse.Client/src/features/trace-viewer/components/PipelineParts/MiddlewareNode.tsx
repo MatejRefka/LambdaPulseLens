@@ -49,7 +49,7 @@ export const MiddlewareNode = ({ middlewareName, step }: MiddlewareNodeProps) =>
           </span>
         )}
 
-        {/*notes indicator and tooltip*/}
+        {/*logs indicator*/}
         {isActive && hasLogs && (
           <button className="text-[10px] text-text-30 tracking-wide border-b border-dotted border-text-30 hover:cursor-pointer hover:text-text-20 transition-colors pb-px">
             LOGS

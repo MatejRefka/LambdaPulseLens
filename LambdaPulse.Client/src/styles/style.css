@@ -81,3 +81,26 @@
     @apply w-full h-full rounded-full flex items-center justify-center cursor-pointer border-2 border-platinum;
   }
 }
+
+@layer utilities {
+  .scrollbar {
+    /*firefox*/
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-surface-40) transparent;
+
+    /*chrome/safari/edge*/
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      @apply bg-surface-40 rounded-full transition-colors;
+    }
+    &::-webkit-scrollbar-thumb:hover {
+      @apply bg-surface-50;
+    }
+  }
+}

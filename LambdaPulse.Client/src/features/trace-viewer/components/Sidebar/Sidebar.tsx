@@ -15,7 +15,7 @@ export const Sidebar = ({ traces, selectedTraceId, onSelectTrace }: SidebarProps
       <BrandLogo />
 
       {/*trace list*/}
-      <div className="flex-1 flex flex-col px-4 gap-2 overflow-y-auto pb-4">
+      <div className="flex-1 flex flex-col px-4 gap-2 overflow-y-auto pb-4 scrollbar">
         {traces.map((trace) => (
           <TraceItem
             key={trace.id}
