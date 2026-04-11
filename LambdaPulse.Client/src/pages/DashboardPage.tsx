@@ -13,7 +13,7 @@ export const DashboardPage = () => {
       <Sidebar traces={mockTraces} selectedTraceId={selectedTrace.id} onSelectTrace={setSelectedTrace} />
 
       {/*trace inspector*/}
-      <TraceInspector trace={selectedTrace} />
+      <TraceInspector key={selectedTrace.id} trace={selectedTrace} />
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import type { Trace } from "../../../../types/telemetry";
 import { LogTimeline } from "../PipelineParts/LogTimeline";
 import { PipelineLayout } from "./PipelineLayout";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface TraceInspectorProps {
   trace: Trace;
@@ -12,11 +12,6 @@ const LogoutIcon = () => <span className="cursor-pointer hover:text-text-10 tran
 
 export const TraceInspector = ({ trace }: TraceInspectorProps) => {
   const [activeLogItem, setActiveLogItem] = useState<string | null>(null);
-
-  //reset the active LogItem when new TraceItem is selected
-  useEffect(() => {
-    setActiveLogItem(null);
-  }, [trace.id]);
 
   return (
     <div className="flex-1 flex overflow-hidden bg-surface-10">
