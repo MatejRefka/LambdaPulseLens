@@ -1,4 +1,5 @@
 import type { FlowDirection, ExecutionEvent } from "../../../../types/telemetry";
+import { cn } from "../../../../utils/cn";
 
 interface ShortCircuitLinkProps {
   direction?: FlowDirection;
@@ -27,16 +28,17 @@ export const ShortCircuitLink = ({ direction, event = "short-circuit" }: ShortCi
       {direction === "downstream" && (
         <>
           {/*vertical wire*/}
-          <div className={`absolute top-0 bottom-1/2 left-1/2 w-0.5 -ml-px ${wireColor}`}></div>
+          <div className={cn("absolute top-0 bottom-1/2 left-1/2 w-0.5 -ml-px", wireColor)}></div>
 
           {/*horizontal wire*/}
-          <div className={`absolute top-1/2 left-1/2 w-1/4 h-0.5 -mt-px ${wireColor}`}></div>
+          <div className={cn("absolute top-1/2 left-1/2 w-1/4 h-0.5 -mt-px", wireColor)}></div>
 
           {/*arrow right*/}
           <div
-            className={`absolute top-1/2 left-[75%] -mt-1 -ml-px w-0 h-0 
-            border-y-4 border-y-transparent 
-            border-l-[6px] z-10 ${arrowRightColor}`}
+            className={cn(
+              "absolute top-1/2 left-[75%] -mt-1 -ml-px w-0 h-0 border-y-4 border-y-transparent border-l-[6px] z-10",
+              arrowRightColor
+            )}
           ></div>
         </>
       )}
@@ -44,16 +46,17 @@ export const ShortCircuitLink = ({ direction, event = "short-circuit" }: ShortCi
       {direction === "upstream" && (
         <>
           {/*horizontal wire*/}
-          <div className={`absolute top-1/2 left-1/4 w-1/4 h-0.5 -mt-px ${wireColor}`}></div>
+          <div className={cn("absolute top-1/2 left-1/4 w-1/4 h-0.5 -mt-px", wireColor)}></div>
 
           {/*vertical wire*/}
-          <div className={`absolute bottom-1/2 top-1.5 left-1/2 w-0.5 -ml-px ${wireColor}`}></div>
+          <div className={cn("absolute bottom-1/2 top-1.5 left-1/2 w-0.5 -ml-px", wireColor)}></div>
 
           {/*arrow up*/}
           <div
-            className={`absolute top-0 left-1/2 -ml-1 w-0 h-0 
-            border-x-4 border-x-transparent 
-            border-b-[6px] z-10 ${arrowTopColor}`}
+            className={cn(
+              "absolute top-0 left-1/2 -ml-1 w-0 h-0 border-x-4 border-x-transparent border-b-[6px] z-10",
+              arrowTopColor
+            )}
           ></div>
         </>
       )}

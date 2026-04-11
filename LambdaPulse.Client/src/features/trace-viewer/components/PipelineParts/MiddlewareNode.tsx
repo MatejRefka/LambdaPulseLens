@@ -1,4 +1,5 @@
 import type { Step } from "../../../../types/telemetry";
+import { cn } from "../../../../utils/cn";
 
 interface MiddlewareNodeProps {
   middlewareName: string;
@@ -14,12 +15,12 @@ const getNodeStyle = (isActive: boolean, event?: string) => {
 
   switch (event) {
     case "short-circuit":
-      return `${activeNode} border-l-warning-20`;
+      return cn(activeNode, "border-l-warning-20");
     case "error":
-      return `${activeNode} border-l-danger-10`;
+      return cn(activeNode, "border-l-danger-10");
     case "success":
     default:
-      return `${activeNode} border-l-surface-50`;
+      return cn(activeNode, "border-l-surface-50");
   }
 };
 
@@ -30,7 +31,10 @@ export const MiddlewareNode = ({ middlewareName, step, onLogClick }: MiddlewareN
 
   return (
     <div
-      className={`relative flex flex-col justify-center px-3 h-14 rounded-lg border w-full ${getNodeStyle(isActive, step?.event)}`}
+      className={cn(
+        "relative flex flex-col justify-center px-3 h-14 rounded-lg border w-full",
+        getNodeStyle(isActive, step?.event)
+      )}
     >
       {/*top row*/}
       <div className="flex justify-between items-center">
@@ -45,7 +49,7 @@ export const MiddlewareNode = ({ middlewareName, step, onLogClick }: MiddlewareN
 
         {/*short circuit or error badge*/}
         {isCircuitBreak && (
-          <span className={`text-xs py-0.5 ${step.event === "error" ? "text-danger-10" : "text-warning-20"}`}>
+          <span className={cn("text-xs py-0.5", step.event === "error" ? "text-danger-10" : "text-warning-20")}>
             {step.event.replace("-", " ")}
           </span>
         )}

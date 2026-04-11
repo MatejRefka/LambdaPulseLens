@@ -1,4 +1,5 @@
 import type { FlowDirection, ExecutionEvent } from "../../../../types/telemetry";
+import { cn } from "../../../../utils/cn";
 
 interface WireProps {
   isActive: boolean;
@@ -47,23 +48,25 @@ export const Wire = ({
   };
 
   return (
-    <div className={`flex justify-center ${isFlex && "flex-1"}`}>
-      <div className={`relative w-0.5 ${isFlex ? "h-full" : "h-4"} ${getWireColor()}`}>
+    <div className={cn("flex justify-center", isFlex && "flex-1")}>
+      <div className={cn("relative w-0.5", isFlex ? "h-full" : "h-4", getWireColor())}>
         {/*arrow head pointing downstream*/}
         {showArrow && direction === "downstream" && (
           <div
-            className={`absolute bottom-0 left-1/2 -ml-1 w-0 h-0 
-            border-x-4 border-x-transparent 
-            border-t-[6px] ${getArrowColor()}`}
+            className={cn(
+              "absolute bottom-0 left-1/2 -ml-1 w-0 h-0 border-x-4 border-x-transparent border-t-[6px]",
+              getArrowColor()
+            )}
           ></div>
         )}
 
         {/*arrow head pointing upstream*/}
         {showArrow && direction === "upstream" && (
           <div
-            className={`absolute top-0 left-1/2 -ml-1 w-0 h-0 
-            border-x-4 border-x-transparent 
-            border-b-[6px] ${getArrowColor()}`}
+            className={cn(
+              "absolute top-0 left-1/2 -ml-1 w-0 h-0 border-x-4 border-x-transparent border-b-[6px]",
+              getArrowColor()
+            )}
           ></div>
         )}
       </div>
