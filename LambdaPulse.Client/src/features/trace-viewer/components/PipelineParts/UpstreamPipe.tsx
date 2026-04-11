@@ -8,9 +8,10 @@ import { usePipeline } from "../../hooks/usePipeline";
 interface UpstreamPipeProps {
   middlewares: string[];
   trace: Trace;
+  onLogClick: (activeLogItem: string) => void;
 }
 
-export const UpstreamPipe = ({ middlewares, trace }: UpstreamPipeProps) => {
+export const UpstreamPipe = ({ middlewares, trace, onLogClick }: UpstreamPipeProps) => {
   const { getDownstreamStep, getUpstreamStep, hasShortCircuit } = usePipeline(trace);
   return (
     <>
@@ -30,7 +31,7 @@ export const UpstreamPipe = ({ middlewares, trace }: UpstreamPipeProps) => {
 
         return (
           <React.Fragment key={`out-${middlewareName}`}>
-            <MiddlewareNode middlewareName={middlewareName} step={step} />
+            <MiddlewareNode middlewareName={middlewareName} step={step} onLogClick={onLogClick} />
             {!isLast &&
               (isShortCircuit ? (
                 <ShortCircuitLink direction="upstream" event={step?.event} />

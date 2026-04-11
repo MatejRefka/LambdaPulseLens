@@ -10,9 +10,10 @@ import { FlexWireContainer } from "../Sidebar/FlexWireContainer";
 
 interface PipelineLayoutProps {
   trace: Trace;
+  onLogClick: (activeLogItem: string) => void;
 }
 
-export const PipelineLayout = ({ trace }: PipelineLayoutProps) => {
+export const PipelineLayout = ({ trace, onLogClick }: PipelineLayoutProps) => {
   const { getDownstreamStep, getUpstreamStep } = usePipeline(trace);
 
   return (
@@ -48,27 +49,27 @@ export const PipelineLayout = ({ trace }: PipelineLayoutProps) => {
 
       {/*row 2 col 1, downstream pipeline -mw 1 to 10*/}
       <div className="row-start-2 col-start-1 flex flex-col">
-        <DownstreamPipe middlewares={MIDDLEWARE_1_10} trace={trace} />
+        <DownstreamPipe middlewares={MIDDLEWARE_1_10} trace={trace} onLogClick={onLogClick} />
         <Wire isActive={!!getDownstreamStep(MIDDLEWARE_1_10[9])} direction="downstream" isFlex />
       </div>
 
       {/*row 2 col 2, downstream pipeline -mw 11 to 20*/}
       <div className="row-start-2 col-start-2 flex flex-col">
         <Wire isActive={!!getDownstreamStep(MIDDLEWARE_11_20[0])} direction="downstream" isFlex />
-        <DownstreamPipe middlewares={MIDDLEWARE_11_20} trace={trace} />
+        <DownstreamPipe middlewares={MIDDLEWARE_11_20} trace={trace} onLogClick={onLogClick} />
         <Wire isActive={!!getDownstreamStep(MIDDLEWARE_11_20[9])} direction="downstream" />
       </div>
 
       {/*row 2 col 4, upstream mw 1-10*/}
       <div className="row-start-2 col-start-4 flex flex-col">
         <Wire isActive={!!getUpstreamStep(MIDDLEWARE_11_20[0])} direction="upstream" isFlex />
-        <UpstreamPipe middlewares={MIDDLEWARE_11_20} trace={trace} />
+        <UpstreamPipe middlewares={MIDDLEWARE_11_20} trace={trace} onLogClick={onLogClick} />
         <Wire isActive={!!getUpstreamStep(MIDDLEWARE_11_20[9])} direction="upstream" />
       </div>
 
       {/*row 2 col 5, upstream mw 11-20*/}
       <div className="row-start-2 col-start-5  flex flex-col">
-        <UpstreamPipe middlewares={MIDDLEWARE_1_10} trace={trace} />
+        <UpstreamPipe middlewares={MIDDLEWARE_1_10} trace={trace} onLogClick={onLogClick} />
         <Wire isActive={!!getUpstreamStep(MIDDLEWARE_1_10[9])} direction="upstream" isFlex showArrow />
       </div>
 
@@ -79,7 +80,11 @@ export const PipelineLayout = ({ trace }: PipelineLayoutProps) => {
 
       {/*row 3 col 2 + 3 + 4, termination node*/}
       <div className="row-start-3 col-start-2 col-span-3 w-full flex items-center justify-center relative">
-        <MiddlewareNode middlewareName={MIDDLEWARE_TERMINATION} step={getDownstreamStep(MIDDLEWARE_TERMINATION)} />
+        <MiddlewareNode
+          middlewareName={MIDDLEWARE_TERMINATION}
+          step={getDownstreamStep(MIDDLEWARE_TERMINATION)}
+          onLogClick={onLogClick}
+        />
       </div>
 
       {/*row 3 col 5, filler wire*/}

@@ -3,6 +3,7 @@ import type { Step } from "../../../../types/telemetry";
 interface MiddlewareNodeProps {
   middlewareName: string;
   step?: Step;
+  onLogClick: (activeLogItem: string) => void;
 }
 
 const getNodeStyle = (isActive: boolean, event?: string) => {
@@ -22,7 +23,7 @@ const getNodeStyle = (isActive: boolean, event?: string) => {
   }
 };
 
-export const MiddlewareNode = ({ middlewareName, step }: MiddlewareNodeProps) => {
+export const MiddlewareNode = ({ middlewareName, step, onLogClick }: MiddlewareNodeProps) => {
   const isActive = !!step;
   const hasLogs = !!step?.logs;
   const isCircuitBreak = step?.event === "short-circuit" || step?.event === "error";
@@ -51,7 +52,10 @@ export const MiddlewareNode = ({ middlewareName, step }: MiddlewareNodeProps) =>
 
         {/*logs indicator*/}
         {isActive && hasLogs && (
-          <button className="text-[10px] text-text-30 tracking-wide border-b border-dotted border-text-30 hover:cursor-pointer hover:text-text-20 transition-colors pb-px">
+          <button
+            className="text-[10px] text-text-30 tracking-wide border-b border-dotted border-text-30 hover:cursor-pointer hover:text-text-20 transition-colors pb-px"
+            onClick={() => onLogClick(`${step.middleware}-${step.direction}`)}
+          >
             LOGS
           </button>
         )}
