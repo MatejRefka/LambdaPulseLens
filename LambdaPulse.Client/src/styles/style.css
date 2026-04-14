@@ -1,29 +1,30 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: "Montserrat", sans-serif;
+
   --color-brand-10: #d90429; /*vivid red*/
   --color-brand-20: #ef233c; /*strawberry*/
 
-  --color-text-10: #f5f5f5;
-  --color-text-20: #d4d4d4;
-  --color-text-30: #a3a3a3;
-
-  --color-surface-10: #08090a;
-  --color-surface-20: #121417;
-  --color-surface-30: #1c1f25;
-  --color-surface-40: #2b3038;
-  --color-surface-50: #3b424d;
-  --color-surface-60: #4c5563;
-
   --color-success-10: #059669;
   --color-success-20: #10b981;
-
   --color-warning-10: #ea580c;
   --color-warning-20: #f97316;
-
   --color-danger-10: var(--color-brand-10);
   --color-danger-20: var(--color-brand-20);
+
+  --color-text-10: #18181b;
+  --color-text-20: #3f3f46;
+  --color-text-30: #71717a;
+
+  --color-surface-10: #ffffff;
+  --color-surface-20: #fafafa;
+  --color-surface-30: #f4f4f5;
+  --color-surface-40: #e4e4e7;
+  --color-surface-50: #d4d4d8;
+  --color-surface-60: #a1a1aa;
 
   --color-dark-indigo: #181925;
   --color-indigo: #2b2d42;
@@ -35,12 +36,21 @@
 }
 
 @layer base {
-  body {
-    @apply text-indigo bg-gray-50;
+  .dark {
+    --color-text-10: #f5f5f5;
+    --color-text-20: #d4d4d4;
+    --color-text-30: #a3a3a3;
+
+    --color-surface-10: #08090a;
+    --color-surface-20: #121417;
+    --color-surface-30: #1c1f25;
+    --color-surface-40: #2b3038;
+    --color-surface-50: #3b424d;
+    --color-surface-60: #4c5563;
   }
 
-  h2 {
-    @apply font-extrabold text-4xl;
+  body {
+    @apply text-text-10 bg-surface-10;
   }
 }
 
@@ -54,7 +64,7 @@
   }
 
   .auth-card-wrapper {
-    @apply flex w-full max-w-3xl bg-transparent;
+    @apply flex w-full max-w-3xl bg-transparent rounded-2xl overflow-hidden shadow-2xl;
   }
 
   .input-field {

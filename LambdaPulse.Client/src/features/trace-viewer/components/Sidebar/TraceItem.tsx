@@ -10,9 +10,9 @@ interface TraceItemProps {
 export const TraceItem = ({ trace, isSelected, onClick }: TraceItemProps) => {
   const traceContainerStyle = isSelected
     ? "bg-surface-40"
-    : "border border-surface-60 cursor-pointer hover:bg-surface-30 hover:border-surface-30 shadow-md";
+    : "border border-surface-60 cursor-pointer hover:bg-surface-30 hover:border-surface-30";
 
-  const badgeStyle = isSelected ? "border-surface-60" : "border-surface-40";
+  const badgeStyle = isSelected ? "border-surface-60" : "border-surface-50";
   const badgeStyleHover = isSelected ? "group-hover:border-surface-60" : "group-hover:border-surface-30";
 
   return (

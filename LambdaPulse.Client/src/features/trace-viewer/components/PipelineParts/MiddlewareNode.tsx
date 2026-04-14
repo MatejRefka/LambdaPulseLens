@@ -11,7 +11,7 @@ const getNodeStyle = (isActive: boolean, event?: string) => {
   if (!isActive) {
     return "opacity-50 border-surface-50 bg-transparent text-surface-50 font-normal border-dashed";
   }
-  const activeNode = "bg-surface-20 border-surface-40 border-l-4 shadow-sm";
+  const activeNode = "bg-surface-20 border-surface-40 border-l-4";
 
   switch (event) {
     case "short-circuit":

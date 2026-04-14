@@ -14,10 +14,10 @@ export const LoginPage = ({ onRedirectToRegister }: LoginPageProps) => {
 
   return (
     <div className="auth-page-layout">
-      <div className="auth-card-wrapper rounded-2xl overflow-hidden shadow-2xl">
+      <div className="auth-card-wrapper">
         {/*left card: login form*/}
         <div className="auth-form-card">
-          <h2 className="text-center">Sign in</h2>
+          <h2 className="text-center font-extrabold text-4xl">Sign in</h2>
           <div className="flex justify-center gap-3 m-4">
             <Button variant="icon" className="w-12 h-12">
               <img src={googleIcon} className="w-5.5 h-5.5" alt="Google" />
@@ -44,7 +44,7 @@ export const LoginPage = ({ onRedirectToRegister }: LoginPageProps) => {
 
         {/*right card: welcome message + sign up*/}
         <div className="auth-form-card bg-strawberry">
-          <h2 className="text-center text-white">Get started</h2>
+          <h2 className="text-center text-white font-extrabold text-4xl">Get started</h2>
           <p className="w-80 text-white mt-4 text-center">
             Create your account to start exploring the Lambda Pulse web server.
           </p>

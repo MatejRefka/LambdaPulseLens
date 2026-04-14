@@ -14,10 +14,10 @@ export const RegisterPage = ({ onRedirectToLogin }: RegisterPageProps) => {
 
   return (
     <div className="auth-page-layout">
-      <div className="auth-card-wrapper overflow-hidden rounded-2xl shadow-2xl">
+      <div className="auth-card-wrapper">
         {/*left card: welcome back message + sign In */}
         <div className="auth-form-card bg-strawberry">
-          <h2 className="text-center text-white">Welcome Back</h2>
+          <h2 className="text-center text-white font-extrabold text-4xl">Welcome Back</h2>
           <p className="w-80 text-white mt-4 text-center">
             Already have an account? Sign in to monitor your Lambda Pulse pipeline.
           </p>
@@ -30,7 +30,7 @@ export const RegisterPage = ({ onRedirectToLogin }: RegisterPageProps) => {
 
         {/*right card: register form*/}
         <div className="auth-form-card bg-white">
-          <h2 className="text-center">Sign up</h2>
+          <h2 className="text-center font-extrabold text-4xl">Sign up</h2>
           <div className="flex justify-center gap-3 m-4">
             <Button variant="icon" className="w-12 h-12">
               <img src={googleIcon} className="w-5.5 h-5.5" alt="Google" />
