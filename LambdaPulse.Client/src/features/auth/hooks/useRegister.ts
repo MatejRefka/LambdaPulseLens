@@ -9,7 +9,7 @@ export const useRegister = () => {
     formState: { errors, isSubmitting }
   } = useForm<RegisterFormInputs>({
     resolver: zodResolver(registerSchema),
-    mode: "onBlur"
+    mode: "onTouched"
   });
 
   const onSubmit = (data: RegisterFormInputs) => {

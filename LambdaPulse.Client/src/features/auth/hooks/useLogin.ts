@@ -7,7 +7,7 @@ export const useLogin = () => {
     register,
     handleSubmit,
     formState: { errors, isSubmitting }
-  } = useForm<LoginFormInputs>({ resolver: zodResolver(loginSchema), mode: "onBlur" });
+  } = useForm<LoginFormInputs>({ resolver: zodResolver(loginSchema), mode: "onTouched" });
 
   const onSubmit = (data: LoginFormInputs) => {
     console.log("User login", data);

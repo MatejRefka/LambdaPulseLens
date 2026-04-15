@@ -8,7 +8,7 @@ export const DashboardPage = () => {
   const [selectedTrace, setSelectedTrace] = useState<Trace>(mockTraces[0]);
 
   return (
-    <div className="h-screen w-screen flex overflow-hidden bg-surface-10 text-text-20 cursor-default">
+    <div className="h-screen w-screen flex overflow-hidden bg-surface-10 text-text-20">
       {/*sidebar*/}
       <Sidebar traces={mockTraces} selectedTraceId={selectedTrace.id} onSelectTrace={setSelectedTrace} />
 

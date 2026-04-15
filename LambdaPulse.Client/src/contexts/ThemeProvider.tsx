@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "dark" | "light";
+type Theme = "light" | "dark";
 
 type ThemeProviderProps = {
   children: React.ReactNode;
@@ -61,7 +61,7 @@ export function ThemeProvider({
       document.head.appendChild(css);
 
       //apply the theme
-      const newTheme = theme === "dark" ? "light" : "dark";
+      const newTheme = theme === "light" ? "dark" : "light";
       localStorage.setItem(storageKey, newTheme);
       setTheme(newTheme);
 

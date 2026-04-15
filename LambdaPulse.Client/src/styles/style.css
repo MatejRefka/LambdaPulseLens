@@ -25,18 +25,15 @@
   --color-surface-40: #e4e4e7;
   --color-surface-50: #d4d4d8;
   --color-surface-60: #a1a1aa;
-
-  --color-dark-indigo: #181925;
-  --color-indigo: #2b2d42;
-  --color-dark-grey: #454b56;
-  --color-grey: #8d99ae;
-  --color-platinum: #edf2f4;
-  --color-strawberry: #ef233c;
-  --color-vivid-red: #d90429;
 }
 
 @layer base {
+  :root {
+    color-scheme: light;
+  }
+
   .dark {
+    color-scheme: dark;
     --color-text-10: #f5f5f5;
     --color-text-20: #d4d4d4;
     --color-text-30: #a3a3a3;
@@ -50,45 +47,7 @@
   }
 
   body {
-    @apply text-text-10 bg-surface-10;
-  }
-}
-
-@layer components {
-  .auth-page-layout {
-    @apply min-h-screen flex items-center justify-center;
-  }
-
-  .auth-form-card {
-    @apply flex-1 py-14 flex flex-col items-center justify-center shadow-2xl bg-white;
-  }
-
-  .auth-card-wrapper {
-    @apply flex w-full max-w-3xl bg-transparent rounded-2xl overflow-hidden shadow-2xl;
-  }
-
-  .input-field {
-    @apply w-full mx-auto block px-4 py-2.5 bg-platinum rounded-xs text-indigo focus:border-transparent focus:outline-none;
-  }
-
-  .input-field-error {
-    @apply border-vivid-red border focus:ring-vivid-red;
-  }
-
-  .input-field-error-message {
-    @apply text-vivid-red text-xs mt-1 ml-1 text-left;
-  }
-
-  .btn-primary {
-    @apply w-full py-2.5 rounded-4xl text-white cursor-pointer bg-strawberry hover:bg-vivid-red transition-colors duration-200;
-  }
-
-  .btn-secondary {
-    @apply w-full py-2.5 rounded-4xl text-white cursor-pointer bg-strawberry hover:bg-vivid-red transition-colors duration-200 border-white border-2;
-  }
-
-  .btn-icon {
-    @apply w-full h-full rounded-full flex items-center justify-center cursor-pointer border-2 border-platinum;
+    @apply text-text-10 bg-surface-10 cursor-default;
   }
 }
 
@@ -103,12 +62,15 @@
       width: 6px;
       height: 6px;
     }
+
     &::-webkit-scrollbar-track {
       background: transparent;
     }
+
     &::-webkit-scrollbar-thumb {
       @apply bg-surface-40 rounded-full transition-colors;
     }
+
     &::-webkit-scrollbar-thumb:hover {
       @apply bg-surface-50;
     }

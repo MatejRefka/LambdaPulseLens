@@ -30,7 +30,7 @@ export const TraceInspector = ({ trace }: TraceInspectorProps) => {
             className="p-2 rounded-md text-text-30 hover:text-text-10 hover:bg-surface-20 transition-all cursor-pointer"
             onClick={toggleTheme}
           >
-            {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
           </button>
 
           <button
