@@ -1,5 +1,5 @@
-import type { Step } from "../../../../types/telemetry";
-import { cn } from "../../../../utils/cn";
+import type { Step } from "../../../../../types/telemetry";
+import { cn } from "../../../../../utils/cn";
 
 interface MiddlewareNodeProps {
   middlewareName: string;

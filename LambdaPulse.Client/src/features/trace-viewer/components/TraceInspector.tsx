@@ -1,9 +1,9 @@
-import type { Trace } from "../../../../types/telemetry";
-import { LogTimeline } from "../PipelineParts/LogTimeline";
-import { PipelineLayout } from "./PipelineLayout";
+import type { Trace } from "../../../types/telemetry";
+import { LogTimeline } from "./Pipeline/Logs/LogTimeline";
+import { PipelineLayout } from "./Pipeline/PipelineLayout";
 import { useState } from "react";
 import { Moon, Sun, LogOut } from "lucide-react";
-import { useTheme } from "../../../../contexts/ThemeProvider";
+import { useTheme } from "../../../contexts/ThemeProvider";
 
 interface TraceInspectorProps {
   trace: Trace;
