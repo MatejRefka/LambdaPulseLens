@@ -1,9 +1,9 @@
 import React from "react";
-import type { Trace } from "../../../../../types/telemetry";
+import type { Trace } from "../../../../../../types/telemetry";
 import { MiddlewareNode } from "./MiddlewareNode";
 import { Wire } from "../PipelineVisuals/Wire";
 import { ShortCircuitLink } from "../PipelineVisuals/ShortCircuitLink";
-import { usePipeline } from "../../../hooks/usePipeline";
+import { usePipeline } from "../../../../hooks/usePipeline";
 
 interface DownstreamPipeProps {
   middlewares: string[];

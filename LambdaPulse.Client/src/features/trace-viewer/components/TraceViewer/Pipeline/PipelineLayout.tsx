@@ -1,12 +1,12 @@
-import type { Trace } from "../../../../types/telemetry";
-import { MIDDLEWARE_1_10, MIDDLEWARE_11_20, MIDDLEWARE_TERMINATION } from "../../../../utils/constants";
+import type { Trace } from "../../../../../types/telemetry";
+import { MIDDLEWARE_1_10, MIDDLEWARE_11_20, MIDDLEWARE_TERMINATION } from "../../../../../utils/constants";
 import { MiddlewareNode } from "./PipelineParts/MiddlewareNode";
 import { Wire } from "./PipelineVisuals/Wire";
 import { DownstreamPipe } from "./PipelineParts/DownstreamPipe";
 import { UpstreamPipe } from "./PipelineParts/UpstreamPipe";
-import { usePipeline } from "../../hooks/usePipeline";
+import { usePipeline } from "../../../hooks/usePipeline";
 import { WebContextPill } from "./PipelineVisuals/WebContextPill";
-import { FlexWireContainer } from "../Sidebar/FlexWireContainer";
+import { FlexWireContainer } from "../../Sidebar/FlexWireContainer";
 
 interface PipelineLayoutProps {
   trace: Trace;

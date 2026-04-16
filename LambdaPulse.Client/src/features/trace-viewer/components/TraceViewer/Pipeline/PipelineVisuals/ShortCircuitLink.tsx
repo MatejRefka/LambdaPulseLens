@@ -1,5 +1,5 @@
-import type { FlowDirection, ExecutionEvent } from "../../../../../types/telemetry";
-import { cn } from "../../../../../utils/cn";
+import type { FlowDirection, ExecutionEvent } from "../../../../../../types/telemetry";
+import { cn } from "../../../../../../utils/cn";
 
 interface ShortCircuitLinkProps {
   direction?: FlowDirection;
