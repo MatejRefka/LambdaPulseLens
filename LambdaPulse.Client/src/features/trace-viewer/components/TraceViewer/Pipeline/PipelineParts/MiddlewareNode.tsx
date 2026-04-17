@@ -32,7 +32,7 @@ export const MiddlewareNode = ({ middlewareName, step, onLogClick }: MiddlewareN
   return (
     <div
       className={cn(
-        "relative flex flex-col justify-center px-3 h-14 rounded-lg border w-full",
+        "relative flex flex-col justify-center px-1 2xl:px-3 h-14 rounded-lg border w-full",
         getNodeStyle(isActive, step?.event)
       )}
     >

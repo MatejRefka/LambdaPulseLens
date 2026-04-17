@@ -18,7 +18,7 @@ export const PipelineLayout = ({ trace, onLogClick }: PipelineLayoutProps) => {
 
   return (
     //4 rows: flex wire -> pipeline -> termination node -> flex wire
-    <div className="grid grid-cols-[1fr_1fr_1rem_1fr_1fr] grid-rows-[1fr_auto_auto_1fr] gap-x-6 w-full max-w-5xl mx-auto h-full">
+    <div className="grid grid-cols-[1fr_1fr_0rem_1fr_1fr] 2xl:grid-cols-[1fr_1fr_1rem_1fr_1fr] grid-rows-[1fr_auto_auto_1fr] gap-x-2 2xl:gap-x-6 w-full max-w-5xl mx-auto h-full">
       {/*row 1 col 1, flex wire with Http Request pill*/}
       <div className="row-start-1 col-start-1 flex flex-col h-full">
         <FlexWireContainer>

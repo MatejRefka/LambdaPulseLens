@@ -17,12 +17,12 @@ export const TraceInspector = ({ trace }: TraceInspectorProps) => {
   return (
     <div className="flex-1 flex overflow-hidden bg-surface-10">
       {/*pipeline container*/}
-      <div className="flex-1 flex flex-col pl-12 pr-6 overflow-y-auto">
+      <div className="flex-1 flex flex-col pl-2 2xl:pl-12 2xl:pr-6 overflow-y-auto">
         <PipelineLayout trace={trace} onLogClick={setActiveLogItem} />
       </div>
 
       {/*site utilities + log timeline*/}
-      <div className="w-100 shrink-0 flex flex-col">
+      <div className="w-70 2xl:w-100 shrink-0 flex flex-col">
         {/*utility buttons*/}
         <div className="h-14 px-8 flex justify-end items-center gap-1">
           <button
@@ -42,7 +42,7 @@ export const TraceInspector = ({ trace }: TraceInspectorProps) => {
         </div>
 
         {/*log timeline*/}
-        <div className="flex-1 overflow-y-auto p-6 mt-2">
+        <div className="flex-1 overflow-y-auto pr-2 2xl:p-4 mt-2 2xl:mt-5">
           <LogTimeline pipeline={trace.pipeline} activeLogItem={activeLogItem} />
         </div>
       </div>
