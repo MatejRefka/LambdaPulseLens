@@ -17,7 +17,7 @@ export const TraceInspector = ({ trace }: TraceInspectorProps) => {
   return (
     <div className="flex-1 flex overflow-hidden bg-surface-10">
       {/*pipeline container*/}
-      <div className="flex-1 flex flex-col pl-2 2xl:pl-12 2xl:pr-6 overflow-y-auto">
+      <div className="flex-1 flex flex-col pl-2 2xl:pl-12 2xl:pr-6 overflow-y-auto scrollbar">
         <PipelineLayout trace={trace} onLogClick={setActiveLogItem} />
       </div>
 
