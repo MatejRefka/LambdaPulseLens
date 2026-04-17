@@ -17,7 +17,7 @@ export const TraceInspector = ({ trace }: TraceInspectorProps) => {
   return (
     <div className="flex-1 flex overflow-hidden bg-surface-10">
       {/*pipeline container*/}
-      <div className="flex-1 flex flex-col pl-2 2xl:pl-12 2xl:pr-6 overflow-y-auto scrollbar">
+      <div className="flex-1 flex flex-col pl-2 2xl:pl-12 overflow-y-auto scrollbar">
         <PipelineLayout trace={trace} onLogClick={setActiveLogItem} />
       </div>
 
@@ -42,7 +42,7 @@ export const TraceInspector = ({ trace }: TraceInspectorProps) => {
         </div>
 
         {/*log timeline*/}
-        <div className="flex-1 overflow-y-auto pr-2 2xl:p-4 mt-2 2xl:mt-5">
+        <div className="flex-1 overflow-y-auto pr-2 2xl:py-4 2xl:pr-4 mt-2 2xl:mt-5">
           <LogTimeline pipeline={trace.pipeline} activeLogItem={activeLogItem} />
         </div>
       </div>
