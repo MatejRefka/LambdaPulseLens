@@ -26,7 +26,7 @@ export interface WebRequest {
   path: string;
   protocol: string;
   headers: Headers;
-  cookies: Cookies;
+  cookies?: Cookies;
   body?: string;
 }
 
@@ -34,7 +34,7 @@ export interface WebResponse {
   statusCode: number;
   responsePhrase: string;
   headers: Headers;
-  cookies: Cookies;
+  cookies?: Cookies;
   body?: string;
 }
 
