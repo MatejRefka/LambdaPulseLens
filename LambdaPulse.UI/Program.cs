@@ -1,8 +1,8 @@
-﻿using LambdaPulse.Server.Features.Routing;
+﻿using LambdaPulse.Server.Features.Logging;
+using LambdaPulse.Server.Features.Routing;
 using LambdaPulse.Server.Hosting;
 using LambdaPulse.Server.Shared.Extensions;
-
-
+using LambdaPulse.UI.Services;
 
 #region Static pages
 
@@ -58,6 +58,9 @@ var healtCheck = new Endpoint
 
 #endregion API
 
+//Postgres DB storing trace logs
+var postgresConnection = Environment.GetEnvironmentVariable("LAMBDAPULSE_POSTGRES_CONNECTION") ?? throw new InvalidOperationException("LAMBDAPULSE_POSTGRES_CONNECTION environment variable is not set.");
+
 var webServer = ServerBuilder.Build(
     configureEndpoints: endpointRegistry =>
     {
@@ -68,7 +71,8 @@ var webServer = ServerBuilder.Build(
     },
     configureServices: container =>
     {
-        //services can be overridden here with custom implementations
+        container.AddSingleton(new PostgresConfig { ConnectionString = postgresConnection });
+        container.OverrideSingleton<ITraceLogger, PostgresTraceLogger>();
     }
 );
 
