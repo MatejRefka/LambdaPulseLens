@@ -1,7 +1,7 @@
-﻿using LambdaPulse.Server.Features.Logging;
-using LambdaPulse.Server.Features.Routing;
-using LambdaPulse.Server.Hosting;
-using LambdaPulse.Server.Shared.Extensions;
+﻿using LambdaPulse.Engine.Features.Logging;
+using LambdaPulse.Engine.Features.Routing;
+using LambdaPulse.Engine.Hosting;
+using LambdaPulse.Engine.Shared.Extensions;
 using LambdaPulse.UI.Services;
 
 #region Static pages
