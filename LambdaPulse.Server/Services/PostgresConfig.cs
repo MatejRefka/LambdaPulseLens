@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.UI.Services;
+﻿namespace LambdaPulse.Server.Services;
 
 internal sealed class PostgresConfig
 {

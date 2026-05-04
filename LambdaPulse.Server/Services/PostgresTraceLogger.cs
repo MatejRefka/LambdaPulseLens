@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Text.Json;
 using System.Threading.Channels;
 
-namespace LambdaPulse.UI.Services;
+namespace LambdaPulse.Server.Services;
 
 internal sealed class PostgresTraceLogger : ITraceLogger, IAsyncDisposable
 {
@@ -49,16 +49,16 @@ internal sealed class PostgresTraceLogger : ITraceLogger, IAsyncDisposable
         {
             try
             {
-                await InserTrace(trace, cancellationToken);
+                await InsertTrace(trace, cancellationToken);
             }
             catch (Exception e)
             {
-                _engineLogger.Log(LogLevel.Error, "Failed to save trace to Postgres", e);
+                _engineLogger.Log(LogLevel.Error, "PostgresTraceLogger", "Failed to save trace to Postgres", e);
             }
         }
     }
 
-    private async Task InserTrace(Trace trace, CancellationToken cancellationToken)
+    private async Task InsertTrace(Trace trace, CancellationToken cancellationToken)
     {
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync(cancellationToken);
@@ -88,8 +88,8 @@ internal sealed class PostgresTraceLogger : ITraceLogger, IAsyncDisposable
             traceCommand.Parameters.Add(new NpgsqlParameter("ResCookies", NpgsqlDbType.Jsonb) { Value = JsonSerializer.Serialize(trace.ResponseCookies) });
             traceCommand.Parameters.AddWithValue("ResBody", (object?)trace.ResponseBody ?? DBNull.Value);
 
-            var rawtraceId = await traceCommand.ExecuteScalarAsync(cancellationToken);
-            var traceId = Convert.ToInt64(rawtraceId, CultureInfo.InvariantCulture);
+            var rawTraceId = await traceCommand.ExecuteScalarAsync(cancellationToken);
+            var traceId = Convert.ToInt64(rawTraceId, CultureInfo.InvariantCulture);
 
             var insertStepSql = @"INSERT INTO telemetry.steps (trace_id, middleware, direction, event, timestamp_start, duration_ms, logs)
                                    VALUES (@TraceId, @Middleware, CAST(@Direction AS telemetry.flow_direction), CAST(@Event AS telemetry.execution_event), @TimestampStart, @DurationMs, @Logs);";

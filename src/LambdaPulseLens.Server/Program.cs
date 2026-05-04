@@ -2,7 +2,7 @@
 using LambdaPulse.Engine.Features.Routing;
 using LambdaPulse.Engine.Hosting;
 using LambdaPulse.Engine.Shared.Extensions;
-using LambdaPulse.UI.Services;
+using LambdaPulse.Server.Services;
 
 #region Static pages
 
@@ -10,9 +10,9 @@ var loginPage = new Endpoint
 {
     Method = "GET",
     Path = "/login",
-    ApplicationFunction = async (webContex, cancellationToken) =>
+    ApplicationFunction = async (webContext, cancellationToken) =>
     {
-        webContex.StaticFileRelativePath = "/login/index.html";
+        webContext.StaticFileRelativePath = "/login/index.html";
     },
     AllowAnonymous = true,
 };
@@ -21,9 +21,9 @@ var registerPage = new Endpoint
 {
     Method = "GET",
     Path = "/register",
-    ApplicationFunction = async (webContex, cancellationToken) =>
+    ApplicationFunction = async (webContext, cancellationToken) =>
     {
-        webContex.StaticFileRelativePath = "/register/index.html";
+        webContext.StaticFileRelativePath = "/register/index.html";
     },
     AllowAnonymous = true,
 };
@@ -43,7 +43,7 @@ var homePage = new Endpoint
 
 #region API
 
-var healtCheck = new Endpoint
+var healthCheck = new Endpoint
 {
     Method = "GET",
     Path = "/api/health",
@@ -67,7 +67,7 @@ var webServer = ServerBuilder.Build(
         endpointRegistry.AddEndpoint(loginPage);
         endpointRegistry.AddEndpoint(registerPage);
         endpointRegistry.AddEndpoint(homePage);
-        endpointRegistry.AddEndpoint(healtCheck);
+        endpointRegistry.AddEndpoint(healthCheck);
     },
     configureServices: container =>
     {
