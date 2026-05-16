@@ -42,7 +42,7 @@ internal sealed class PostgresTraceLogger : ITraceLogger, IAsyncDisposable
         _channel.Writer.TryWrite(trace);
     }
 
-    private async Task ProcessChannel(CancellationToken cancellationToken)
+    private async Task ProcessChannel(CancellationToken cancellationToken = default)
     {
         //wait for a trace to be placed into the channel
         await foreach (var trace in _channel.Reader.ReadAllAsync(cancellationToken))
@@ -58,7 +58,7 @@ internal sealed class PostgresTraceLogger : ITraceLogger, IAsyncDisposable
         }
     }
 
-    private async Task InsertTrace(Trace trace, CancellationToken cancellationToken)
+    private async Task InsertTrace(Trace trace, CancellationToken cancellationToken = default)
     {
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync(cancellationToken);
