@@ -1,5 +1,6 @@
 ﻿using LambdaPulse.Engine.Features.Logging;
 using LambdaPulse.Engine.Features.Routing;
+using LambdaPulse.Engine.Features.State.Cache;
 using LambdaPulse.Engine.Hosting;
 using LambdaPulse.Engine.Shared.Extensions;
 using LambdaPulse.Server.Services;
@@ -14,7 +15,12 @@ var healthCheck = new Endpoint
         webContext.WebResponse.ResponsePhrase = "OK";
         await webContext.WebResponse.WriteJsonToBody(new { Health = "Healthy" }, cancellationToken);
     },
-    AllowAnonymous = true
+    AllowAnonymous = true,
+    CachePolicy = new CachePolicy
+    {
+        Enabled = true,
+        DurationSeconds = 120
+    }
 };
 
 //Postgres DB storing trace logs
