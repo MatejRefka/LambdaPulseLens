@@ -16,7 +16,7 @@ export default defineConfig({
     tailwindcss()
   ],
   build: {
-    outDir: path.resolve(__dirname, "../LambdaPulse.UI/wwwroot"),
+    outDir: path.resolve(__dirname, "../LambdaPulse.Server/wwwroot"),
     emptyOutDir: true
   }
 });
