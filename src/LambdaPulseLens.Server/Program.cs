@@ -4,6 +4,7 @@ using LambdaPulse.Engine.Features.State.Cache;
 using LambdaPulse.Engine.Hosting;
 using LambdaPulse.Engine.Shared.Extensions;
 using LambdaPulse.Server.Services;
+using StackExchange.Redis;
 
 var healthCheck = new Endpoint
 {
@@ -23,8 +24,11 @@ var healthCheck = new Endpoint
     }
 };
 
-//Postgres DB storing trace logs
+//Postgres storing trace logs
 var postgresConnection = Environment.GetEnvironmentVariable("LAMBDAPULSE_POSTGRES_CONNECTION") ?? throw new InvalidOperationException("LAMBDAPULSE_POSTGRES_CONNECTION environment variable is not set.");
+//Redis cache
+var redisConnection = Environment.GetEnvironmentVariable("LAMBDAPULSE_REDIS_CONNECTION") ?? throw new InvalidOperationException("LAMBDAPULSE_REDIS_CONNECTION environment variable is not set.");
+var redisConnectionManager = await ConnectionMultiplexer.ConnectAsync(redisConnection);
 
 var webServer = ServerBuilder.Build(
     configureEndpoints: endpointRegistry =>
@@ -33,8 +37,12 @@ var webServer = ServerBuilder.Build(
     },
     configureServices: container =>
     {
-        container.AddSingleton(new PostgresConfig { ConnectionString = postgresConnection });
+        container.AddSingleton(new PostgresTraceConfig { ConnectionString = postgresConnection });
         container.OverrideSingleton<ITraceLogger, PostgresTraceLogger>();
+
+        //Redis connection manager; one per server instance
+        container.AddSingleton<IConnectionMultiplexer>(redisConnectionManager);
+        container.OverrideSingleton<ICacheStore, RedisCacheStore>();
     }
 );
 

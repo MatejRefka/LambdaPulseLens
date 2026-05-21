@@ -18,7 +18,7 @@ internal sealed class PostgresTraceLogger : ITraceLogger, IAsyncDisposable
     private readonly IEngineLogger _engineLogger;
     private readonly CancellationTokenSource _cancellationTokenSource;
 
-    public PostgresTraceLogger(PostgresConfig config, IEngineLogger engineLogger)
+    public PostgresTraceLogger(PostgresTraceConfig config, IEngineLogger engineLogger)
     {
         _connectionString = config.ConnectionString;
         _engineLogger = engineLogger;
