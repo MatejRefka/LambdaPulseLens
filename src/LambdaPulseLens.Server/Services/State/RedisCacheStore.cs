@@ -3,7 +3,7 @@ using LambdaPulse.Engine.Features.State.Cache;
 using StackExchange.Redis;
 using System.Text.Json;
 
-namespace LambdaPulse.Server.Services;
+namespace LambdaPulse.Server.Services.State;
 
 internal sealed class RedisCacheStore : ICacheStore
 {

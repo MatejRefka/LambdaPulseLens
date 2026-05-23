@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Text.Json;
 using System.Threading.Channels;
 
-namespace LambdaPulse.Server.Services;
+namespace LambdaPulse.Server.Services.Logging;
 
 internal sealed class PostgresTraceLogger : ITraceLogger, IAsyncDisposable
 {

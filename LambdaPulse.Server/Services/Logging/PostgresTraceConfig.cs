@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Server.Services;
+﻿namespace LambdaPulse.Server.Services.Logging;
 
 internal sealed class PostgresTraceConfig
 {
