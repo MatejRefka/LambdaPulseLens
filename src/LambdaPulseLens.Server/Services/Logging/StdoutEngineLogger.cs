@@ -10,7 +10,6 @@ internal sealed class StdoutEngineLogger : IEngineLogger
         var entry = new
         {
             TimeStamp = DateTime.UtcNow,
-            ApplicationName = "LambdaPulse.Server",
             LogLevel = logLevel.ToString(),
             Source = source,
             Message = message,

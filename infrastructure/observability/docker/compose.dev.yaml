@@ -1,0 +1,62 @@
+name: lambdapulse-observability
+
+services:
+  loki:
+    image: grafana/loki:3.7.2
+    container_name: lambdapulse-loki
+    volumes:
+      - ../loki/loki.dev.yaml:/etc/loki/loki.dev.yaml:ro ##mount config file into container as read only
+      - loki-data:/loki ##mount loki volume into container
+    command:
+      - -config.file=/etc/loki/loki.dev.yaml ##use this config
+    ports:
+      - "3100:3100" ##expose container service to host machine
+    labels:
+      lambdapulse.logging: "true" ##advertise for alloy to collect
+    networks:
+      - lambdapulse-observability ##attach to custom Docker network
+
+  alloy:
+    image: grafana/alloy:v1.16.1
+    container_name: lambdapulse-alloy
+    depends_on:
+      - loki
+    volumes:
+      - ../alloy/config.dev.alloy:/etc/alloy/config.alloy:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro ##mount Docker socket into Alloy container
+    command:
+      - run
+      - /etc/alloy/config.alloy ##run config file
+      - --server.http.listen-addr=127.0.0.1:12345 ##listen on the entire network within the container
+    ports:
+      - "12345:12345"
+    labels:
+      lambdapulse.logging: "true"
+    networks:
+      - lambdapulse-observability
+
+  grafana:
+    image: grafana/grafana:13.0.1-security-01
+    container_name: lambdapulse-grafana
+    volumes:
+      - grafana-data:/var/lib/grafana ##holds local internal state
+      - ../grafana/provisioning:/etc/grafana/provisioning:ro
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+    labels:
+      lambdapulse.logging: "true"
+    depends_on:
+      - loki
+    networks:
+      - lambdapulse-observability
+
+networks:
+  lambdapulse-observability:
+    name: lambdapulse-observability
+
+volumes:
+  loki-data:
+  grafana-data:

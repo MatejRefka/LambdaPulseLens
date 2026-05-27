@@ -1,0 +1,69 @@
+//discover docker engine containers and expose them as targets
+discovery.docker "containers" {
+  host = "unix:///var/run/docker.sock"
+  refresh_interval = "10s"
+}
+
+//setup rules for filtering and standardising the Docker labels
+discovery.relabel "lambdapulse_logs" {
+  targets = []
+
+  //only keep logs from containers where label is 'lambdapulse.logging = true'
+  rule {
+    source_labels = ["__meta_docker_container_label_lambdapulse_logging"]
+    regex = "true"
+    action = "keep"
+  }
+
+  //strip leading slash from Docker container names and store as a clean label, e.g. /lambdapulse-server container name -> container="lambdapulse-server"
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex = "/(.*)"
+    target_label = "container"
+  }
+
+  //add static stack label. stack="lambdapulse"
+  rule {
+    target_label = "stack"
+    replacement  = "lambdapulse"
+  }
+}
+
+//reads log entries from Docker containers and forwards them to loki.process
+loki.source.docker "lambdapulse" {
+  host = "unix:///var/run/docker.sock"
+  targets = discovery.docker.containers.targets
+  relabel_rules = discovery.relabel.lambdapulse_logs.rules
+  forward_to = [loki.process.lambdapulse.receiver]
+}
+
+//apply processing stages to log entries, then forward to loki.write
+loki.process "lambdapulse" {
+  forward_to = [loki.write.local.receiver]
+
+  //parse json written by StdoutEngineLogger
+  stage.json {
+    expressions = {
+      log_level = "LogLevel",
+      source = "Source",
+      exceptionType = "ExceptionType",
+    }
+    drop_malformed = false
+  }
+
+  //create Loki labels from extracted values
+  stage.labels {
+    values = {
+      log_level = "",
+      source = "",
+      exceptionType = "",
+    }
+  }
+}
+
+//send the log entries to loki endpoint
+loki.write "local" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}
