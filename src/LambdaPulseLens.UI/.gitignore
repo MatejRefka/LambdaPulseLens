@@ -1,5 +1,7 @@
 # Logs
 logs
+!src/features/dashboard/components/TraceViewer/Logs/
+!src/features/dashboard/components/TraceViewer/Logs/**
 *.log
 npm-debug.log*
 yarn-debug.log*
