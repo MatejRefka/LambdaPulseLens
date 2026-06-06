@@ -13,7 +13,8 @@ EXCEPTION
 END $$;
 
 CREATE TABLE IF NOT EXISTS telemetry.traces (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id BIGINT NULL,
     timestamp_start TIMESTAMPTZ NOT NULL,
     duration_ms BIGINT NOT NULL,
 
@@ -28,11 +29,13 @@ CREATE TABLE IF NOT EXISTS telemetry.traces (
     res_phrase TEXT NOT NULL,
     res_headers JSONB NOT NULL,
     res_cookies JSONB,
-    res_body TEXT
+    res_body TEXT,
+
+    CONSTRAINT fk_telemetry_traces_user FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS telemetry.steps (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     trace_id BIGINT NOT NULL,
     middleware VARCHAR(100) NOT NULL,
     direction telemetry.flow_direction,
@@ -41,9 +44,7 @@ CREATE TABLE IF NOT EXISTS telemetry.steps (
     duration_ms BIGINT NOT NULL,
     logs JSONB,
 
-    CONSTRAINT fk_trace
-        FOREIGN KEY(trace_id)
-        REFERENCES telemetry.traces(id)
+    CONSTRAINT fk_trace FOREIGN KEY(trace_id) REFERENCES telemetry.traces(id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_steps_trace_id ON telemetry.steps(trace_id);
