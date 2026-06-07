@@ -15,6 +15,11 @@ export default defineConfig({
     }),
     tailwindcss()
   ],
+  server: {
+    proxy: {
+      "/api": "http://localhost:8080"
+    }
+  },
   build: {
     outDir: path.resolve(__dirname, "../LambdaPulse.Server/wwwroot"),
     emptyOutDir: true
