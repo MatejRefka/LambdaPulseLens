@@ -3,62 +3,19 @@ using Npgsql;
 using NpgsqlTypes;
 using System.Globalization;
 using System.Text.Json;
-using System.Threading.Channels;
 
-namespace LambdaPulse.Server.Services.Logging;
+namespace LambdaPulse.Server.Services.Telemetry;
 
-internal sealed class PostgresTraceLogger : ITraceLogger, IAsyncDisposable
+internal sealed class PostgresTelemetryRepository : ITelemetryRepository
 {
-    //thread-safe queue holding Traces
-    private readonly Channel<Trace> _channel;
-    //processor task running in the background, processing Traces from the channel
-    private readonly Task _processorTask;
-
     private readonly string _connectionString;
-    private readonly IEngineLogger _engineLogger;
-    private readonly CancellationTokenSource _cancellationTokenSource;
 
-    public PostgresTraceLogger(PostgresTraceConfig config, IEngineLogger engineLogger)
+    public PostgresTelemetryRepository(PostgresConfig config)
     {
         _connectionString = config.ConnectionString;
-        _engineLogger = engineLogger;
-        _cancellationTokenSource = new CancellationTokenSource();
-
-        var options = new BoundedChannelOptions(10000)
-        {
-            FullMode = BoundedChannelFullMode.DropOldest,
-            SingleWriter = false, //each request is on its own thread. So many separate threads writing this one channel
-            SingleReader = true //one background task is reading from the channel. Avoids read
-        };
-        _channel = Channel.CreateBounded<Trace>(options);
-
-        //start the processor task on instantiation
-        _processorTask = Task.Run(() => ProcessChannel(_cancellationTokenSource.Token));
     }
 
-    public void Log(Trace trace)
-    {
-        //write the trace to the channel queue
-        _channel.Writer.TryWrite(trace);
-    }
-
-    private async Task ProcessChannel(CancellationToken cancellationToken = default)
-    {
-        //wait for a trace to be placed into the channel
-        await foreach (var trace in _channel.Reader.ReadAllAsync(cancellationToken))
-        {
-            try
-            {
-                await InsertTrace(trace, cancellationToken);
-            }
-            catch (Exception e)
-            {
-                _engineLogger.Log(LogLevel.Error, "PostgresTraceLogger", "Failed to save trace to Postgres", e);
-            }
-        }
-    }
-
-    private async Task InsertTrace(Trace trace, CancellationToken cancellationToken = default)
+    public async Task InsertTrace(Trace trace, CancellationToken cancellationToken = default)
     {
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync(cancellationToken);
@@ -118,6 +75,12 @@ internal sealed class PostgresTraceLogger : ITraceLogger, IAsyncDisposable
         }
     }
 
+    public Task<IReadOnlyList<Trace>> GetUserTraces(long id, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    #region Helpers
     private static string MapExecutionEvent(ExecutionEvent executionEvent)
     {
         return executionEvent switch
@@ -138,22 +101,5 @@ internal sealed class PostgresTraceLogger : ITraceLogger, IAsyncDisposable
             _ => throw new ArgumentOutOfRangeException(flowDirection.ToString(), "Unknown flow direction.")
         };
     }
-
-    public async ValueTask DisposeAsync()
-    {
-        //stop accepting new Traces
-        _channel.Writer.Complete();
-
-        //send cancellation signal downstream to postgres
-        _cancellationTokenSource.Cancel();
-
-        //wait for the processor task to finish processing existing Traces in the channel
-        try
-        {
-            await _processorTask;
-        }
-        catch (TaskCanceledException) { }
-
-        _cancellationTokenSource.Dispose();
-    }
+    #endregion Helpers
 }

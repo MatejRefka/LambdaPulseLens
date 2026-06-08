@@ -3,8 +3,10 @@ using LambdaPulse.Engine.Features.Routing;
 using LambdaPulse.Engine.Features.State.Cache;
 using LambdaPulse.Engine.Hosting;
 using LambdaPulse.Engine.Shared.Extensions;
+using LambdaPulse.Server.Services.Auth;
 using LambdaPulse.Server.Services.Logging;
 using LambdaPulse.Server.Services.State;
+using LambdaPulse.Server.Services.Telemetry;
 using StackExchange.Redis;
 
 var healthCheck = new Endpoint
@@ -38,9 +40,11 @@ var webServer = ServerBuilder.Build(
     },
     configureServices: container =>
     {
-        container.AddSingleton(new PostgresTraceConfig { ConnectionString = postgresConnection });
-        container.OverrideSingleton<ITraceLogger, PostgresTraceLogger>();
+        container.AddSingleton(new PostgresConfig { ConnectionString = postgresConnection });
+        container.AddSingleton<ITelemetryRepository, PostgresTelemetryRepository>();
+        container.AddSingleton<IAuthRepository, PostgresAuthRepository>();
 
+        container.OverrideSingleton<ITraceLogger, PostgresTraceLogger>();
         container.OverrideSingleton<IEngineLogger, StdoutEngineLogger>();
 
         //Redis connection manager; one per server instance
