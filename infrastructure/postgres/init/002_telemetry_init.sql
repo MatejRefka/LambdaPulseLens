@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS telemetry.steps (
     duration_ms BIGINT NOT NULL,
     logs JSONB,
 
-    CONSTRAINT fk_trace FOREIGN KEY(trace_id) REFERENCES telemetry.traces(id)
+    CONSTRAINT fk_telemetry_steps_trace FOREIGN KEY(trace_id) REFERENCES telemetry.traces(id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_steps_trace_id ON telemetry.steps(trace_id);
+CREATE INDEX IF NOT EXISTS idx_telemetry_steps_trace_id ON telemetry.steps(trace_id);
