@@ -31,19 +31,19 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
 
             await using var traceCommand = new NpgsqlCommand(insertTraceSql, connection, transaction);
 
-            traceCommand.Parameters.AddWithValue("TimestampStart", trace.TimestampStart);
-            traceCommand.Parameters.AddWithValue("DurationMs", trace.DurationMs);
-            traceCommand.Parameters.AddWithValue("ReqMethod", (object?)trace.RequestMethod ?? DBNull.Value);
-            traceCommand.Parameters.AddWithValue("ReqPath", (object?)trace.RequestPath ?? DBNull.Value);
-            traceCommand.Parameters.AddWithValue("ReqProtocol", (object?)trace.RequestProtocol ?? DBNull.Value);
+            traceCommand.Parameters.Add(new NpgsqlParameter("TimestampStart", NpgsqlDbType.TimestampTz) { Value = trace.TimestampStart });
+            traceCommand.Parameters.Add(new NpgsqlParameter("DurationMs", NpgsqlDbType.Bigint) { Value = trace.DurationMs });
+            traceCommand.Parameters.Add(new NpgsqlParameter("ReqMethod", NpgsqlDbType.Varchar) { Value = (object?)trace.RequestMethod ?? DBNull.Value });
+            traceCommand.Parameters.Add(new NpgsqlParameter("ReqPath", NpgsqlDbType.Text) { Value = (object?)trace.RequestPath ?? DBNull.Value });
+            traceCommand.Parameters.Add(new NpgsqlParameter("ReqProtocol", NpgsqlDbType.Varchar) { Value = (object?)trace.RequestProtocol ?? DBNull.Value });
             traceCommand.Parameters.Add(new NpgsqlParameter("ReqHeaders", NpgsqlDbType.Jsonb) { Value = JsonSerializer.Serialize(trace.RequestHeaders) });
             traceCommand.Parameters.Add(new NpgsqlParameter("ReqCookies", NpgsqlDbType.Jsonb) { Value = JsonSerializer.Serialize(trace.RequestCookies) });
-            traceCommand.Parameters.AddWithValue("ReqBody", (object?)trace.RequestBody ?? DBNull.Value);
-            traceCommand.Parameters.AddWithValue("ResStatusCode", (object?)trace.ResponseStatusCode ?? DBNull.Value);
-            traceCommand.Parameters.AddWithValue("ResPhrase", (object?)trace.ResponsePhrase ?? DBNull.Value);
+            traceCommand.Parameters.Add(new NpgsqlParameter("ReqBody", NpgsqlDbType.Text) { Value = (object?)trace.RequestBody ?? DBNull.Value });
+            traceCommand.Parameters.Add(new NpgsqlParameter("ResStatusCode", NpgsqlDbType.Integer) { Value = (object?)trace.ResponseStatusCode ?? DBNull.Value });
+            traceCommand.Parameters.Add(new NpgsqlParameter("ResPhrase", NpgsqlDbType.Text) { Value = (object?)trace.ResponsePhrase ?? DBNull.Value });
             traceCommand.Parameters.Add(new NpgsqlParameter("ResHeaders", NpgsqlDbType.Jsonb) { Value = JsonSerializer.Serialize(trace.ResponseHeaders) });
             traceCommand.Parameters.Add(new NpgsqlParameter("ResCookies", NpgsqlDbType.Jsonb) { Value = JsonSerializer.Serialize(trace.ResponseCookies) });
-            traceCommand.Parameters.AddWithValue("ResBody", (object?)trace.ResponseBody ?? DBNull.Value);
+            traceCommand.Parameters.Add(new NpgsqlParameter("ResBody", NpgsqlDbType.Text) { Value = (object?)trace.ResponseBody ?? DBNull.Value });
 
             var rawTraceId = await traceCommand.ExecuteScalarAsync(cancellationToken);
             var traceId = Convert.ToInt64(rawTraceId, CultureInfo.InvariantCulture);
@@ -54,12 +54,12 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
             foreach (var step in trace.Steps)
             {
                 await using var stepCommand = new NpgsqlCommand(insertStepSql, connection, transaction);
-                stepCommand.Parameters.AddWithValue("TraceId", traceId);
-                stepCommand.Parameters.AddWithValue("Middleware", step.Middleware);
-                stepCommand.Parameters.AddWithValue("Direction", step.Direction.HasValue ? MapFlowDirection(step.Direction.Value) : DBNull.Value);
-                stepCommand.Parameters.AddWithValue("Event", MapExecutionEvent(step.Event));
-                stepCommand.Parameters.AddWithValue("TimestampStart", step.TimestampStart);
-                stepCommand.Parameters.AddWithValue("DurationMs", step.DurationMs);
+                stepCommand.Parameters.Add(new NpgsqlParameter("TraceId", NpgsqlDbType.Bigint) { Value = traceId });
+                stepCommand.Parameters.Add(new NpgsqlParameter("Middleware", NpgsqlDbType.Varchar) { Value = step.Middleware });
+                stepCommand.Parameters.Add(new NpgsqlParameter("Direction", NpgsqlDbType.Text) { Value = step.Direction.HasValue ? MapFlowDirection(step.Direction.Value) : DBNull.Value });
+                stepCommand.Parameters.Add(new NpgsqlParameter("Event", NpgsqlDbType.Text) { Value = MapExecutionEvent(step.Event) });
+                stepCommand.Parameters.Add(new NpgsqlParameter("TimestampStart", NpgsqlDbType.TimestampTz) { Value = step.TimestampStart });
+                stepCommand.Parameters.Add(new NpgsqlParameter("DurationMs", NpgsqlDbType.Bigint) { Value = step.DurationMs });
                 stepCommand.Parameters.Add(new NpgsqlParameter("Logs", NpgsqlDbType.Jsonb) { Value = JsonSerializer.Serialize(step.Logs) });
 
                 await stepCommand.ExecuteNonQueryAsync(cancellationToken);
