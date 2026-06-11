@@ -1,6 +1,6 @@
-﻿namespace LambdaPulse.Server.Services.Auth.Models;
+﻿namespace LambdaPulse.Server.Services.Auth;
 
-internal sealed class AuthUser
+internal sealed class AuthUserRecord
 {
     public required long Id { get; init; }
     public required string Email { get; init; }
