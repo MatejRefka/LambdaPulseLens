@@ -1,6 +1,7 @@
-﻿using LambdaPulse.Engine.Features.Authentication.Abstractions;
+﻿using LambdaPulse.Engine.Features.Authentication;
 using LambdaPulse.Engine.Features.Logging;
 using LambdaPulse.Engine.Features.Routing;
+using LambdaPulse.Engine.Features.Security;
 using LambdaPulse.Engine.Features.State.Cache;
 using LambdaPulse.Engine.Hosting;
 using LambdaPulse.Engine.Shared.Extensions;
@@ -10,6 +11,7 @@ using LambdaPulse.Server.Services.State;
 using LambdaPulse.Server.Services.Telemetry;
 using StackExchange.Redis;
 using System.Globalization;
+using System.Security.Cryptography;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -41,11 +43,46 @@ var healthCheck = new Endpoint
         await webContext.WebResponse.WriteJsonToBody(new { Health = "Healthy" }, cancellationToken);
     },
     AllowAnonymous = true,
+    SkipCsrf = false,
     CachePolicy = new CachePolicy
     {
         Enabled = true,
         DurationSeconds = 120
     }
+};
+
+//issues CSRF token
+var csrf = new Endpoint
+{
+    Method = "GET",
+    Path = "/api/auth/csrf",
+    AllowAnonymous = true,
+    SkipCsrf = true,
+    CachePolicy = new CachePolicy { Enabled = false },
+    ApplicationFunction = async (webContext, cancellationToken) =>
+    {
+        //indicate that the response should not be cached by browsers or CDNs
+        webContext.WebResponse.Headers["Cache-Control"] = "no-store";
+
+        if (webContext.Session == null)
+        {
+            webContext.WebResponse.StatusCode = 500;
+            webContext.WebResponse.ResponsePhrase = "Internal Server Error";
+            await webContext.WebResponse.WriteJsonToBody(new { success = false }, cancellationToken);
+            return;
+        }
+
+        var existingToken = await webContext.Session.GetValue<string>(SecurityConstants.CsrfTokenSessionKey);
+
+        var csrfToken = !string.IsNullOrWhiteSpace(existingToken) ? existingToken : Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+
+        await webContext.Session.SetValue(SecurityConstants.CsrfTokenSessionKey, csrfToken);
+
+        webContext.WebResponse.StatusCode = 200;
+        webContext.WebResponse.ResponsePhrase = "OK";
+        await webContext.WebResponse.WriteJsonToBody(new { success = true, token = csrfToken }, cancellationToken);
+    }
+
 };
 
 var register = new Endpoint
@@ -101,13 +138,14 @@ var register = new Endpoint
             return;
         }
 
-        await webContext.Session.SetValue(AuthenticationDefaults.UserIdSessionKey, newUser.Id.ToString(CultureInfo.InvariantCulture));
+        await webContext.Session.SetValue(AuthenticationConstants.UserIdSessionKey, newUser.Id.ToString(CultureInfo.InvariantCulture));
 
         webContext.WebResponse.StatusCode = 201;
         webContext.WebResponse.ResponsePhrase = "Created";
         await webContext.WebResponse.WriteJsonToBody(new { success = true }, cancellationToken);
     },
     AllowAnonymous = true,
+    SkipCsrf = false,
     CachePolicy = new CachePolicy
     {
         Enabled = false
@@ -151,7 +189,7 @@ var login = new Endpoint
         if (user == null)
         {
             //prevent timing attacks which reveal whether an account exists or not
-            passwordHasher.VerifyPassword(password, AuthenticationDefaults.DummyPasswordHash);
+            passwordHasher.VerifyPassword(password, AuthenticationConstants.DummyPasswordHash);
 
             webContext.WebResponse.StatusCode = 401;
             webContext.WebResponse.ResponsePhrase = "Unauthorized";
@@ -177,13 +215,14 @@ var login = new Endpoint
             return;
         }
 
-        await webContext.Session.SetValue(AuthenticationDefaults.UserIdSessionKey, user.Id.ToString(CultureInfo.InvariantCulture));
+        await webContext.Session.SetValue(AuthenticationConstants.UserIdSessionKey, user.Id.ToString(CultureInfo.InvariantCulture));
 
         webContext.WebResponse.StatusCode = 200;
         webContext.WebResponse.ResponsePhrase = "OK";
         await webContext.WebResponse.WriteJsonToBody(new { success = true }, cancellationToken);
     },
     AllowAnonymous = true,
+    SkipCsrf = false,
     CachePolicy = new CachePolicy
     {
         Enabled = false
@@ -197,6 +236,7 @@ var webServer = ServerBuilder.Build(
     configureEndpoints: endpointRegistry =>
     {
         endpointRegistry.AddEndpoint(healthCheck);
+        endpointRegistry.AddEndpoint(csrf);
         endpointRegistry.AddEndpoint(register);
         endpointRegistry.AddEndpoint(login);
     },
