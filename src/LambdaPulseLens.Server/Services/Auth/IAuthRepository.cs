@@ -3,5 +3,6 @@
 internal interface IAuthRepository
 {
     Task<AuthUserRecord> CreateUser(string email, string passwordHash, CancellationToken cancellationToken);
-    Task<AuthUserRecord> GetUser(string email, CancellationToken cancellationToken);
+    Task<AuthUserRecord?> GetUserById(long id, CancellationToken cancellationToken);
+    Task<AuthUserRecord?> GetUserByEmail(string email, CancellationToken cancellationToken);
 }

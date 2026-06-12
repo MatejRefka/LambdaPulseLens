@@ -117,7 +117,7 @@ var register = new Endpoint
             return;
         }
 
-        var existingUser = await authRepository.GetUser(email, cancellationToken);
+        var existingUser = await authRepository.GetUserByEmail(email, cancellationToken);
         //user already exists
         if (existingUser != null)
         {
@@ -184,7 +184,7 @@ var login = new Endpoint
             return;
         }
 
-        var user = await authRepository.GetUser(email, cancellationToken);
+        var user = await authRepository.GetUserByEmail(email, cancellationToken);
 
         if (user == null)
         {
@@ -229,6 +229,53 @@ var login = new Endpoint
     }
 };
 
+//indicates whether the user is authenticated and returns user info
+var me = new Endpoint
+{
+    Method = "GET",
+    Path = "/api/auth/me",
+    AllowAnonymous = true,
+    SkipCsrf = false,
+    CachePolicy = new CachePolicy
+    {
+        Enabled = false,
+    },
+    ApplicationFunction = async (webContext, cancellationToken) =>
+    {
+        //user not authenticated
+        if (!webContext.User.IsAuthenticated)
+        {
+            webContext.WebResponse.StatusCode = 401;
+            webContext.WebResponse.ResponsePhrase = "Unauthorized";
+            await webContext.WebResponse.WriteJsonToBody(new { success = false }, cancellationToken);
+            return;
+        }
+
+        //user id missing or invalid
+        if (!long.TryParse(webContext.User.Id, out var userId))
+        {
+            webContext.WebResponse.StatusCode = 401;
+            webContext.WebResponse.ResponsePhrase = "Unauthorized";
+            await webContext.WebResponse.WriteJsonToBody(new { success = false }, cancellationToken);
+            return;
+        }
+
+        var user = await authRepository.GetUserById(userId, cancellationToken);
+
+        if (user == null)
+        {
+            webContext.WebResponse.StatusCode = 401;
+            webContext.WebResponse.ResponsePhrase = "Unauthorized";
+            await webContext.WebResponse.WriteJsonToBody(new { success = false }, cancellationToken);
+            return;
+        }
+
+        webContext.WebResponse.StatusCode = 200;
+        webContext.WebResponse.ResponsePhrase = "OK";
+        await webContext.WebResponse.WriteJsonToBody(new { success = true, user = new { id = user.Id, email = user.Email } }, cancellationToken);
+    }
+};
+
 #endregion Endpoints
 
 
@@ -239,6 +286,7 @@ var webServer = ServerBuilder.Build(
         endpointRegistry.AddEndpoint(csrf);
         endpointRegistry.AddEndpoint(register);
         endpointRegistry.AddEndpoint(login);
+        endpointRegistry.AddEndpoint(me);
     },
     configureServices: container =>
     {

@@ -14,8 +14,11 @@ internal sealed class PostgresAuthRepository : IAuthRepository
     {
         throw new NotImplementedException();
     }
-
-    public Task<AuthUserRecord> GetUser(string email, CancellationToken cancellationToken)
+    public Task<AuthUserRecord?> GetUserById(long id, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+    public Task<AuthUserRecord?> GetUserByEmail(string email, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
     }
