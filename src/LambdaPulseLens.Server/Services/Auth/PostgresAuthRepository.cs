@@ -1,7 +1,15 @@
-﻿namespace LambdaPulse.Server.Services.Auth;
+﻿using LambdaPulse.Server.Services.Telemetry;
+
+namespace LambdaPulse.Server.Services.Auth;
 
 internal sealed class PostgresAuthRepository : IAuthRepository
 {
+    private readonly string _connectionString;
+    public PostgresAuthRepository(PostgresConfig config)
+    {
+        _connectionString = config.ConnectionString;
+    }
+
     public Task<AuthUserRecord> CreateUser(string email, string passwordHash, CancellationToken cancellationToken)
     {
         throw new NotImplementedException();
