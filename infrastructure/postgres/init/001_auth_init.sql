@@ -4,9 +4,10 @@ CREATE TABLE IF NOT EXISTS auth.users
 (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     email TEXT NOT NULL,
+    email_normalized TEXT GENERATED ALWAYS AS (lower(trim(email))) STORED,
 	password_hash TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ NULL
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
-CREATE UNIQUE INDEX ux_users_email_normalized ON auth.users (lower(trim(email)));
+CREATE UNIQUE INDEX IF NOT EXISTS ux_users_email_normalized ON auth.users (email_normalized);
