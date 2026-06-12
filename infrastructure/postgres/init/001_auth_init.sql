@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS auth.users
     email TEXT NOT NULL,
 	password_hash TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ NULL,
+    updated_at TIMESTAMPTZ NULL
 );
 
 CREATE UNIQUE INDEX ux_users_email_normalized ON auth.users (lower(trim(email)));
