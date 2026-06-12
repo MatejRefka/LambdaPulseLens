@@ -25,8 +25,8 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
 
         try
         {
-            var insertTraceSql = @"INSERT INTO telemetry.traces (timestamp_start, duration_ms, req_method, req_path, req_protocol, req_headers, req_cookies, req_body, res_status_code, res_phrase, res_headers, res_cookies, res_body)
-                                   VALUES (@TimestampStart, @DurationMs, @ReqMethod, @ReqPath, @ReqProtocol, @ReqHeaders, @ReqCookies, @ReqBody, @ResStatusCode, @ResPhrase, @ResHeaders, @ResCookies, @ResBody) 
+            var insertTraceSql = @"INSERT INTO telemetry.traces (timestamp_start, duration_ms, req_method, req_path, req_protocol, res_status_code, res_phrase)
+                                   VALUES (@TimestampStart, @DurationMs, @ReqMethod, @ReqPath, @ReqProtocol, @ResStatusCode, @ResPhrase) 
                                    RETURNING id;";
 
             await using var traceCommand = new NpgsqlCommand(insertTraceSql, connection, transaction);
@@ -36,14 +36,8 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
             traceCommand.Parameters.Add(new NpgsqlParameter("ReqMethod", NpgsqlDbType.Varchar) { Value = (object?)trace.RequestMethod ?? DBNull.Value });
             traceCommand.Parameters.Add(new NpgsqlParameter("ReqPath", NpgsqlDbType.Text) { Value = (object?)trace.RequestPath ?? DBNull.Value });
             traceCommand.Parameters.Add(new NpgsqlParameter("ReqProtocol", NpgsqlDbType.Varchar) { Value = (object?)trace.RequestProtocol ?? DBNull.Value });
-            traceCommand.Parameters.Add(new NpgsqlParameter("ReqHeaders", NpgsqlDbType.Jsonb) { Value = JsonSerializer.Serialize(trace.RequestHeaders) });
-            traceCommand.Parameters.Add(new NpgsqlParameter("ReqCookies", NpgsqlDbType.Jsonb) { Value = JsonSerializer.Serialize(trace.RequestCookies) });
-            traceCommand.Parameters.Add(new NpgsqlParameter("ReqBody", NpgsqlDbType.Text) { Value = (object?)trace.RequestBody ?? DBNull.Value });
             traceCommand.Parameters.Add(new NpgsqlParameter("ResStatusCode", NpgsqlDbType.Integer) { Value = (object?)trace.ResponseStatusCode ?? DBNull.Value });
             traceCommand.Parameters.Add(new NpgsqlParameter("ResPhrase", NpgsqlDbType.Text) { Value = (object?)trace.ResponsePhrase ?? DBNull.Value });
-            traceCommand.Parameters.Add(new NpgsqlParameter("ResHeaders", NpgsqlDbType.Jsonb) { Value = JsonSerializer.Serialize(trace.ResponseHeaders) });
-            traceCommand.Parameters.Add(new NpgsqlParameter("ResCookies", NpgsqlDbType.Jsonb) { Value = JsonSerializer.Serialize(trace.ResponseCookies) });
-            traceCommand.Parameters.Add(new NpgsqlParameter("ResBody", NpgsqlDbType.Text) { Value = (object?)trace.ResponseBody ?? DBNull.Value });
 
             var rawTraceId = await traceCommand.ExecuteScalarAsync(cancellationToken);
             var traceId = Convert.ToInt64(rawTraceId, CultureInfo.InvariantCulture);

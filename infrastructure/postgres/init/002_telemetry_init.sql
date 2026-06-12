@@ -21,15 +21,9 @@ CREATE TABLE IF NOT EXISTS telemetry.traces (
     req_method VARCHAR(10) NOT NULL,
     req_path TEXT NOT NULL,
     req_protocol VARCHAR(20) NOT NULL,
-    req_headers JSONB NOT NULL,
-    req_cookies JSONB,
-    req_body TEXT,
 
     res_status_code INTEGER NOT NULL,
     res_phrase TEXT NOT NULL,
-    res_headers JSONB NOT NULL,
-    res_cookies JSONB,
-    res_body TEXT,
 
     CONSTRAINT fk_telemetry_traces_user FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE SET NULL
 );
