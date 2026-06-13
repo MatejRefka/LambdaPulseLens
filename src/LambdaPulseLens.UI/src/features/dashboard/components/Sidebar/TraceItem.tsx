@@ -14,6 +14,8 @@ export const TraceItem = ({ trace, isSelected, onClick }: TraceItemProps) => {
 
   const badgeStyle = isSelected ? "border-surface-60" : "border-surface-50";
   const badgeStyleHover = isSelected ? "group-hover:border-surface-60" : "group-hover:border-surface-30";
+  const method = trace.request.method ?? "Malformed";
+  const path = trace.request.path ?? "Request parse failed";
 
   return (
     <button
@@ -22,14 +24,14 @@ export const TraceItem = ({ trace, isSelected, onClick }: TraceItemProps) => {
     >
       {/*method + status code*/}
       <div className="flex justify-between items-center mb-1">
-        <span className="text-sm font-semibold">{trace.request.method}</span>
+        <span className="text-sm font-semibold">{method}</span>
         <div className={cn("text-xs px-2 py-0.5 rounded border", badgeStyle, badgeStyleHover)}>
           {trace.response.statusCode} {trace.response.responsePhrase}
         </div>
       </div>
 
       {/*path*/}
-      <div className="truncate text-sm">{trace.request.path}</div>
+      <div className="truncate text-sm">{path}</div>
 
       {/*duration + timestamp*/}
       <div className="text-xs mt-1 flex justify-between text-text-30 font-medium">

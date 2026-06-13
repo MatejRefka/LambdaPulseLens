@@ -22,9 +22,9 @@ export interface Step {
 }
 
 export interface WebRequest {
-  method: string;
-  path: string;
-  protocol: string;
+  method: string | null;
+  path: string | null;
+  protocol: string | null;
   headers: Headers;
   cookies?: Cookies;
   body?: string;

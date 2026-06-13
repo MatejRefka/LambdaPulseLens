@@ -17,11 +17,9 @@ CREATE TABLE IF NOT EXISTS telemetry.traces (
     user_id BIGINT NULL,
     timestamp_start TIMESTAMPTZ NOT NULL,
     duration_ms BIGINT NOT NULL,
-
-    req_method VARCHAR(10) NOT NULL,
-    req_path TEXT NOT NULL,
-    req_protocol VARCHAR(20) NOT NULL,
-
+    req_method VARCHAR(10) NULL,
+    req_path TEXT NULL,
+    req_protocol VARCHAR(20) NULL,
     res_status_code INTEGER NOT NULL,
     res_phrase TEXT NOT NULL,
 
