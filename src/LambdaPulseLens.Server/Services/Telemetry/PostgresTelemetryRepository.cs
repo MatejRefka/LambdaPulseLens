@@ -130,7 +130,7 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
         return traces;
     }
 
-    public async Task<Trace> GetTrace(long traceId, long userId, CancellationToken cancellationToken = default)
+    public async Task<Trace?> GetTrace(long traceId, long userId, CancellationToken cancellationToken = default)
     {
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync(cancellationToken);
@@ -164,7 +164,7 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
 
         if (!await reader.ReadAsync(cancellationToken))
         {
-            throw new KeyNotFoundException($"Trace '{traceId}' was not found for user '{userId}'.");
+            return null;
         }
 
         var trace = new Trace

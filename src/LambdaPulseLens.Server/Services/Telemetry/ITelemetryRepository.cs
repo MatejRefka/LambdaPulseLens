@@ -8,5 +8,5 @@ internal interface ITelemetryRepository
 
     Task<IReadOnlyList<TraceSummaryRecord>> GetTraceSummaries(long userId, CancellationToken cancellationToken = default);
 
-    Task<Trace> GetTrace(long traceId, long userId, CancellationToken cancellationToken = default);
+    Task<Trace?> GetTrace(long traceId, long userId, CancellationToken cancellationToken = default);
 }
