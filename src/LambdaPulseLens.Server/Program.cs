@@ -27,32 +27,34 @@ var redisConnectionManager = await ConnectionMultiplexer.ConnectAsync(redisConne
 //services
 BCryptPasswordHasher passwordHasher = new();
 PostgresAuthRepository authRepository = new(postgresConfig);
+PostgresTelemetryRepository telemetryRepository = new(postgresConfig);
 
 #endregion Instantiations
 
-
-#region Endpoints
-var healthCheck = new Endpoint
+#region Health Check Endpoint
+var healthCheckEndpoint = new Endpoint
 {
     Method = "GET",
     Path = "/api/health",
+    AllowAnonymous = true,
+    CachePolicy = new CachePolicy
+    {
+        Enabled = true,
+        DurationSeconds = 120
+    },
     ApplicationFunction = async (webContext, cancellationToken) =>
     {
         webContext.WebResponse.StatusCode = 200;
         webContext.WebResponse.ResponsePhrase = "OK";
         await webContext.WebResponse.WriteJsonToBody(new { Health = "Healthy" }, cancellationToken);
-    },
-    AllowAnonymous = true,
-    SkipCsrf = false,
-    CachePolicy = new CachePolicy
-    {
-        Enabled = true,
-        DurationSeconds = 120
     }
 };
+#endregion Health Check Endpoint
+
+#region Auth Endpoints
 
 //issues CSRF token
-var csrf = new Endpoint
+var csrfEndpoint = new Endpoint
 {
     Method = "GET",
     Path = "/api/auth/csrf",
@@ -85,10 +87,15 @@ var csrf = new Endpoint
 
 };
 
-var register = new Endpoint
+var registerEndpoint = new Endpoint
 {
     Method = "POST",
     Path = "/api/auth/register",
+    AllowAnonymous = true,
+    CachePolicy = new CachePolicy
+    {
+        Enabled = false
+    },
     ApplicationFunction = async (webContext, cancellationToken) =>
     {
         var request = JsonSerializer.Deserialize<RegisterRequest>(webContext.WebRequest.Body ?? string.Empty, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
@@ -143,19 +150,18 @@ var register = new Endpoint
         webContext.WebResponse.StatusCode = 201;
         webContext.WebResponse.ResponsePhrase = "Created";
         await webContext.WebResponse.WriteJsonToBody(new { success = true }, cancellationToken);
-    },
-    AllowAnonymous = true,
-    SkipCsrf = false,
-    CachePolicy = new CachePolicy
-    {
-        Enabled = false
     }
 };
 
-var login = new Endpoint
+var loginEndpoint = new Endpoint
 {
     Method = "POST",
     Path = "/api/auth/login",
+    AllowAnonymous = true,
+    CachePolicy = new CachePolicy
+    {
+        Enabled = false
+    },
     ApplicationFunction = async (webContext, cancellationToken) =>
     {
         var request = JsonSerializer.Deserialize<LoginRequest>(webContext.WebRequest.Body ?? string.Empty, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
@@ -220,22 +226,15 @@ var login = new Endpoint
         webContext.WebResponse.StatusCode = 200;
         webContext.WebResponse.ResponsePhrase = "OK";
         await webContext.WebResponse.WriteJsonToBody(new { success = true }, cancellationToken);
-    },
-    AllowAnonymous = true,
-    SkipCsrf = false,
-    CachePolicy = new CachePolicy
-    {
-        Enabled = false
     }
 };
 
 //indicates whether the user is authenticated and returns user info
-var me = new Endpoint
+var meEndpoint = new Endpoint
 {
     Method = "GET",
     Path = "/api/auth/me",
     AllowAnonymous = true,
-    SkipCsrf = false,
     CachePolicy = new CachePolicy
     {
         Enabled = false,
@@ -276,17 +275,102 @@ var me = new Endpoint
     }
 };
 
-#endregion Endpoints
+#endregion Auth Endpoints
 
+#region Telemetry Endpoints
+//returns trace summaries
+var tracesEndpoint = new Endpoint
+{
+    Method = "GET",
+    Path = "/api/telemetry/traces",
+    AllowAnonymous = false,
+    CachePolicy = new CachePolicy
+    {
+        Enabled = false
+    },
+    ApplicationFunction = async (webContext, cancellationToken) =>
+    {
+        if (!long.TryParse(webContext.User.Id, CultureInfo.InvariantCulture, out var userId))
+        {
+            webContext.WebResponse.StatusCode = 401;
+            webContext.WebResponse.ResponsePhrase = "Unauthorized";
+            await webContext.WebResponse.WriteJsonToBody(new { success = false }, cancellationToken);
+            return;
+        }
+
+        var traces = await telemetryRepository.GetTraceSummaries(userId, cancellationToken);
+
+        webContext.WebResponse.StatusCode = 200;
+        webContext.WebResponse.ResponsePhrase = "OK";
+        await webContext.WebResponse.WriteJsonToBody(new { success = true, traces }, cancellationToken);
+    }
+};
+
+//returns full trace
+var traceEndpoint = new Endpoint
+{
+    Method = "GET",
+    Path = "/api/telemetry/traces/{id}",
+    AllowAnonymous = false,
+    //another user may hit the same path. do not cache until cache key is user-scoped
+    CachePolicy = new CachePolicy
+    {
+        Enabled = false
+    },
+    ApplicationFunction = async (webContext, cancellationToken) =>
+    {
+        if (!long.TryParse(webContext.User.Id, CultureInfo.InvariantCulture, out var userId))
+        {
+            webContext.WebResponse.StatusCode = 401;
+            webContext.WebResponse.ResponsePhrase = "Unauthorized";
+            await webContext.WebResponse.WriteJsonToBody(new { success = false }, cancellationToken);
+            return;
+        }
+
+        if (webContext.Endpoint == null)
+        {
+            webContext.WebResponse.StatusCode = 400;
+            webContext.WebResponse.ResponsePhrase = "Bad Request";
+            await webContext.WebResponse.WriteJsonToBody(new { success = false }, cancellationToken);
+            return;
+        }
+
+        var traceIdValue = webContext.Endpoint.PathParameters["id"];
+        if (!long.TryParse(traceIdValue, CultureInfo.InvariantCulture, out var traceId))
+        {
+            webContext.WebResponse.StatusCode = 400;
+            webContext.WebResponse.ResponsePhrase = "Bad Request";
+            await webContext.WebResponse.WriteJsonToBody(new { success = false }, cancellationToken);
+            return;
+        }
+
+        var trace = await telemetryRepository.GetTrace(traceId, userId, cancellationToken);
+        if (trace == null)
+        {
+            webContext.WebResponse.StatusCode = 404;
+            webContext.WebResponse.ResponsePhrase = "Not Found";
+            await webContext.WebResponse.WriteJsonToBody(new { success = false }, cancellationToken);
+            return;
+        }
+
+        webContext.WebResponse.StatusCode = 200;
+        webContext.WebResponse.ResponsePhrase = "OK";
+        await webContext.WebResponse.WriteJsonToBody(new { success = true, trace }, cancellationToken);
+    }
+};
+
+#endregion Telemetry Endpoints
 
 var webServer = ServerBuilder.Build(
     configureEndpoints: endpointRegistry =>
     {
-        endpointRegistry.AddEndpoint(healthCheck);
-        endpointRegistry.AddEndpoint(csrf);
-        endpointRegistry.AddEndpoint(register);
-        endpointRegistry.AddEndpoint(login);
-        endpointRegistry.AddEndpoint(me);
+        endpointRegistry.AddEndpoint(healthCheckEndpoint);
+        endpointRegistry.AddEndpoint(csrfEndpoint);
+        endpointRegistry.AddEndpoint(registerEndpoint);
+        endpointRegistry.AddEndpoint(loginEndpoint);
+        endpointRegistry.AddEndpoint(meEndpoint);
+        endpointRegistry.AddEndpoint(tracesEndpoint);
+        endpointRegistry.AddEndpoint(traceEndpoint);
     },
     configureServices: container =>
     {

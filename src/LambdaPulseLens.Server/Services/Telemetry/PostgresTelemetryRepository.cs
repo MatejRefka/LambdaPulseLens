@@ -27,6 +27,13 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
             throw new InvalidOperationException("Missing trace response phrase.");
         }
 
+        //server implementation using long/bigint type for user id
+        long? traceUserId = null;
+        if (!string.IsNullOrWhiteSpace(trace.UserId) && long.TryParse(trace.UserId, CultureInfo.InvariantCulture, out var parsedUserId))
+        {
+            traceUserId = parsedUserId;
+        }
+
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync(cancellationToken);
 
@@ -41,7 +48,7 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
 
             await using var traceCommand = new NpgsqlCommand(insertTraceSql, connection, transaction);
 
-            traceCommand.Parameters.Add(new NpgsqlParameter("UserId", NpgsqlDbType.Bigint) { Value = trace.UserId.HasValue ? trace.UserId.Value : DBNull.Value });
+            traceCommand.Parameters.Add(new NpgsqlParameter("UserId", NpgsqlDbType.Bigint) { Value = traceUserId.HasValue ? traceUserId.Value : DBNull.Value });
             traceCommand.Parameters.Add(new NpgsqlParameter("TimestampStart", NpgsqlDbType.TimestampTz) { Value = trace.TimestampStart });
             traceCommand.Parameters.Add(new NpgsqlParameter("DurationMs", NpgsqlDbType.Bigint) { Value = trace.DurationMs });
             traceCommand.Parameters.Add(new NpgsqlParameter("ReqMethod", NpgsqlDbType.Varchar) { Value = (object?)trace.RequestMethod ?? DBNull.Value });
@@ -162,8 +169,8 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
 
         var trace = new Trace
         {
-            Id = traceId,
-            UserId = reader.IsDBNull(reader.GetOrdinal("trace_user_id")) ? null : reader.GetInt64(reader.GetOrdinal("trace_user_id")),
+            Id = traceId.ToString(CultureInfo.InvariantCulture),
+            UserId = reader.IsDBNull(reader.GetOrdinal("trace_user_id")) ? null : reader.GetInt64(reader.GetOrdinal("trace_user_id")).ToString(CultureInfo.InvariantCulture),
             TimestampStart = reader.GetFieldValue<DateTimeOffset>(reader.GetOrdinal("trace_timestamp_start")),
             DurationMs = reader.GetInt64(reader.GetOrdinal("trace_duration_ms")),
             RequestMethod = reader.IsDBNull(reader.GetOrdinal("trace_req_method")) ? null : reader.GetString(reader.GetOrdinal("trace_req_method")),
