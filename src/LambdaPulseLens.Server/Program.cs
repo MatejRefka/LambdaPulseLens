@@ -269,7 +269,7 @@ var meEndpoint = new Endpoint
 var logoutEndpoint = new Endpoint
 {
     Method = "POST",
-    Path = "api/auth/logout",
+    Path = "/api/auth/logout",
     AllowAnonymous = false,
     SkipCsrf = false,
     CachePolicy = new CachePolicy { Enabled = false },
