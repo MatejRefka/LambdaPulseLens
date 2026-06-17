@@ -138,7 +138,9 @@ var registerEndpoint = new Endpoint
             return;
         }
 
-        await webContext.Session.SetValue(AuthenticationConstants.UserIdSessionKey, newUser.Id.ToString(CultureInfo.InvariantCulture));
+        var userId = newUser.Id.ToString(CultureInfo.InvariantCulture);
+        await webContext.Session.SetValue(AuthenticationConstants.UserIdSessionKey, userId);
+        webContext.User = new AuthenticatedUser(userId);
 
         webContext.WebResponse.StatusCode = 201;
         webContext.WebResponse.ResponsePhrase = "Created";
@@ -211,7 +213,9 @@ var loginEndpoint = new Endpoint
             return;
         }
 
-        await webContext.Session.SetValue(AuthenticationConstants.UserIdSessionKey, user.Id.ToString(CultureInfo.InvariantCulture));
+        var userId = user.Id.ToString(CultureInfo.InvariantCulture);
+        await webContext.Session.SetValue(AuthenticationConstants.UserIdSessionKey, userId);
+        webContext.User = new AuthenticatedUser(userId);
 
         webContext.WebResponse.StatusCode = 200;
         webContext.WebResponse.ResponsePhrase = "OK";
