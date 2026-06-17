@@ -91,6 +91,9 @@ var registerEndpoint = new Endpoint
     CachePolicy = new CachePolicy { Enabled = false },
     ApplicationFunction = async (webContext, cancellationToken) =>
     {
+        //indicate that the response should not be cached by browsers or CDNs
+        webContext.WebResponse.Headers["Cache-Control"] = "no-store";
+
         var request = JsonSerializer.Deserialize<RegisterRequest>(webContext.WebRequest.Body ?? string.Empty, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
         if (request == null)
@@ -156,6 +159,9 @@ var loginEndpoint = new Endpoint
     CachePolicy = new CachePolicy { Enabled = false },
     ApplicationFunction = async (webContext, cancellationToken) =>
     {
+        //indicate that the response should not be cached by browsers or CDNs
+        webContext.WebResponse.Headers["Cache-Control"] = "no-store";
+
         var request = JsonSerializer.Deserialize<LoginRequest>(webContext.WebRequest.Body ?? string.Empty, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
         if (request == null)
@@ -232,6 +238,9 @@ var meEndpoint = new Endpoint
     CachePolicy = new CachePolicy { Enabled = false, },
     ApplicationFunction = async (webContext, cancellationToken) =>
     {
+        //indicate that the response should not be cached by browsers or CDNs
+        webContext.WebResponse.Headers["Cache-Control"] = "no-store";
+
         //user not authenticated
         if (!webContext.User.IsAuthenticated)
         {
@@ -275,6 +284,9 @@ var logoutEndpoint = new Endpoint
     CachePolicy = new CachePolicy { Enabled = false },
     ApplicationFunction = async (webContext, cancellationToken) =>
     {
+        //indicate that the response should not be cached by browsers or CDNs
+        webContext.WebResponse.Headers["Cache-Control"] = "no-store";
+
         if (webContext.Session == null)
         {
             webContext.WebResponse.StatusCode = 500;
@@ -305,6 +317,9 @@ var tracesEndpoint = new Endpoint
     CachePolicy = new CachePolicy { Enabled = false },
     ApplicationFunction = async (webContext, cancellationToken) =>
     {
+        //indicate that the response should not be cached by browsers or CDNs
+        webContext.WebResponse.Headers["Cache-Control"] = "no-store";
+
         if (!long.TryParse(webContext.User.Id, CultureInfo.InvariantCulture, out var userId))
         {
             webContext.WebResponse.StatusCode = 401;
@@ -331,6 +346,9 @@ var traceEndpoint = new Endpoint
     CachePolicy = new CachePolicy { Enabled = false },
     ApplicationFunction = async (webContext, cancellationToken) =>
     {
+        //indicate that the response should not be cached by browsers or CDNs
+        webContext.WebResponse.Headers["Cache-Control"] = "no-store";
+
         if (!long.TryParse(webContext.User.Id, CultureInfo.InvariantCulture, out var userId))
         {
             webContext.WebResponse.StatusCode = 401;
