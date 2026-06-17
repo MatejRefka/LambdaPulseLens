@@ -37,11 +37,7 @@ var healthCheckEndpoint = new Endpoint
     Method = "GET",
     Path = "/api/health",
     AllowAnonymous = true,
-    CachePolicy = new CachePolicy
-    {
-        Enabled = true,
-        DurationSeconds = 120
-    },
+    CachePolicy = new CachePolicy { Enabled = true, DurationSeconds = 120 },
     ApplicationFunction = async (webContext, cancellationToken) =>
     {
         webContext.WebResponse.StatusCode = 200;
@@ -92,10 +88,7 @@ var registerEndpoint = new Endpoint
     Method = "POST",
     Path = "/api/auth/register",
     AllowAnonymous = true,
-    CachePolicy = new CachePolicy
-    {
-        Enabled = false
-    },
+    CachePolicy = new CachePolicy { Enabled = false },
     ApplicationFunction = async (webContext, cancellationToken) =>
     {
         var request = JsonSerializer.Deserialize<RegisterRequest>(webContext.WebRequest.Body ?? string.Empty, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
@@ -158,10 +151,7 @@ var loginEndpoint = new Endpoint
     Method = "POST",
     Path = "/api/auth/login",
     AllowAnonymous = true,
-    CachePolicy = new CachePolicy
-    {
-        Enabled = false
-    },
+    CachePolicy = new CachePolicy { Enabled = false },
     ApplicationFunction = async (webContext, cancellationToken) =>
     {
         var request = JsonSerializer.Deserialize<LoginRequest>(webContext.WebRequest.Body ?? string.Empty, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
@@ -235,10 +225,7 @@ var meEndpoint = new Endpoint
     Method = "GET",
     Path = "/api/auth/me",
     AllowAnonymous = true,
-    CachePolicy = new CachePolicy
-    {
-        Enabled = false,
-    },
+    CachePolicy = new CachePolicy { Enabled = false, },
     ApplicationFunction = async (webContext, cancellationToken) =>
     {
         //user not authenticated
@@ -275,6 +262,33 @@ var meEndpoint = new Endpoint
     }
 };
 
+var logoutEndpoint = new Endpoint
+{
+    Method = "POST",
+    Path = "api/auth/logout",
+    AllowAnonymous = false,
+    SkipCsrf = false,
+    CachePolicy = new CachePolicy { Enabled = false },
+    ApplicationFunction = async (webContext, cancellationToken) =>
+    {
+        if (webContext.Session == null)
+        {
+            webContext.WebResponse.StatusCode = 500;
+            webContext.WebResponse.ResponsePhrase = "Internal Server Error";
+            await webContext.WebResponse.WriteJsonToBody(new { success = false, message = "Internal Server Error." }, cancellationToken);
+            return;
+        }
+
+        await webContext.Session.RemoveValue(AuthenticationConstants.UserIdSessionKey);
+
+        webContext.User = GuestUser.Instance;
+
+        webContext.WebResponse.StatusCode = 200;
+        webContext.WebResponse.ResponsePhrase = "OK";
+        await webContext.WebResponse.WriteJsonToBody(new { success = true }, cancellationToken);
+    }
+};
+
 #endregion Auth Endpoints
 
 #region Telemetry Endpoints
@@ -284,10 +298,7 @@ var tracesEndpoint = new Endpoint
     Method = "GET",
     Path = "/api/telemetry/traces",
     AllowAnonymous = false,
-    CachePolicy = new CachePolicy
-    {
-        Enabled = false
-    },
+    CachePolicy = new CachePolicy { Enabled = false },
     ApplicationFunction = async (webContext, cancellationToken) =>
     {
         if (!long.TryParse(webContext.User.Id, CultureInfo.InvariantCulture, out var userId))
@@ -313,10 +324,7 @@ var traceEndpoint = new Endpoint
     Path = "/api/telemetry/traces/{id}",
     AllowAnonymous = false,
     //another user may hit the same path. do not cache until cache key is user-scoped
-    CachePolicy = new CachePolicy
-    {
-        Enabled = false
-    },
+    CachePolicy = new CachePolicy { Enabled = false },
     ApplicationFunction = async (webContext, cancellationToken) =>
     {
         if (!long.TryParse(webContext.User.Id, CultureInfo.InvariantCulture, out var userId))
@@ -369,6 +377,7 @@ var webServer = ServerBuilder.Build(
         endpointRegistry.AddEndpoint(registerEndpoint);
         endpointRegistry.AddEndpoint(loginEndpoint);
         endpointRegistry.AddEndpoint(meEndpoint);
+        endpointRegistry.AddEndpoint(logoutEndpoint);
         endpointRegistry.AddEndpoint(tracesEndpoint);
         endpointRegistry.AddEndpoint(traceEndpoint);
     },
