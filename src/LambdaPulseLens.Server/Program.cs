@@ -147,7 +147,7 @@ var registerEndpoint = new Endpoint
 
         webContext.WebResponse.StatusCode = 201;
         webContext.WebResponse.ResponsePhrase = "Created";
-        await webContext.WebResponse.WriteJsonToBody(new { success = true }, cancellationToken);
+        await webContext.WebResponse.WriteJsonToBody(new { success = true, user = new { id = newUser.Id, email = newUser.Email } }, cancellationToken);
     }
 };
 
@@ -225,7 +225,7 @@ var loginEndpoint = new Endpoint
 
         webContext.WebResponse.StatusCode = 200;
         webContext.WebResponse.ResponsePhrase = "OK";
-        await webContext.WebResponse.WriteJsonToBody(new { success = true }, cancellationToken);
+        await webContext.WebResponse.WriteJsonToBody(new { success = true, user = new { id = user.Id, email = user.Email } }, cancellationToken);
     }
 };
 

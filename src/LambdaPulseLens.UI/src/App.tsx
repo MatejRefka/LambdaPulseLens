@@ -1,3 +1,4 @@
+import { AuthProvider } from "./contexts/AuthProvider";
 import { ThemeProvider } from "./contexts/ThemeProvider";
 import { DashboardPage } from "./pages/DashboardPage";
 // import { LoginPage } from "./pages/LoginPage";
@@ -6,11 +7,13 @@ import { DashboardPage } from "./pages/DashboardPage";
 function App() {
   return (
     <ThemeProvider>
-      {/* <RegisterPage onRedirectToLogin={() => console.log("Redirected to Login page!")} /> */}
+      <AuthProvider>
+        {/* <RegisterPage onRedirectToLogin={() => console.log("Redirected to Login page!")} /> */}
 
-      {/* <LoginPage onRedirectToRegister={() => console.log("Redirected to Register page!")} /> */}
+        {/* <LoginPage onRedirectToRegister={() => console.log("Redirected to Register page!")} /> */}
 
-      <DashboardPage />
+        <DashboardPage />
+      </AuthProvider>
     </ThemeProvider>
   );
 }

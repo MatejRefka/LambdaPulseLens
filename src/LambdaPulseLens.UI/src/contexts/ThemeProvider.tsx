@@ -19,8 +19,7 @@ const ThemeProviderContext = createContext<ThemeProviderState | undefined>(undef
 export function ThemeProvider({
   children,
   defaultTheme = "light",
-  storageKey = "lambda-pulse-theme",
-  ...props
+  storageKey = "lambda-pulse-theme"
 }: ThemeProviderProps) {
   //initialize the theme
   const [theme, setTheme] = useState<Theme>(() => {
@@ -75,11 +74,7 @@ export function ThemeProvider({
     }
   };
 
-  return (
-    <ThemeProviderContext.Provider {...props} value={value}>
-      {children}
-    </ThemeProviderContext.Provider>
-  );
+  return <ThemeProviderContext.Provider value={value}>{children}</ThemeProviderContext.Provider>;
 }
 
 //combine useContext and ThemeProviderContext into a custom hook
