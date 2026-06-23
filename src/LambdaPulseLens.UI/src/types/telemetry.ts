@@ -14,7 +14,7 @@ export interface Trace {
 
 export interface Step {
   middleware: string;
-  direction?: FlowDirection;
+  direction?: FlowDirection | null;
   event: ExecutionEvent;
   timestampStart: string;
   durationMs: number;

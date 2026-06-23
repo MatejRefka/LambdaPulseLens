@@ -59,7 +59,7 @@ export const MiddlewareNode = ({ middlewareName, step, onLogClick }: MiddlewareN
           <button
             className="text-[10px] text-text-30 tracking-wide border-b border-dotted border-text-30 hover:cursor-pointer hover:text-text-20 transition-colors pb-px"
             onClick={() => {
-              onLogClick(`${step.middleware}-${step.direction}`);
+              onLogClick(`${step.middleware}-${step.direction ?? ""}`);
             }}
           >
             LOGS
