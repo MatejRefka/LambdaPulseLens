@@ -21,7 +21,9 @@ export const Sidebar = ({ traces, selectedTraceId, onSelectTrace }: SidebarProps
             key={trace.id}
             trace={trace}
             isSelected={selectedTraceId === trace.id}
-            onClick={() => onSelectTrace(trace)}
+            onClick={() => {
+              onSelectTrace(trace);
+            }}
           />
         ))}
       </div>

@@ -30,7 +30,7 @@ export function ThemeProvider({
     }
 
     //user has not chosen the theme, use OS/browser preference
-    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
       return "dark";
     }
 

@@ -6,7 +6,7 @@ interface AuthButtonProps extends React.ComponentPropsWithRef<"button"> {
   variant: "primary" | "secondary" | "icon";
 }
 
-export const AuthButton = ({ children, variant = "primary", className, ...props }: AuthButtonProps) => {
+export const AuthButton = ({ children, variant, className, ...props }: AuthButtonProps) => {
   return (
     <button
       {...props}

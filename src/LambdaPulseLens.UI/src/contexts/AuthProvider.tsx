@@ -35,7 +35,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setIsLoading(false);
       }
     }
-    initializeAuth();
+    void initializeAuth();
   }, []);
 
   async function register(email: string, password: string) {
