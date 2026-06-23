@@ -11,27 +11,9 @@ function App() {
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
       {/*public /register route*/}
-      <Route
-        path="/register"
-        element={
-          <RegisterPage
-            onRedirectToLogin={() => {
-              console.log("Redirected to Login page!");
-            }}
-          />
-        }
-      />
+      <Route path="/register" element={<RegisterPage />} />
       {/*public /login route*/}
-      <Route
-        path="/login"
-        element={
-          <LoginPage
-            onRedirectToRegister={() => {
-              console.log("Redirected to Register page!");
-            }}
-          />
-        }
-      />
+      <Route path="/login" element={<LoginPage />} />
 
       {/*/dashboard within 'protected' route*/}
       <Route element={<ProtectedRoute />}>

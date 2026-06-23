@@ -2,6 +2,7 @@ import { AuthInput } from "../features/auth/components/AuthInput";
 import { AuthButton } from "../features/auth/components/AuthButton";
 import { useLogin } from "../features/auth/hooks/useLogin";
 import type { FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import googleIcon from "../assets/icons/google.png";
 import googleIconDarkTheme from "../assets/icons/google-dt.png";
 import appleIcon from "../assets/icons/apple.png";
@@ -11,12 +12,9 @@ import githubIconDarkTheme from "../assets/icons/github-dt.png";
 import { useTheme } from "../contexts/useTheme";
 import { Sun, Moon } from "lucide-react";
 
-interface LoginPageProps {
-  onRedirectToRegister: () => void;
-}
-
-export const LoginPage = ({ onRedirectToRegister }: LoginPageProps) => {
-  const { register, handleSubmit, errors, isSubmitting, onSubmit } = useLogin();
+export const LoginPage = () => {
+  const navigate = useNavigate();
+  const { register, handleSubmit, errors, isSubmitting, submitError, onSubmit } = useLogin();
   const { theme, toggleTheme } = useTheme();
   const onFormSubmit = (event: FormEvent<HTMLFormElement>) => {
     void handleSubmit(onSubmit)(event);
@@ -74,6 +72,7 @@ export const LoginPage = ({ onRedirectToRegister }: LoginPageProps) => {
               <button type="button" className="text-sm text-right pr-2 -mt-2 underline">
                 Forgot password?
               </button>
+              {submitError && <p className="text-danger-10 text-sm text-center">{submitError}</p>}
               <AuthButton type="submit" variant="primary" className="mt-6 mx-auto w-40" disabled={isSubmitting}>
                 {isSubmitting ? "Signing in..." : "Sign in"}
               </AuthButton>
@@ -87,7 +86,7 @@ export const LoginPage = ({ onRedirectToRegister }: LoginPageProps) => {
               Create your account to start exploring the Lambda Pulse web server.
             </p>
             <div className="mt-8 flex justify-center">
-              <AuthButton type="button" variant="secondary" className="w-40" onClick={onRedirectToRegister}>
+              <AuthButton type="button" variant="secondary" className="w-40" onClick={() => void navigate("/register")}>
                 Sign up
               </AuthButton>
             </div>

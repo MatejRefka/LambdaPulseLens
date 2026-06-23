@@ -2,6 +2,7 @@ import { AuthInput } from "../features/auth/components/AuthInput";
 import { AuthButton } from "../features/auth/components/AuthButton";
 import { useRegister } from "../features/auth/hooks/useRegister";
 import type { FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import googleIcon from "../assets/icons/google.png";
 import googleIconDarkTheme from "../assets/icons/google-dt.png";
 import appleIcon from "../assets/icons/apple.png";
@@ -11,12 +12,9 @@ import githubIconDarkTheme from "../assets/icons/github-dt.png";
 import { useTheme } from "../contexts/useTheme";
 import { Sun, Moon } from "lucide-react";
 
-interface RegisterPageProps {
-  onRedirectToLogin: () => void;
-}
-
-export const RegisterPage = ({ onRedirectToLogin }: RegisterPageProps) => {
-  const { register, handleSubmit, errors, isSubmitting, onSubmit } = useRegister();
+export const RegisterPage = () => {
+  const navigate = useNavigate();
+  const { register, handleSubmit, errors, isSubmitting, submitError, onSubmit } = useRegister();
   const { theme, toggleTheme } = useTheme();
   const onFormSubmit = (event: FormEvent<HTMLFormElement>) => {
     void handleSubmit(onSubmit)(event);
@@ -43,7 +41,7 @@ export const RegisterPage = ({ onRedirectToLogin }: RegisterPageProps) => {
               Already have an account? Sign in to monitor your Lambda Pulse pipeline.
             </p>
             <div className="mt-8 flex justify-center">
-              <AuthButton type="button" variant="secondary" className="w-40" onClick={onRedirectToLogin}>
+              <AuthButton type="button" variant="secondary" className="w-40" onClick={() => void navigate("/login")}>
                 Sign in
               </AuthButton>
             </div>
@@ -90,6 +88,7 @@ export const RegisterPage = ({ onRedirectToLogin }: RegisterPageProps) => {
                 {...register("confirmPassword")}
                 error={errors.confirmPassword?.message}
               />
+              {submitError && <p className="text-danger-10 text-sm text-center">{submitError}</p>}
               <AuthButton type="submit" variant="primary" className="mt-2 mx-auto w-40" disabled={isSubmitting}>
                 {isSubmitting ? "Signing up..." : "Sign up"}
               </AuthButton>
