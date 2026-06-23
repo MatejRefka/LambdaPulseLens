@@ -1,13 +1,14 @@
 import { AuthInput } from "../features/auth/components/AuthInput";
 import { AuthButton } from "../features/auth/components/AuthButton";
 import { useRegister } from "../features/auth/hooks/useRegister";
+import type { FormEvent } from "react";
 import googleIcon from "../assets/icons/google.png";
 import googleIconDarkTheme from "../assets/icons/google-dt.png";
 import appleIcon from "../assets/icons/apple.png";
 import appleIconDarkTheme from "../assets/icons/apple-dt.png";
 import githubIcon from "../assets/icons/github.png";
 import githubIconDarkTheme from "../assets/icons/github-dt.png";
-import { useTheme } from "../contexts/ThemeProvider";
+import { useTheme } from "../contexts/useTheme";
 import { Sun, Moon } from "lucide-react";
 
 interface RegisterPageProps {
@@ -17,6 +18,9 @@ interface RegisterPageProps {
 export const RegisterPage = ({ onRedirectToLogin }: RegisterPageProps) => {
   const { register, handleSubmit, errors, isSubmitting, onSubmit } = useRegister();
   const { theme, toggleTheme } = useTheme();
+  const onFormSubmit = (event: FormEvent<HTMLFormElement>) => {
+    void handleSubmit(onSubmit)(event);
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-surface-20 text-text-10">
@@ -72,7 +76,7 @@ export const RegisterPage = ({ onRedirectToLogin }: RegisterPageProps) => {
               </AuthButton>
             </div>
             <p className="text-center text-text-20 mb-2">or use your email</p>
-            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 w-80">
+            <form onSubmit={onFormSubmit} className="flex flex-col gap-4 w-80">
               <AuthInput type="email" placeholder="email" {...register("email")} error={errors.email?.message} />
               <AuthInput
                 type="password"

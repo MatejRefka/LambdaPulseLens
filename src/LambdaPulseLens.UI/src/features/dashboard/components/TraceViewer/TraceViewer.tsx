@@ -3,7 +3,7 @@ import { LogTimeline } from "./Logs/LogTimeline";
 import { PipelineLayout } from "./Pipeline/PipelineLayout";
 import { useState } from "react";
 import { Moon, Sun, LogOut } from "lucide-react";
-import { useTheme } from "../../../../contexts/ThemeProvider";
+import { useTheme } from "../../../../contexts/useTheme";
 
 interface TraceInspectorProps {
   trace: Trace;
