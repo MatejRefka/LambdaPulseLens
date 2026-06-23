@@ -1,20 +1,46 @@
-import { AuthProvider } from "./contexts/AuthProvider";
-import { ThemeProvider } from "./contexts/ThemeProvider";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { ProtectedRoute } from "./features/auth/ProtectedRoute";
 import { DashboardPage } from "./pages/DashboardPage";
-// import { LoginPage } from "./pages/LoginPage";
-// import { RegisterPage } from "./pages/RegisterPage";
+import { LoginPage } from "./pages/LoginPage";
+import { RegisterPage } from "./pages/RegisterPage";
 
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        {/* <RegisterPage onRedirectToLogin={() => console.log("Redirected to Login page!")} /> */}
+    <Routes>
+      {/*root route. redirects to /dashboard*/}
+      <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-        {/* <LoginPage onRedirectToRegister={() => console.log("Redirected to Register page!")} /> */}
+      {/*public /register route*/}
+      <Route
+        path="/register"
+        element={
+          <RegisterPage
+            onRedirectToLogin={() => {
+              console.log("Redirected to Login page!");
+            }}
+          />
+        }
+      />
+      {/*public /login route*/}
+      <Route
+        path="/login"
+        element={
+          <LoginPage
+            onRedirectToRegister={() => {
+              console.log("Redirected to Register page!");
+            }}
+          />
+        }
+      />
 
-        <DashboardPage />
-      </AuthProvider>
-    </ThemeProvider>
+      {/*/dashboard within 'protected' route*/}
+      <Route element={<ProtectedRoute />}>
+        <Route path="/dashboard" element={<DashboardPage />} />
+      </Route>
+
+      {/*fallback, catches unknown routes and redirects to /dashboard*/}
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+    </Routes>
   );
 }
 
