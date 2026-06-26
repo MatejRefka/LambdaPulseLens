@@ -115,8 +115,8 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
         {
             traces.Add(new TraceSummaryRecord
             {
-                Id = reader.GetInt64(reader.GetOrdinal("id")),
-                UserId = reader.IsDBNull(reader.GetOrdinal("user_id")) ? null : reader.GetInt64(reader.GetOrdinal("user_id")),
+                Id = reader.GetInt64(reader.GetOrdinal("id")).ToString(CultureInfo.InvariantCulture),
+                UserId = reader.IsDBNull(reader.GetOrdinal("user_id")) ? null : reader.GetInt64(reader.GetOrdinal("user_id")).ToString(CultureInfo.InvariantCulture),
                 TimestampStart = reader.GetFieldValue<DateTimeOffset>(reader.GetOrdinal("timestamp_start")),
                 DurationMs = reader.GetInt64(reader.GetOrdinal("duration_ms")),
                 RequestMethod = reader.IsDBNull(reader.GetOrdinal("req_method")) ? null : reader.GetString(reader.GetOrdinal("req_method")),
@@ -130,8 +130,13 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
         return traces;
     }
 
-    public async Task<Trace?> GetTrace(long traceId, long userId, CancellationToken cancellationToken = default)
+    public async Task<Trace?> GetTrace(string traceId, long userId, CancellationToken cancellationToken = default)
     {
+        if (!long.TryParse(traceId, CultureInfo.InvariantCulture, out var traceIdValue))
+        {
+            return null;
+        }
+
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync(cancellationToken);
 
@@ -157,7 +162,7 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
                                 ORDER BY steps.id ASC;";
 
         await using var command = new NpgsqlCommand(selectTracesSql, connection);
-        command.Parameters.Add(new NpgsqlParameter("TraceId", NpgsqlDbType.Bigint) { Value = traceId });
+        command.Parameters.Add(new NpgsqlParameter("TraceId", NpgsqlDbType.Bigint) { Value = traceIdValue });
         command.Parameters.Add(new NpgsqlParameter("UserId", NpgsqlDbType.Bigint) { Value = userId });
 
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
@@ -169,7 +174,7 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
 
         var trace = new Trace
         {
-            Id = traceId.ToString(CultureInfo.InvariantCulture),
+            Id = reader.GetInt64(reader.GetOrdinal("trace_id")).ToString(CultureInfo.InvariantCulture),
             UserId = reader.IsDBNull(reader.GetOrdinal("trace_user_id")) ? null : reader.GetInt64(reader.GetOrdinal("trace_user_id")).ToString(CultureInfo.InvariantCulture),
             TimestampStart = reader.GetFieldValue<DateTimeOffset>(reader.GetOrdinal("trace_timestamp_start")),
             DurationMs = reader.GetInt64(reader.GetOrdinal("trace_duration_ms")),

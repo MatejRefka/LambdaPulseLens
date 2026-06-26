@@ -366,7 +366,7 @@ var traceEndpoint = new Endpoint
         }
 
         var traceIdValue = webContext.Endpoint.PathParameters["id"];
-        if (!long.TryParse(traceIdValue, CultureInfo.InvariantCulture, out var traceId))
+        if (string.IsNullOrWhiteSpace(traceIdValue))
         {
             webContext.WebResponse.StatusCode = 400;
             webContext.WebResponse.ResponsePhrase = "Bad Request";
@@ -374,7 +374,7 @@ var traceEndpoint = new Endpoint
             return;
         }
 
-        var trace = await telemetryRepository.GetTrace(traceId, userId, cancellationToken);
+        var trace = await telemetryRepository.GetTrace(traceIdValue, userId, cancellationToken);
         if (trace == null)
         {
             webContext.WebResponse.StatusCode = 404;

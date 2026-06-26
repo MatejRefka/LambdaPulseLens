@@ -2,8 +2,8 @@
 
 internal sealed class TraceSummaryRecord
 {
-    public required long Id { get; init; }
-    public long? UserId { get; init; }
+    public required string Id { get; init; }
+    public string? UserId { get; init; }
     public required DateTimeOffset TimestampStart { get; init; }
     public required long DurationMs { get; init; }
     public string? RequestMethod { get; init; }
