@@ -43,7 +43,7 @@ export const TraceInspector = ({ trace }: TraceInspectorProps) => {
 
         {/*log timeline*/}
         <div className="flex-1 overflow-y-auto pr-2 2xl:py-4 2xl:pr-4 mt-2 2xl:mt-5">
-          <LogTimeline pipeline={trace.pipeline} activeLogItem={activeLogItem} />
+          <LogTimeline pipeline={trace.steps} activeLogItem={activeLogItem} />
         </div>
       </div>
     </div>

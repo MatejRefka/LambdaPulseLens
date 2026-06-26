@@ -1,11 +1,11 @@
-import type { Trace } from "../../../../types/telemetry";
+import type { TraceSummary } from "../../../../types/telemetry";
 import { BrandLogo } from "../../../../components/shared/BrandLogo";
 import { TraceItem } from "./TraceItem";
 
 interface SidebarProps {
-  traces: Trace[];
-  selectedTraceId: number;
-  onSelectTrace: (trace: Trace) => void;
+  traces: TraceSummary[];
+  selectedTraceId: string;
+  onSelectTrace: (traceId: string) => void;
 }
 
 export const Sidebar = ({ traces, selectedTraceId, onSelectTrace }: SidebarProps) => {
@@ -22,7 +22,7 @@ export const Sidebar = ({ traces, selectedTraceId, onSelectTrace }: SidebarProps
             trace={trace}
             isSelected={selectedTraceId === trace.id}
             onClick={() => {
-              onSelectTrace(trace);
+              onSelectTrace(trace.id);
             }}
           />
         ))}

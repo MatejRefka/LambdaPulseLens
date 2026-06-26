@@ -1,27 +1,23 @@
 import type { Trace } from "../types/telemetry";
+
 const now = Date.now();
 
 export const mockTraces: Trace[] = [
   //trace 1: 200 OK
   {
-    id: 1001,
+    id: "1001",
+    userId: "1",
     timestampStart: new Date(now - 60000).toISOString(),
     durationMs: 45,
-    request: {
-      method: "GET",
-      path: "/api/users/profile",
-      protocol: "HTTP/1.1",
-      headers: { Accept: "application/json", Authorization: "Bearer eyJhb..." },
-      cookies: {}
-    },
-    response: {
-      statusCode: 200,
-      responsePhrase: "OK",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: 42, role: "Admin" }),
-      cookies: { session_id: "xyz_123" }
-    },
-    pipeline: [
+
+    requestMethod: "GET",
+    requestPath: "/api/users/profile",
+    requestProtocol: "HTTP/1.1",
+
+    responseStatusCode: 200,
+    responsePhrase: "OK",
+
+    steps: [
       {
         middleware: "Exception",
         direction: "downstream",
@@ -169,6 +165,7 @@ export const mockTraces: Trace[] = [
       },
       {
         middleware: "Termination",
+        direction: null,
         event: "success",
         timestampStart: new Date(now - 59949).toISOString(),
         durationMs: 0.1,
@@ -322,23 +319,19 @@ export const mockTraces: Trace[] = [
 
   //trace 2, 400 bad request (reverse proxy failure)
   {
-    id: 1002,
+    id: "1002",
+    userId: "1",
     timestampStart: new Date(now - 45000).toISOString(),
     durationMs: 4,
-    request: {
-      method: "GET",
-      path: "/assets/styles.css",
-      protocol: "HTTP/1.1",
-      headers: { Accept: "text/css" },
-      cookies: {}
-    },
-    response: {
-      statusCode: 400,
-      responsePhrase: "Bad Request",
-      headers: { "Content-Type": "text/css" },
-      cookies: { session_id: "xyz_123" }
-    },
-    pipeline: [
+
+    requestMethod: "GET",
+    requestPath: "/assets/styles.css",
+    requestProtocol: "HTTP/1.1",
+
+    responseStatusCode: 400,
+    responsePhrase: "Bad Request",
+
+    steps: [
       {
         middleware: "Exception",
         direction: "downstream",
@@ -412,27 +405,22 @@ export const mockTraces: Trace[] = [
       }
     ]
   },
+
   //trace 3, 410 Unauthorised
   {
-    id: 1003,
+    id: "1003",
+    userId: "1",
     timestampStart: new Date(now - 30000).toISOString(),
     durationMs: 8,
-    request: {
-      method: "POST",
-      path: "/api/admin/settings",
-      protocol: "HTTP/1.1",
-      headers: { "Content-Type": "application/json" },
-      cookies: {},
-      body: '{"theme":"dark"}'
-    },
-    response: {
-      statusCode: 401,
-      responsePhrase: "Unauthorized",
-      headers: {},
-      cookies: { session_id: "xyz_123" },
-      body: "Missing Authentication Token"
-    },
-    pipeline: [
+
+    requestMethod: "POST",
+    requestPath: "/api/admin/settings",
+    requestProtocol: "HTTP/1.1",
+
+    responseStatusCode: 401,
+    responsePhrase: "Unauthorized",
+
+    steps: [
       {
         middleware: "Exception",
         direction: "downstream",
@@ -677,25 +665,22 @@ export const mockTraces: Trace[] = [
       }
     ]
   },
+
   //trace 4, 500 Internal Server Error
   {
-    id: 1004,
+    id: "1004",
+    userId: "1",
     timestampStart: new Date(now - 45000).toISOString(),
     durationMs: 4,
-    request: {
-      method: "GET",
-      path: "/assets/index.js",
-      protocol: "HTTP/1.1",
-      headers: { Accept: "text/css" },
-      cookies: {}
-    },
-    response: {
-      statusCode: 500,
-      responsePhrase: "Internal Server Error",
-      headers: { "Content-Type": "text/css" },
-      cookies: { session_id: "xyz_123" }
-    },
-    pipeline: [
+
+    requestMethod: "GET",
+    requestPath: "/assets/index.js",
+    requestProtocol: "HTTP/1.1",
+
+    responseStatusCode: 500,
+    responsePhrase: "Internal Server Error",
+
+    steps: [
       {
         middleware: "Exception",
         direction: "downstream",
@@ -754,26 +739,22 @@ export const mockTraces: Trace[] = [
       }
     ]
   },
-  //trace 6: 500 Internal Server Error, within termination mw
+
+  //trace 5: 500 Internal Server Error, within termination mw
   {
-    id: 1006,
+    id: "1005",
+    userId: "1",
     timestampStart: new Date(now - 60000).toISOString(),
     durationMs: 45,
-    request: {
-      method: "GET",
-      path: "/api/users/orders",
-      protocol: "HTTP/1.1",
-      headers: { Accept: "application/json", Authorization: "Bearer eyJhb..." },
-      cookies: {}
-    },
-    response: {
-      statusCode: 500,
-      responsePhrase: "Internal Server Error",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: 42, role: "Admin" }),
-      cookies: { session_id: "xyz_123" }
-    },
-    pipeline: [
+
+    requestMethod: "GET",
+    requestPath: "/api/users/orders",
+    requestProtocol: "HTTP/1.1",
+
+    responseStatusCode: 500,
+    responsePhrase: "Internal Server Error",
+
+    steps: [
       {
         middleware: "Exception",
         direction: "downstream",
@@ -920,6 +901,7 @@ export const mockTraces: Trace[] = [
       },
       {
         middleware: "Termination",
+        direction: null,
         event: "error",
         timestampStart: new Date(now - 59949).toISOString(),
         durationMs: 0.1,

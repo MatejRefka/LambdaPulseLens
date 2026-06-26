@@ -1,11 +1,18 @@
 import { useState } from "react";
-import { mockTraces } from "../data/mockTelemtry";
+import { mockTraces } from "../data/mockTelemetry";
 import type { Trace } from "../types/telemetry";
 import { Sidebar } from "../features/dashboard/components/Sidebar/Sidebar";
 import { TraceInspector } from "../features/dashboard/components/TraceViewer/TraceViewer";
 
 export const DashboardPage = () => {
   const [selectedTrace, setSelectedTrace] = useState<Trace>(mockTraces[0]);
+
+  const handleSelectTrace = (traceId: string) => {
+    const trace = mockTraces.find((mockTrace) => mockTrace.id === traceId);
+    if (trace) {
+      setSelectedTrace(trace);
+    }
+  };
 
   return (
     //wrapper
@@ -22,7 +29,7 @@ export const DashboardPage = () => {
       {/* laptop or desktop. <= 1920px width. 2k and 4k are locked at 1920px width*/}
       <div className="hidden lg:flex h-screen w-full max-w-480 mx-auto overflow-hidden text-text-20 relative shadow-2xl">
         {/* sidebar */}
-        <Sidebar traces={mockTraces} selectedTraceId={selectedTrace.id} onSelectTrace={setSelectedTrace} />
+        <Sidebar traces={mockTraces} selectedTraceId={selectedTrace.id} onSelectTrace={handleSelectTrace} />
 
         {/* trace inspector */}
         <TraceInspector key={selectedTrace.id} trace={selectedTrace} />

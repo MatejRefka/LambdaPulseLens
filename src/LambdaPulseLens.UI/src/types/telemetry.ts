@@ -1,47 +1,41 @@
 export type FlowDirection = "downstream" | "upstream";
 export type ExecutionEvent = "success" | "short-circuit" | "error";
 
-export interface Trace {
-  id: number;
+export interface TraceSummary {
+  id: string;
+  userId: string | null;
   timestampStart: string;
   durationMs: number;
 
-  request: WebRequest;
-  response: WebResponse;
+  requestMethod: string | null;
+  requestPath: string | null;
+  requestProtocol: string | null;
 
-  pipeline: Step[];
+  responseStatusCode: number;
+  responsePhrase: string;
+}
+
+export interface Trace {
+  id: string;
+  userId: string | null;
+  timestampStart: string;
+  durationMs: number;
+
+  requestMethod: string | null;
+  requestPath: string | null;
+  requestProtocol: string | null;
+
+  responseStatusCode: number;
+  responsePhrase: string;
+
+  steps: Step[];
 }
 
 export interface Step {
   middleware: string;
-  direction?: FlowDirection | null;
+  direction: FlowDirection | null;
   event: ExecutionEvent;
   timestampStart: string;
   durationMs: number;
   logs?: string[];
-}
-
-export interface WebRequest {
-  method: string | null;
-  path: string | null;
-  protocol: string | null;
-  headers: Headers;
-  cookies?: Cookies;
-  body?: string;
-}
-
-export interface WebResponse {
-  statusCode: number;
-  responsePhrase: string;
-  headers: Headers;
-  cookies?: Cookies;
-  body?: string;
-}
-
-export interface Headers {
-  [key: string]: string;
-}
-
-export interface Cookies {
-  [key: string]: string;
 }

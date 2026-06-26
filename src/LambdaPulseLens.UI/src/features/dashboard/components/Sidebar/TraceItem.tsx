@@ -1,8 +1,8 @@
-import type { Trace } from "../../../../types/telemetry";
+import type { TraceSummary } from "../../../../types/telemetry";
 import { cn } from "../../../../utils/cn";
 
 interface TraceItemProps {
-  trace: Trace;
+  trace: TraceSummary;
   isSelected: boolean;
   onClick: () => void;
 }
@@ -14,8 +14,8 @@ export const TraceItem = ({ trace, isSelected, onClick }: TraceItemProps) => {
 
   const badgeStyle = isSelected ? "border-surface-60" : "border-surface-50";
   const badgeStyleHover = isSelected ? "group-hover:border-surface-60" : "group-hover:border-surface-30";
-  const method = trace.request.method ?? "Malformed";
-  const path = trace.request.path ?? "Request parse failed";
+  const method = trace.requestMethod ?? "Malformed";
+  const path = trace.requestPath ?? "Request parse failed";
 
   return (
     <button
@@ -26,7 +26,7 @@ export const TraceItem = ({ trace, isSelected, onClick }: TraceItemProps) => {
       <div className="flex justify-between items-center mb-1">
         <span className="text-sm font-semibold">{method}</span>
         <div className={cn("text-xs px-2 py-0.5 rounded border", badgeStyle, badgeStyleHover)}>
-          {trace.response.statusCode} {trace.response.responsePhrase}
+          {trace.responseStatusCode} {trace.responsePhrase}
         </div>
       </div>
 
