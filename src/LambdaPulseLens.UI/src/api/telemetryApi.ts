@@ -22,10 +22,11 @@ export async function getTraceSummaries(): Promise<TraceSummary[]> {
   return summaryResponse.traces;
 }
 
-export async function getTrace(traceId: string): Promise<Trace> {
+export async function getTrace(traceId: string, signal?: AbortSignal): Promise<Trace> {
   const response = await fetch(`/api/telemetry/traces/${traceId}`, {
     method: "GET",
-    credentials: "include"
+    credentials: "include",
+    signal
   });
 
   const traceResponse = (await response.json().catch(() => null)) as TraceResponse | null;

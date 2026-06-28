@@ -1,18 +1,10 @@
-import { useState } from "react";
-import { mockTraces } from "../data/mockTelemetry";
-import type { Trace } from "../types/telemetry";
 import { Sidebar } from "../features/dashboard/components/Sidebar/Sidebar";
 import { TraceInspector } from "../features/dashboard/components/TraceViewer/TraceViewer";
+import { useTraces } from "../features/dashboard/hooks/useTraces";
 
 export const DashboardPage = () => {
-  const [selectedTrace, setSelectedTrace] = useState<Trace>(mockTraces[0]);
-
-  const handleSelectTrace = (traceId: string) => {
-    const trace = mockTraces.find((mockTrace) => mockTrace.id === traceId);
-    if (trace) {
-      setSelectedTrace(trace);
-    }
-  };
+  const { summaries, selectedTraceId, selectedTrace, selectTrace, isLoadingSummaries, isLoadingTrace, summariesError, traceError } =
+    useTraces();
 
   return (
     //wrapper
@@ -29,10 +21,18 @@ export const DashboardPage = () => {
       {/* laptop or desktop. <= 1920px width. 2k and 4k are locked at 1920px width*/}
       <div className="hidden lg:flex h-screen w-full max-w-480 mx-auto overflow-hidden text-text-20 relative shadow-2xl">
         {/* sidebar */}
-        <Sidebar traces={mockTraces} selectedTraceId={selectedTrace.id} onSelectTrace={handleSelectTrace} />
+        <Sidebar traces={summaries} selectedTraceId={selectedTraceId ?? ""} onSelectTrace={selectTrace} />
 
         {/* trace inspector */}
-        <TraceInspector key={selectedTrace.id} trace={selectedTrace} />
+        {selectedTrace ? (
+          <TraceInspector key={selectedTrace.id} trace={selectedTrace} />
+        ) : (
+          <div className="flex-1 flex items-center justify-center bg-surface-10 text-text-30">
+            {isLoadingSummaries || isLoadingTrace
+              ? "Loading…"
+              : summariesError ?? traceError ?? "No traces to display."}
+          </div>
+        )}
       </div>
     </div>
   );
