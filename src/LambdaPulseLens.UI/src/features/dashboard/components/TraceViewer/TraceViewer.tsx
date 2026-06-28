@@ -3,7 +3,9 @@ import { LogTimeline } from "./Logs/LogTimeline";
 import { PipelineLayout } from "./Pipeline/PipelineLayout";
 import { useState } from "react";
 import { Moon, Sun, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../../../contexts/useTheme";
+import { useAuth } from "../../../../contexts/useAuth";
 
 interface TraceInspectorProps {
   trace: Trace;
@@ -13,6 +15,16 @@ export const TraceInspector = ({ trace }: TraceInspectorProps) => {
   const [activeLogItem, setActiveLogItem] = useState<string | null>(null);
 
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } finally {
+      await navigate("/login", { replace: true });
+    }
+  };
 
   return (
     <div className="flex-1 flex overflow-hidden bg-surface-10">
@@ -36,6 +48,7 @@ export const TraceInspector = ({ trace }: TraceInspectorProps) => {
           <button
             aria-label="Log out"
             className="p-2 rounded-md text-text-30 hover:text-danger-10 hover:bg-danger-10/10 transition-all cursor-pointer"
+            onClick={() => void handleLogout()}
           >
             <LogOut className="w-5 h-5" />
           </button>
