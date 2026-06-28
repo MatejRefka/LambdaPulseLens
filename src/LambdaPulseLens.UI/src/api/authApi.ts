@@ -1,7 +1,7 @@
 import { getCsrfToken, clearCsrfToken } from "./csrf";
 
 export type User = {
-  id: number;
+  id: string;
   email: string;
 };
 
