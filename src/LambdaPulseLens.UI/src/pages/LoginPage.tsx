@@ -61,7 +61,7 @@ export const LoginPage = () => {
               </AuthButton>
             </div>
             <p className="text-center text-text-20 mb-2">or use your account</p>
-            <form onSubmit={onFormSubmit} className="flex flex-col gap-4 w-80">
+            <form noValidate onSubmit={onFormSubmit} className="flex flex-col gap-4 w-80">
               <AuthInput type="email" placeholder="email" {...register("email")} error={errors.email?.message} />
               <AuthInput
                 type="password"
