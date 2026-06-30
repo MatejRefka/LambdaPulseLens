@@ -14,12 +14,24 @@ type AuthResponse = {
 export async function register(email: string, password: string): Promise<User> {
   const csrfToken = await getCsrfToken();
 
-  const response = await fetch("/api/auth/register", {
+  let response = await fetch("/api/auth/register", {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
     credentials: "include",
     body: JSON.stringify({ email, password })
   });
+
+  //retry the request with a fresh CSRF token. (in-memmory session store scenarios)
+  if (response.status === 403) {
+    clearCsrfToken();
+    const refreshedCsrfToken = await getCsrfToken(true);
+    response = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-CSRF-Token": refreshedCsrfToken },
+      credentials: "include",
+      body: JSON.stringify({ email, password })
+    });
+  }
 
   const data = (await response.json().catch(() => null)) as AuthResponse | null;
 
@@ -37,12 +49,24 @@ export async function register(email: string, password: string): Promise<User> {
 export async function login(email: string, password: string): Promise<User> {
   const csrfToken = await getCsrfToken();
 
-  const response = await fetch("/api/auth/login", {
+  let response = await fetch("/api/auth/login", {
     method: "POST",
     headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
     credentials: "include",
     body: JSON.stringify({ email, password })
   });
+
+  //retry the request with a fresh CSRF token. (in-memmory session store scenarios)
+  if (response.status === 403) {
+    clearCsrfToken();
+    const refreshedCsrfToken = await getCsrfToken(true);
+    response = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-CSRF-Token": refreshedCsrfToken },
+      credentials: "include",
+      body: JSON.stringify({ email, password })
+    });
+  }
 
   const data = (await response.json().catch(() => null)) as AuthResponse | null;
 
@@ -85,11 +109,22 @@ export async function getCurrentUser(): Promise<User | null> {
 export async function logout(): Promise<void> {
   const csrfToken = await getCsrfToken();
 
-  const response = await fetch("/api/auth/logout", {
+  let response = await fetch("/api/auth/logout", {
     method: "POST",
     headers: { "X-CSRF-Token": csrfToken },
     credentials: "include"
   });
+
+  //retry the request with a fresh CSRF token. (in-memmory session store scenarios)
+  if (response.status === 403) {
+    clearCsrfToken();
+    const refreshedCsrfToken = await getCsrfToken(true);
+    response = await fetch("/api/auth/logout", {
+      method: "POST",
+      headers: { "X-CSRF-Token": refreshedCsrfToken },
+      credentials: "include"
+    });
+  }
 
   clearCsrfToken();
 
