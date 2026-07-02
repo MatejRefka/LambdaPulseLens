@@ -47,7 +47,7 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       },
       {
-        middleware: "Https Redirection",
+        middleware: "HTTPS",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59997).toISOString(),
@@ -55,7 +55,7 @@ export const mockTraces: Trace[] = [
         logs: ["Forward protocol is https.", "Bypassing redirect."]
       },
       {
-        middleware: "Hsts",
+        middleware: "HSTS",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59996).toISOString(),
@@ -69,14 +69,14 @@ export const mockTraces: Trace[] = [
         durationMs: 0.2
       },
       {
-        middleware: "Cookie",
+        middleware: "Cookies",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59996).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "Csrf",
+        middleware: "CSRF",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59995).toISOString(),
@@ -90,7 +90,7 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       },
       {
-        middleware: "Caching",
+        middleware: "Cache",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59994).toISOString(),
@@ -105,7 +105,7 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       },
       {
-        middleware: "Static Pages",
+        middleware: "SPA Fallback",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59992).toISOString(),
@@ -120,7 +120,7 @@ export const mockTraces: Trace[] = [
         logs: ["Matched route: GetUserProfile"]
       },
       {
-        middleware: "Cors",
+        middleware: "CORS",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59990).toISOString(),
@@ -208,7 +208,7 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       },
       {
-        middleware: "Cors",
+        middleware: "CORS",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59946).toISOString(),
@@ -222,7 +222,7 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       },
       {
-        middleware: "Static Pages",
+        middleware: "SPA Fallback",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59945).toISOString(),
@@ -236,7 +236,7 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       },
       {
-        middleware: "Caching",
+        middleware: "Cache",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59944).toISOString(),
@@ -251,14 +251,14 @@ export const mockTraces: Trace[] = [
         logs: ["Compressed via GZIP"]
       },
       {
-        middleware: "Csrf",
+        middleware: "CSRF",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59943).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "Cookie",
+        middleware: "Cookies",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59943).toISOString(),
@@ -272,14 +272,14 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       },
       {
-        middleware: "Hsts",
+        middleware: "HSTS",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59942).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "Https Redirection",
+        middleware: "HTTPS",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59942).toISOString(),
@@ -361,7 +361,7 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       },
       {
-        middleware: "Https Redirection",
+        middleware: "HTTPS",
         direction: "downstream",
         event: "short-circuit",
         timestampStart: new Date(now - 44997).toISOString(),
@@ -369,7 +369,7 @@ export const mockTraces: Trace[] = [
         logs: ["Forward protocol is https.", "Bypassing redirect."]
       },
       {
-        middleware: "Https Redirection",
+        middleware: "HTTPS",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 44997).toISOString(),
@@ -450,14 +450,14 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       },
       {
-        middleware: "Https Redirection",
+        middleware: "HTTPS",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 29998).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "Hsts",
+        middleware: "HSTS",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 29997).toISOString(),
@@ -471,14 +471,14 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       },
       {
-        middleware: "Cookie",
+        middleware: "Cookies",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 29996).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "Csrf",
+        middleware: "CSRF",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 29996).toISOString(),
@@ -492,7 +492,7 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       },
       {
-        middleware: "Caching",
+        middleware: "Cache",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 29995).toISOString(),
@@ -506,7 +506,7 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       },
       {
-        middleware: "Static Pages",
+        middleware: "SPA Fallback",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 29994).toISOString(),
@@ -520,7 +520,7 @@ export const mockTraces: Trace[] = [
         durationMs: 1.0
       },
       {
-        middleware: "Cors",
+        middleware: "CORS",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 29992).toISOString(),
@@ -559,7 +559,7 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       },
       {
-        middleware: "Cors",
+        middleware: "CORS",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 29989).toISOString(),
@@ -573,7 +573,7 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       },
       {
-        middleware: "Static Pages",
+        middleware: "SPA Fallback",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 29988).toISOString(),
@@ -587,7 +587,7 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       },
       {
-        middleware: "Caching",
+        middleware: "Cache",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 29987).toISOString(),
@@ -601,14 +601,14 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       },
       {
-        middleware: "Csrf",
+        middleware: "CSRF",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 29986).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "Cookie",
+        middleware: "Cookies",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 29985).toISOString(),
@@ -622,14 +622,14 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       },
       {
-        middleware: "Hsts",
+        middleware: "HSTS",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 29984).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "Https Redirection",
+        middleware: "HTTPS",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 29984).toISOString(),
@@ -784,14 +784,14 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       },
       {
-        middleware: "Https Redirection",
+        middleware: "HTTPS",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59997).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "Hsts",
+        middleware: "HSTS",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59996).toISOString(),
@@ -805,14 +805,14 @@ export const mockTraces: Trace[] = [
         durationMs: 0.2
       },
       {
-        middleware: "Cookie",
+        middleware: "Cookies",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59996).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "Csrf",
+        middleware: "CSRF",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59995).toISOString(),
@@ -826,7 +826,7 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       },
       {
-        middleware: "Caching",
+        middleware: "Cache",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59994).toISOString(),
@@ -841,7 +841,7 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       },
       {
-        middleware: "Static Pages",
+        middleware: "SPA Fallback",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59992).toISOString(),
@@ -856,7 +856,7 @@ export const mockTraces: Trace[] = [
         logs: ["Matched route: GetUserProfile"]
       },
       {
-        middleware: "Cors",
+        middleware: "CORS",
         direction: "downstream",
         event: "success",
         timestampStart: new Date(now - 59990).toISOString(),
@@ -944,7 +944,7 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       },
       {
-        middleware: "Cors",
+        middleware: "CORS",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59946).toISOString(),
@@ -958,7 +958,7 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       },
       {
-        middleware: "Static Pages",
+        middleware: "SPA Fallback",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59945).toISOString(),
@@ -972,7 +972,7 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       },
       {
-        middleware: "Caching",
+        middleware: "Cache",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59944).toISOString(),
@@ -987,14 +987,14 @@ export const mockTraces: Trace[] = [
         logs: ["Compressed via GZIP"]
       },
       {
-        middleware: "Csrf",
+        middleware: "CSRF",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59943).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "Cookie",
+        middleware: "Cookies",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59943).toISOString(),
@@ -1008,14 +1008,14 @@ export const mockTraces: Trace[] = [
         durationMs: 0.1
       },
       {
-        middleware: "Hsts",
+        middleware: "HSTS",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59942).toISOString(),
         durationMs: 0.1
       },
       {
-        middleware: "Https Redirection",
+        middleware: "HTTPS",
         direction: "upstream",
         event: "success",
         timestampStart: new Date(now - 59942).toISOString(),
