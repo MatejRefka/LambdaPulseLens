@@ -49,6 +49,22 @@
   body {
     @apply text-text-10 bg-surface-10 cursor-default;
   }
+
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    font: inherit;
+    -webkit-text-fill-color: var(--color-text-10);
+    caret-color: var(--color-text-10);
+  }
 }
 
 @layer utilities {
