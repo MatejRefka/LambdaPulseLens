@@ -26,7 +26,8 @@ const getNodeStyle = (isActive: boolean, event?: string) => {
 
 export const MiddlewareNode = ({ middlewareName, step, onLogClick }: MiddlewareNodeProps) => {
   const isActive = !!step;
-  const hasLogs = !!step?.logs;
+  const logCount = step?.logs?.length ?? 0;
+  const hasLogs = logCount > 0;
   const isCircuitBreak = step?.event === "short-circuit" || step?.event === "error";
 
   return (
