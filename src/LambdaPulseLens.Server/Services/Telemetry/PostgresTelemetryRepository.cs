@@ -50,7 +50,7 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
 
             traceCommand.Parameters.Add(new NpgsqlParameter("UserId", NpgsqlDbType.Bigint) { Value = traceUserId.HasValue ? traceUserId.Value : DBNull.Value });
             traceCommand.Parameters.Add(new NpgsqlParameter("TimestampStart", NpgsqlDbType.TimestampTz) { Value = trace.TimestampStart });
-            traceCommand.Parameters.Add(new NpgsqlParameter("DurationMs", NpgsqlDbType.Bigint) { Value = trace.DurationMs });
+            traceCommand.Parameters.Add(new NpgsqlParameter("DurationMs", NpgsqlDbType.Real) { Value = trace.DurationMs });
             traceCommand.Parameters.Add(new NpgsqlParameter("ReqMethod", NpgsqlDbType.Varchar) { Value = (object?)trace.RequestMethod ?? DBNull.Value });
             traceCommand.Parameters.Add(new NpgsqlParameter("ReqPath", NpgsqlDbType.Text) { Value = (object?)trace.RequestPath ?? DBNull.Value });
             traceCommand.Parameters.Add(new NpgsqlParameter("ReqProtocol", NpgsqlDbType.Varchar) { Value = (object?)trace.RequestProtocol ?? DBNull.Value });
@@ -71,7 +71,7 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
                 stepCommand.Parameters.Add(new NpgsqlParameter("Direction", NpgsqlDbType.Text) { Value = step.Direction.HasValue ? MapFlowDirection(step.Direction.Value) : DBNull.Value });
                 stepCommand.Parameters.Add(new NpgsqlParameter("Event", NpgsqlDbType.Text) { Value = MapExecutionEvent(step.Event) });
                 stepCommand.Parameters.Add(new NpgsqlParameter("TimestampStart", NpgsqlDbType.TimestampTz) { Value = step.TimestampStart });
-                stepCommand.Parameters.Add(new NpgsqlParameter("DurationMs", NpgsqlDbType.Bigint) { Value = step.DurationMs });
+                stepCommand.Parameters.Add(new NpgsqlParameter("DurationMs", NpgsqlDbType.Real) { Value = step.DurationMs });
                 stepCommand.Parameters.Add(new NpgsqlParameter("Logs", NpgsqlDbType.Jsonb) { Value = JsonSerializer.Serialize(step.Logs) });
 
                 await stepCommand.ExecuteNonQueryAsync(cancellationToken);
@@ -118,7 +118,7 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
                 Id = reader.GetInt64(reader.GetOrdinal("id")).ToString(CultureInfo.InvariantCulture),
                 UserId = reader.IsDBNull(reader.GetOrdinal("user_id")) ? null : reader.GetInt64(reader.GetOrdinal("user_id")).ToString(CultureInfo.InvariantCulture),
                 TimestampStart = reader.GetFieldValue<DateTimeOffset>(reader.GetOrdinal("timestamp_start")),
-                DurationMs = reader.GetInt64(reader.GetOrdinal("duration_ms")),
+                DurationMs = reader.GetFloat(reader.GetOrdinal("duration_ms")),
                 RequestMethod = reader.IsDBNull(reader.GetOrdinal("req_method")) ? null : reader.GetString(reader.GetOrdinal("req_method")),
                 RequestPath = reader.IsDBNull(reader.GetOrdinal("req_path")) ? null : reader.GetString(reader.GetOrdinal("req_path")),
                 RequestProtocol = reader.IsDBNull(reader.GetOrdinal("req_protocol")) ? null : reader.GetString(reader.GetOrdinal("req_protocol")),
@@ -177,7 +177,7 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
             Id = reader.GetInt64(reader.GetOrdinal("trace_id")).ToString(CultureInfo.InvariantCulture),
             UserId = reader.IsDBNull(reader.GetOrdinal("trace_user_id")) ? null : reader.GetInt64(reader.GetOrdinal("trace_user_id")).ToString(CultureInfo.InvariantCulture),
             TimestampStart = reader.GetFieldValue<DateTimeOffset>(reader.GetOrdinal("trace_timestamp_start")),
-            DurationMs = reader.GetInt64(reader.GetOrdinal("trace_duration_ms")),
+            DurationMs = reader.GetFloat(reader.GetOrdinal("trace_duration_ms")),
             RequestMethod = reader.IsDBNull(reader.GetOrdinal("trace_req_method")) ? null : reader.GetString(reader.GetOrdinal("trace_req_method")),
             RequestPath = reader.IsDBNull(reader.GetOrdinal("trace_req_path")) ? null : reader.GetString(reader.GetOrdinal("trace_req_path")),
             RequestProtocol = reader.IsDBNull(reader.GetOrdinal("trace_req_protocol")) ? null : reader.GetString(reader.GetOrdinal("trace_req_protocol")),
@@ -195,7 +195,7 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
                 Direction = reader.IsDBNull(reader.GetOrdinal("step_direction")) ? null : MapDBFlowDirection(reader.GetString(reader.GetOrdinal("step_direction"))),
                 Event = MapDBExecutionEvent(reader.GetString(reader.GetOrdinal("step_event"))),
                 TimestampStart = reader.GetFieldValue<DateTimeOffset>(reader.GetOrdinal("step_timestamp_start")),
-                DurationMs = reader.GetInt64(reader.GetOrdinal("step_duration_ms")),
+                DurationMs = reader.GetFloat(reader.GetOrdinal("step_duration_ms")),
                 Logs = reader.IsDBNull(reader.GetOrdinal("step_logs")) ? [] : JsonSerializer.Deserialize<List<string>>(reader.GetString(reader.GetOrdinal("step_logs"))) ?? []
             });
         }
@@ -211,7 +211,7 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
                     Direction = reader.IsDBNull(reader.GetOrdinal("step_direction")) ? null : MapDBFlowDirection(reader.GetString(reader.GetOrdinal("step_direction"))),
                     Event = MapDBExecutionEvent(reader.GetString(reader.GetOrdinal("step_event"))),
                     TimestampStart = reader.GetFieldValue<DateTimeOffset>(reader.GetOrdinal("step_timestamp_start")),
-                    DurationMs = reader.GetInt64(reader.GetOrdinal("step_duration_ms")),
+                    DurationMs = reader.GetFloat(reader.GetOrdinal("step_duration_ms")),
                     Logs = reader.IsDBNull(reader.GetOrdinal("step_logs")) ? [] : JsonSerializer.Deserialize<List<string>>(reader.GetString(reader.GetOrdinal("step_logs"))) ?? []
                 });
             }

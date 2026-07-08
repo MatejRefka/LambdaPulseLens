@@ -35,7 +35,7 @@ export const TraceItem = ({ trace, isSelected, onClick }: TraceItemProps) => {
 
       {/*duration + timestamp*/}
       <div className="text-xs mt-1 flex justify-between text-text-30 font-medium">
-        <span>{trace.durationMs}ms</span>
+        <span>{trace.durationMs.toFixed(0)}ms</span>
         <span>{new Date(trace.timestampStart).toLocaleTimeString()}</span>
       </div>
     </button>

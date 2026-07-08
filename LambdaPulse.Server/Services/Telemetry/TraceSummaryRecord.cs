@@ -5,7 +5,7 @@ internal sealed class TraceSummaryRecord
     public required string Id { get; init; }
     public string? UserId { get; init; }
     public required DateTimeOffset TimestampStart { get; init; }
-    public required long DurationMs { get; init; }
+    public required float DurationMs { get; init; }
     public string? RequestMethod { get; init; }
     public string? RequestPath { get; init; }
     public string? RequestProtocol { get; init; }

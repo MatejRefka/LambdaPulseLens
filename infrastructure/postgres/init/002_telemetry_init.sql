@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS telemetry.traces (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id BIGINT NULL,
     timestamp_start TIMESTAMPTZ NOT NULL,
-    duration_ms BIGINT NOT NULL,
+    duration_ms REAL NOT NULL,
     req_method VARCHAR(10) NULL,
     req_path TEXT NULL,
     req_protocol VARCHAR(20) NULL,
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS telemetry.steps (
     direction telemetry.flow_direction,
     event telemetry.execution_event NOT NULL,
     timestamp_start TIMESTAMPTZ NOT NULL,
-    duration_ms BIGINT NOT NULL,
+    duration_ms REAL NOT NULL,
     logs JSONB,
 
     CONSTRAINT fk_telemetry_steps_trace FOREIGN KEY(trace_id) REFERENCES telemetry.traces(id)

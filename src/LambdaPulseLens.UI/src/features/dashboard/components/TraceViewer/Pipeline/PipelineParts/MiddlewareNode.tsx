@@ -46,7 +46,7 @@ export const MiddlewareNode = ({ middlewareName, step, onLogClick }: MiddlewareN
       {/*bottom row*/}
       <div className="flex justify-between items-center mt-1 h-5">
         {/*duration*/}
-        {isActive && <span className="text-xs text-text-30 whitespace-nowrap">{step.durationMs}ms</span>}
+        {isActive && <span className="text-xs text-text-30 whitespace-nowrap">{step.durationMs.toFixed(4)}ms</span>}
 
         {/*short circuit or error badge*/}
         {isCircuitBreak && (
