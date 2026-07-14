@@ -28,6 +28,7 @@ var redisConnectionManager = await ConnectionMultiplexer.ConnectAsync(redisConne
 BCryptPasswordHasher passwordHasher = new();
 PostgresAuthRepository authRepository = new(postgresConfig);
 PostgresTelemetryRepository telemetryRepository = new(postgresConfig);
+StdoutEngineLogger engineLogger = new();
 
 #endregion Instantiations
 
@@ -144,6 +145,22 @@ var registerEndpoint = new Endpoint
         var userId = newUser.Id.ToString(CultureInfo.InvariantCulture);
         await webContext.Session.SetValue(AuthenticationConstants.UserIdSessionKey, userId);
         webContext.User = new AuthenticatedUser(userId);
+        webContext.Trace.UserId = userId;
+        webContext.Trace.AssociatedUserId = userId;
+
+        //do not return 500 if telemetry linking fails
+        try
+        {
+            await telemetryRepository.LinkAnonymousSessionToUser(webContext.PreSessionToken, webContext.AnonymousSessionToken, newUser.Id, cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception e)
+        {
+            engineLogger.Log(LogLevel.Error, "RegisterEndpoint", "Failed to link anonymous session telemetry to authenticated user.", e);
+        }
 
         webContext.WebResponse.StatusCode = 201;
         webContext.WebResponse.ResponsePhrase = "Created";
@@ -222,6 +239,22 @@ var loginEndpoint = new Endpoint
         var userId = user.Id.ToString(CultureInfo.InvariantCulture);
         await webContext.Session.SetValue(AuthenticationConstants.UserIdSessionKey, userId);
         webContext.User = new AuthenticatedUser(userId);
+        webContext.Trace.UserId = userId;
+        webContext.Trace.AssociatedUserId = userId;
+
+        //do not return 500 if telemetry linking fails
+        try
+        {
+            await telemetryRepository.LinkAnonymousSessionToUser(webContext.PreSessionToken, webContext.AnonymousSessionToken, user.Id, cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception e)
+        {
+            engineLogger.Log(LogLevel.Error, "LoginEndpoint", "Failed to link anonymous session telemetry to authenticated user.", e);
+        }
 
         webContext.WebResponse.StatusCode = 200;
         webContext.WebResponse.ResponsePhrase = "OK";
@@ -409,7 +442,7 @@ var webServer = ServerBuilder.Build(
         container.AddSingleton<ITelemetryRepository, PostgresTelemetryRepository>();
 
         container.OverrideSingleton<ITraceLogger, PostgresTraceLogger>();
-        container.OverrideSingleton<IEngineLogger, StdoutEngineLogger>();
+        container.OverrideSingleton<IEngineLogger>(engineLogger);
 
         //Redis connection manager; one per server instance
         container.AddSingleton<IConnectionMultiplexer>(redisConnectionManager);

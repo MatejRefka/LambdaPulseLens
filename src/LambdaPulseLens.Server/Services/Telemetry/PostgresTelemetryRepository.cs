@@ -27,11 +27,32 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
             throw new InvalidOperationException("Missing trace response phrase.");
         }
 
-        //server implementation using long/bigint type for user id
-        long? traceUserId = null;
+        //check if pre-session token exists and is valid
+        Guid? preSessionToken = null;
+        if (!string.IsNullOrWhiteSpace(trace.PreSessionToken) && Guid.TryParse(trace.PreSessionToken, out var parsedPreSessionToken))
+        {
+            preSessionToken = parsedPreSessionToken;
+        }
+
+        //check if anonymous session token exists and is valid
+        Guid? anonymousSessionToken = null;
+        if (!string.IsNullOrWhiteSpace(trace.AnonymousSessionToken) && Guid.TryParse(trace.AnonymousSessionToken, out var parsedAnonymousSessionToken))
+        {
+            anonymousSessionToken = parsedAnonymousSessionToken;
+        }
+
+        //check if associated user id exists and is valid
+        long? associatedUserId = null;
+        if (!string.IsNullOrWhiteSpace(trace.AssociatedUserId) && long.TryParse(trace.AssociatedUserId, CultureInfo.InvariantCulture, out var parsedAssociatedUserId))
+        {
+            associatedUserId = parsedAssociatedUserId;
+        }
+
+        //check if user id exists and is valid
+        long? userId = null;
         if (!string.IsNullOrWhiteSpace(trace.UserId) && long.TryParse(trace.UserId, CultureInfo.InvariantCulture, out var parsedUserId))
         {
-            traceUserId = parsedUserId;
+            userId = parsedUserId;
         }
 
         await using var connection = new NpgsqlConnection(_connectionString);
@@ -42,13 +63,16 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
 
         try
         {
-            var insertTraceSql = @"INSERT INTO telemetry.traces (user_id, timestamp_start, duration_ms, req_method, req_path, req_protocol, res_status_code, res_phrase)
-                                   VALUES (@UserId, @TimestampStart, @DurationMs, @ReqMethod, @ReqPath, @ReqProtocol, @ResStatusCode, @ResPhrase) 
+            var insertTraceSql = @"INSERT INTO telemetry.traces (pre_session_id, anonymous_session_id, associated_user_id, user_id, timestamp_start, duration_ms, req_method, req_path, req_protocol, res_status_code, res_phrase)
+                                   VALUES (@PreSessionToken, @AnonymousSessionToken, @AssociatedUserId, @UserId, @TimestampStart, @DurationMs, @ReqMethod, @ReqPath, @ReqProtocol, @ResStatusCode, @ResPhrase) 
                                    RETURNING id;";
 
             await using var traceCommand = new NpgsqlCommand(insertTraceSql, connection, transaction);
 
-            traceCommand.Parameters.Add(new NpgsqlParameter("UserId", NpgsqlDbType.Bigint) { Value = traceUserId.HasValue ? traceUserId.Value : DBNull.Value });
+            traceCommand.Parameters.Add(new NpgsqlParameter("PreSessionToken", NpgsqlDbType.Uuid) { Value = preSessionToken.HasValue ? preSessionToken.Value : DBNull.Value });
+            traceCommand.Parameters.Add(new NpgsqlParameter("AnonymousSessionToken", NpgsqlDbType.Uuid) { Value = anonymousSessionToken.HasValue ? anonymousSessionToken.Value : DBNull.Value });
+            traceCommand.Parameters.Add(new NpgsqlParameter("AssociatedUserId", NpgsqlDbType.Bigint) { Value = associatedUserId.HasValue ? associatedUserId.Value : DBNull.Value });
+            traceCommand.Parameters.Add(new NpgsqlParameter("UserId", NpgsqlDbType.Bigint) { Value = userId.HasValue ? userId.Value : DBNull.Value });
             traceCommand.Parameters.Add(new NpgsqlParameter("TimestampStart", NpgsqlDbType.TimestampTz) { Value = trace.TimestampStart });
             traceCommand.Parameters.Add(new NpgsqlParameter("DurationMs", NpgsqlDbType.Real) { Value = trace.DurationMs });
             traceCommand.Parameters.Add(new NpgsqlParameter("ReqMethod", NpgsqlDbType.Varchar) { Value = (object?)trace.RequestMethod ?? DBNull.Value });
@@ -87,6 +111,34 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
         }
     }
 
+    public async Task LinkAnonymousSessionToUser(string? preSessionToken, string? anonymousSessionToken, long userId, CancellationToken cancellationToken = default)
+    {
+        var parsedPreSessionId = Guid.TryParse(preSessionToken, out var preSessionId) ? preSessionId : (Guid?)null;
+        var parsedAnonymousSessionId = Guid.TryParse(anonymousSessionToken, out var anonymousSessionId) ? anonymousSessionId : (Guid?)null;
+
+        //both tokens are invalid, do not link
+        if (!parsedPreSessionId.HasValue && !parsedAnonymousSessionId.HasValue)
+        {
+            return;
+        }
+
+        await using var connection = new NpgsqlConnection(_connectionString);
+        await connection.OpenAsync(cancellationToken);
+
+        var associateTraceSql = @"UPDATE telemetry.traces
+                                  SET associated_user_id = @UserId
+                                  WHERE associated_user_id IS NULL
+                                  AND ((@PreSessionId IS NOT NULL AND pre_session_id = @PreSessionId)
+                                  OR (@AnonymousSessionId IS NOT NULL AND anonymous_session_id = @AnonymousSessionId));";
+
+        await using var command = new NpgsqlCommand(associateTraceSql, connection);
+        command.Parameters.Add(new NpgsqlParameter("UserId", NpgsqlDbType.Bigint) { Value = userId });
+        command.Parameters.Add(new NpgsqlParameter("PreSessionId", NpgsqlDbType.Uuid) { Value = parsedPreSessionId.HasValue ? parsedPreSessionId.Value : DBNull.Value });
+        command.Parameters.Add(new NpgsqlParameter("AnonymousSessionId", NpgsqlDbType.Uuid) { Value = parsedAnonymousSessionId.HasValue ? parsedAnonymousSessionId.Value : DBNull.Value });
+
+        await command.ExecuteNonQueryAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyList<TraceSummaryRecord>> GetTraceSummaries(long userId, CancellationToken cancellationToken = default)
     {
         await using var connection = new NpgsqlConnection(_connectionString);
@@ -102,7 +154,7 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
                                                res_status_code,
                                                res_phrase
                                         FROM telemetry.traces
-                                        WHERE user_id = @UserId
+                                        WHERE user_id = @UserId OR associated_user_id = @UserId
                                         ORDER BY id DESC;";
 
         await using var command = new NpgsqlCommand(selectTraceSummariesSql, connection);
@@ -141,6 +193,9 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
         await connection.OpenAsync(cancellationToken);
 
         var selectTracesSql = @"SELECT traces.id AS trace_id,
+                                       traces.pre_session_id AS trace_pre_session_id,
+                                       traces.anonymous_session_id AS trace_anonymous_session_id,
+                                       traces.associated_user_id AS trace_associated_user_id,
                                        traces.user_id AS trace_user_id,
                                        traces.timestamp_start AS trace_timestamp_start,
                                        traces.duration_ms AS trace_duration_ms,
@@ -158,7 +213,7 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
                                        steps.logs::text AS step_logs
                                 FROM telemetry.traces traces 
                                 LEFT JOIN telemetry.steps steps ON steps.trace_id = traces.id
-                                WHERE traces.id = @TraceId AND traces.user_id = @UserId
+                                WHERE traces.id = @TraceId AND (traces.user_id = @UserId OR traces.associated_user_id = @UserId)
                                 ORDER BY steps.id ASC;";
 
         await using var command = new NpgsqlCommand(selectTracesSql, connection);
@@ -175,6 +230,9 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
         var trace = new Trace
         {
             Id = reader.GetInt64(reader.GetOrdinal("trace_id")).ToString(CultureInfo.InvariantCulture),
+            PreSessionToken = reader.IsDBNull(reader.GetOrdinal("trace_pre_session_id")) ? null : reader.GetGuid(reader.GetOrdinal("trace_pre_session_id")).ToString("N"),
+            AnonymousSessionToken = reader.IsDBNull(reader.GetOrdinal("trace_anonymous_session_id")) ? null : reader.GetGuid(reader.GetOrdinal("trace_anonymous_session_id")).ToString("N"),
+            AssociatedUserId = reader.IsDBNull(reader.GetOrdinal("trace_associated_user_id")) ? null : reader.GetInt64(reader.GetOrdinal("trace_associated_user_id")).ToString(CultureInfo.InvariantCulture),
             UserId = reader.IsDBNull(reader.GetOrdinal("trace_user_id")) ? null : reader.GetInt64(reader.GetOrdinal("trace_user_id")).ToString(CultureInfo.InvariantCulture),
             TimestampStart = reader.GetFieldValue<DateTimeOffset>(reader.GetOrdinal("trace_timestamp_start")),
             DurationMs = reader.GetFloat(reader.GetOrdinal("trace_duration_ms")),

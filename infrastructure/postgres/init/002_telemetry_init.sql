@@ -14,6 +14,9 @@ END $$;
 
 CREATE TABLE IF NOT EXISTS telemetry.traces (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    pre_session_id UUID NULL,
+    anonymous_session_id UUID NULL,
+    associated_user_id BIGINT NULL,
     user_id BIGINT NULL,
     timestamp_start TIMESTAMPTZ NOT NULL,
     duration_ms REAL NOT NULL,
@@ -23,8 +26,18 @@ CREATE TABLE IF NOT EXISTS telemetry.traces (
     res_status_code INTEGER NOT NULL,
     res_phrase TEXT NOT NULL,
 
+    CONSTRAINT fk_telemetry_traces_associated_user FOREIGN KEY (associated_user_id) REFERENCES auth.users(id) ON DELETE SET NULL,
     CONSTRAINT fk_telemetry_traces_user FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE SET NULL
 );
+
+CREATE INDEX IF NOT EXISTS ix_traces_associated_user_time
+ON telemetry.traces (associated_user_id, id DESC);
+
+CREATE INDEX IF NOT EXISTS ix_traces_anon_session_time
+ON telemetry.traces (anonymous_session_id, id DESC);
+
+CREATE INDEX IF NOT EXISTS ix_traces_pre_session
+ON telemetry.traces (pre_session_id);
 
 CREATE TABLE IF NOT EXISTS telemetry.steps (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
