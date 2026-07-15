@@ -3,12 +3,6 @@ import { AuthButton } from "../features/auth/components/AuthButton";
 import { useRegister } from "../features/auth/hooks/useRegister";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import googleIcon from "../assets/icons/google.png";
-import googleIconDarkTheme from "../assets/icons/google-dt.png";
-import appleIcon from "../assets/icons/apple.png";
-import appleIconDarkTheme from "../assets/icons/apple-dt.png";
-import githubIcon from "../assets/icons/github.png";
-import githubIconDarkTheme from "../assets/icons/github-dt.png";
 import { useTheme } from "../contexts/useTheme";
 import { Sun, Moon } from "lucide-react";
 
@@ -33,7 +27,7 @@ export const RegisterPage = () => {
       </div>
 
       <div className="flex-1 flex items-center justify-center px-4 pb-4 md:p-0">
-        <div className="flex flex-col-reverse md:flex-row w-full max-w-3xl rounded-2xl overflow-hidden shadow-2xl dark:shadow-lg">
+        <div className="flex flex-col-reverse md:flex-row w-full max-w-3xl min-h-120 rounded-2xl overflow-hidden shadow-2xl dark:shadow-lg">
           {/*left card: welcome back message + sign In */}
           <div className="flex-1 py-10 md:py-14 flex flex-col items-center justify-center bg-brand-20">
             <h2 className="text-center text-white font-extrabold text-3xl md:text-4xl">Welcome Back</h2>
@@ -50,46 +44,24 @@ export const RegisterPage = () => {
           {/* right card: register form */}
           <div className="flex-1 py-10 md:py-14 flex flex-col items-center justify-center bg-surface-10">
             <h2 className="text-center font-extrabold text-3xl md:text-4xl">Sign up</h2>
-            <div className="flex justify-center gap-3 m-4">
-              <AuthButton variant="icon" className="w-12 h-12 hover:bg-surface-30">
-                {theme === "light" ? (
-                  <img src={googleIcon} className="w-4.5 h-4.5" alt="Google" />
-                ) : (
-                  <img src={googleIconDarkTheme} className="w-4.5 h-4.5" alt="Google" />
-                )}
-              </AuthButton>
-              <AuthButton variant="icon" className="w-12 h-12 hover:bg-surface-30">
-                {theme === "light" ? (
-                  <img src={appleIcon} className="w-5 h-5" alt="Apple" />
-                ) : (
-                  <img src={appleIconDarkTheme} className="w-5 h-5" alt="Apple" />
-                )}
-              </AuthButton>
-              <AuthButton variant="icon" className="w-12 h-12 hover:bg-surface-30">
-                {theme === "light" ? (
-                  <img src={githubIcon} className="w-5.5 h-5.5 mt-0.5" alt="GitHub" />
-                ) : (
-                  <img src={githubIconDarkTheme} className="w-5.5 h-5.5 mt-0.5" alt="GitHub" />
-                )}
-              </AuthButton>
-            </div>
-            <p className="text-center text-text-20 mb-2">or use your email</p>
-            <form noValidate onSubmit={onFormSubmit} className="flex flex-col gap-4 w-80">
-              <AuthInput type="email" placeholder="email" {...register("email")} error={errors.email?.message} />
-              <AuthInput
-                type="password"
-                placeholder="password"
-                {...register("password")}
-                error={errors.password?.message}
-              />
-              <AuthInput
-                type="password"
-                placeholder="confirm password"
-                {...register("confirmPassword")}
-                error={errors.confirmPassword?.message}
-              />
-              {submitError && <p className="text-danger-10 text-sm text-center">{submitError}</p>}
-              <AuthButton type="submit" variant="primary" className="mt-2 mx-auto w-40" disabled={isSubmitting}>
+            <form noValidate onSubmit={onFormSubmit} className="mt-7 flex w-80 flex-col">
+              <div className="flex flex-col gap-4">
+                <AuthInput type="email" placeholder="email" {...register("email")} error={errors.email?.message} />
+                <AuthInput
+                  type="password"
+                  placeholder="password"
+                  {...register("password")}
+                  error={errors.password?.message}
+                />
+                <AuthInput
+                  type="password"
+                  placeholder="confirm password"
+                  {...register("confirmPassword")}
+                  error={errors.confirmPassword?.message}
+                />
+              </div>
+              {submitError && <p className="mt-4 text-danger-10 text-sm text-center">{submitError}</p>}
+              <AuthButton type="submit" variant="primary" className="mt-10 mx-auto w-40" disabled={isSubmitting}>
                 {isSubmitting ? "Signing up..." : "Sign up"}
               </AuthButton>
             </form>
