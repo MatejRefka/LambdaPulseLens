@@ -307,6 +307,7 @@ var logoutEndpoint = new Endpoint
         await webContext.Session.RemoveValue(AuthenticationConstants.UserIdSessionKey);
 
         webContext.User = GuestUser.Instance;
+        webContext.SessionInvalidationRequested = true;
 
         webContext.WebResponse.StatusCode = 200;
         webContext.WebResponse.ResponsePhrase = "OK";
