@@ -1,6 +1,6 @@
 ﻿namespace LambdaPulse.Server.Services.Telemetry;
 
-internal sealed class TraceSummaryRecord
+internal sealed class TraceSummary
 {
     public required string Id { get; init; }
     public string? UserId { get; init; }

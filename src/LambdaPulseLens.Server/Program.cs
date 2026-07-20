@@ -27,6 +27,7 @@ var redisConnectionManager = await ConnectionMultiplexer.ConnectAsync(redisConne
 BCryptPasswordHasher passwordHasher = new();
 PostgresAuthRepository authRepository = new(postgresConfig);
 PostgresTelemetryRepository telemetryRepository = new(postgresConfig);
+LiveTraceBroadcaster traceBroadcaster = new();
 
 #endregion Instantiations
 
@@ -327,6 +328,9 @@ var tracesEndpoint = new Endpoint
     CachePolicy = new CachePolicy { Enabled = false },
     ApplicationFunction = async (webContext, cancellationToken) =>
     {
+        //disable trace logging to avoid internal noise
+        webContext.Trace.Enabled = false;
+
         //indicate that the response should not be cached by browsers or CDNs
         webContext.WebResponse.Headers["Cache-Control"] = "no-store";
 
@@ -356,6 +360,9 @@ var traceEndpoint = new Endpoint
     CachePolicy = new CachePolicy { Enabled = false },
     ApplicationFunction = async (webContext, cancellationToken) =>
     {
+        //disable trace logging to avoid internal noise
+        webContext.Trace.Enabled = false;
+
         //indicate that the response should not be cached by browsers or CDNs
         webContext.WebResponse.Headers["Cache-Control"] = "no-store";
 
@@ -399,6 +406,79 @@ var traceEndpoint = new Endpoint
     }
 };
 
+//live endpoint for SSE clients
+var liveTracesEndpoint = new Endpoint
+{
+    Method = "GET",
+    Path = "/api/telemetry/traces/live",
+    AllowAnonymous = false,
+    CachePolicy = new CachePolicy { Enabled = false },
+    ApplicationFunction = async (webContext, cancellationToken) =>
+    {
+        //disable trace logging to avoid internal noise
+        webContext.Trace.Enabled = false;
+
+        if (webContext.User.Id == null)
+        {
+            webContext.WebResponse.StatusCode = 401;
+            webContext.WebResponse.ResponsePhrase = "Unauthorized";
+            await webContext.WebResponse.WriteJsonToBody(new { success = false }, cancellationToken);
+            return;
+        }
+
+        var subscriberId = Guid.NewGuid();
+
+        var channelReader = traceBroadcaster.Subscribe(webContext.User.Id, subscriberId);
+
+        try
+        {
+            webContext.WebResponse.StatusCode = 200;
+            webContext.WebResponse.ResponsePhrase = "OK";
+
+            //content type for SSE
+            webContext.WebResponse.Headers["Content-Type"] = "text/event-stream";
+
+            //do not cache SSE responses
+            webContext.WebResponse.Headers["Cache-Control"] = "no-store";
+
+            //keep the connection alive for SSE
+            webContext.WebResponse.Headers["Connection"] = "keep-alive";
+
+            //disable buffering for SSE
+            webContext.WebResponse.Headers["X-Accel-Buffering"] = "no";
+
+            await webContext.WebResponse.StartStreaming(cancellationToken);
+
+            await webContext.WebResponse.WriteToStream(": connected\n\n", cancellationToken);
+
+            await webContext.WebResponse.FlushStream(cancellationToken);
+
+            await foreach (var traceSummary in channelReader.ReadAllAsync(cancellationToken))
+            {
+                var traceSummarySerialized = JsonSerializer.Serialize(traceSummary, WebResponseExtensions.CamelCase);
+
+                var message = $"event: trace\nid: {traceSummary.Id}\ndata: {traceSummarySerialized}\n\n";
+
+                await webContext.WebResponse.WriteToStream(message, cancellationToken);
+                await webContext.WebResponse.FlushStream(cancellationToken);
+            }
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            //browser tab closed, connection lost, server shutdown, etc.
+        }
+        catch (IOException)
+        {
+            //client disconnected mid-write (connection reset)
+        }
+        finally
+        {
+            //unsubscribe the client from receiving further trace summaries
+            traceBroadcaster.Unsubscribe(webContext.User.Id, subscriberId);
+        }
+    }
+};
+
 #endregion Telemetry Endpoints
 
 var webServer = ServerBuilder.Build(
@@ -412,13 +492,15 @@ var webServer = ServerBuilder.Build(
         endpointRegistry.AddEndpoint(logoutEndpoint);
         endpointRegistry.AddEndpoint(tracesEndpoint);
         endpointRegistry.AddEndpoint(traceEndpoint);
+        endpointRegistry.AddEndpoint(liveTracesEndpoint);
     },
     configureServices: container =>
     {
         container.AddSingleton(postgresConfig);
         container.AddSingleton<ITelemetryRepository, PostgresTelemetryRepository>();
 
-        container.OverrideSingleton<ITraceLogger, PostgresTraceLogger>();
+        container.AddSingleton<ILiveTraceBroadcaster>(traceBroadcaster);
+        container.OverrideSingleton<ITraceRecorder, TraceRecorder>();
 
         //Redis connection manager; one per server instance
         container.AddSingleton<IConnectionMultiplexer>(redisConnectionManager);

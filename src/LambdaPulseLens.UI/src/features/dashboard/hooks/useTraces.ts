@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { TraceSummary, Trace } from "../../../types/telemetry";
-import { getTraceSummaries, getTrace } from "../../../api/telemetryApi";
+import { getTraceSummaries, getTrace, subscribeToLiveTraceSummaries } from "../../../api/telemetryApi";
 
 export const useTraces = () => {
   const [summaries, setSummaries] = useState<TraceSummary[]>([]);
@@ -10,6 +10,7 @@ export const useTraces = () => {
   const [isLoadingTrace, setIsLoadingTrace] = useState(false);
   const [summariesError, setSummariesError] = useState<string | null>(null);
   const [traceError, setTraceError] = useState<string | null>(null);
+  const [liveTracesError, setLiveTracesError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadSummaries() {
@@ -26,6 +27,26 @@ export const useTraces = () => {
       }
     }
     void loadSummaries();
+  }, []);
+
+  useEffect(() => {
+    const eventSource = subscribeToLiveTraceSummaries({
+      onTrace: (traceSummary) => {
+        setLiveTracesError(null);
+        setSummaries((currentSummaries) => [
+          traceSummary,
+          ...currentSummaries.filter((summary) => summary.id !== traceSummary.id)
+        ]);
+        setSelectedTraceId((currentSelectedTraceId) => currentSelectedTraceId ?? traceSummary.id);
+      },
+      onError: () => {
+        setLiveTracesError("Live trace stream disconnected.");
+      }
+    });
+
+    return () => {
+      eventSource.close();
+    };
   }, []);
 
   useEffect(() => {
@@ -73,6 +94,7 @@ export const useTraces = () => {
     isLoadingSummaries,
     isLoadingTrace,
     summariesError,
-    traceError
+    traceError,
+    liveTracesError
   };
 };

@@ -15,7 +15,7 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
         _connectionString = config.ConnectionString;
     }
 
-    public async Task InsertTrace(Trace trace, CancellationToken cancellationToken = default)
+    public async Task<TraceSummary> InsertTrace(Trace trace, CancellationToken cancellationToken = default)
     {
         if (trace.ResponseStatusCode == null)
         {
@@ -102,6 +102,19 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
             }
 
             await transaction.CommitAsync(cancellationToken);
+
+            return new TraceSummary
+            {
+                Id = traceId.ToString(CultureInfo.InvariantCulture),
+                UserId = userId?.ToString(CultureInfo.InvariantCulture),
+                TimestampStart = trace.TimestampStart,
+                DurationMs = trace.DurationMs,
+                RequestMethod = trace.RequestMethod,
+                RequestPath = trace.RequestPath,
+                RequestProtocol = trace.RequestProtocol,
+                ResponseStatusCode = trace.ResponseStatusCode.Value,
+                ResponsePhrase = trace.ResponsePhrase
+            };
         }
         catch
         {
@@ -139,7 +152,7 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
         await command.ExecuteNonQueryAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyList<TraceSummaryRecord>> GetTraceSummaries(long userId, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<TraceSummary>> GetTraceSummaries(long userId, CancellationToken cancellationToken = default)
     {
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync(cancellationToken);
@@ -162,10 +175,10 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
 
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
 
-        var traces = new List<TraceSummaryRecord>();
+        var traces = new List<TraceSummary>();
         while (await reader.ReadAsync(cancellationToken))
         {
-            traces.Add(new TraceSummaryRecord
+            traces.Add(new TraceSummary
             {
                 Id = reader.GetInt64(reader.GetOrdinal("id")).ToString(CultureInfo.InvariantCulture),
                 UserId = reader.IsDBNull(reader.GetOrdinal("user_id")) ? null : reader.GetInt64(reader.GetOrdinal("user_id")).ToString(CultureInfo.InvariantCulture),

@@ -10,6 +10,11 @@ type TraceResponse = {
   trace: Trace;
 };
 
+type LiveTraceHandlers = {
+  onTrace: (trace: TraceSummary) => void;
+  onError?: () => void;
+};
+
 export async function getTraceSummaries(): Promise<TraceSummary[]> {
   const response = await fetch("/api/telemetry/traces", { method: "GET", credentials: "include" });
 
@@ -36,4 +41,21 @@ export async function getTrace(traceId: string, signal?: AbortSignal): Promise<T
   }
 
   return traceResponse.trace;
+}
+
+export function subscribeToLiveTraceSummaries({ onTrace, onError }: LiveTraceHandlers): EventSource {
+  const eventSource = new EventSource("/api/telemetry/traces/live", { withCredentials: true });
+
+  const handleTrace = (event: MessageEvent<string>) => {
+    const traceSummary = JSON.parse(event.data) as TraceSummary;
+    onTrace(traceSummary);
+  };
+
+  eventSource.addEventListener("trace", handleTrace as EventListener);
+
+  eventSource.onerror = () => {
+    onError?.();
+  };
+
+  return eventSource;
 }
