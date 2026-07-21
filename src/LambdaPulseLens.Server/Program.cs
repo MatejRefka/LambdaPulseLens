@@ -453,6 +453,7 @@ var liveTracesEndpoint = new Endpoint
 
             await webContext.WebResponse.FlushStream(cancellationToken);
 
+            //loop until the client disconnects or the server shuts down
             await foreach (var traceSummary in channelReader.ReadAllAsync(cancellationToken))
             {
                 var traceSummarySerialized = JsonSerializer.Serialize(traceSummary, WebResponseExtensions.CamelCase);

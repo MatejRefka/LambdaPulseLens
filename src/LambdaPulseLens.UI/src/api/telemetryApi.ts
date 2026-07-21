@@ -43,14 +43,19 @@ export async function getTrace(traceId: string, signal?: AbortSignal): Promise<T
   return traceResponse.trace;
 }
 
-export function subscribeToLiveTraceSummaries({ onTrace, onError }: LiveTraceHandlers): EventSource {
+export function openLiveTraceConnection({ onTrace, onError }: LiveTraceHandlers): EventSource {
+  //opens SSE connection. browser cookies are sent with the request
   const eventSource = new EventSource("/api/telemetry/traces/live", { withCredentials: true });
 
+  //callback for incoming live trace envents
   const handleTrace = (event: MessageEvent<string>) => {
+    //parse event data into TraceSummary
     const traceSummary = JSON.parse(event.data) as TraceSummary;
+    //call onTrace callback
     onTrace(traceSummary);
   };
 
+  //subscribe handleTrace to SSE events named 'trace'
   eventSource.addEventListener("trace", handleTrace as EventListener);
 
   eventSource.onerror = () => {

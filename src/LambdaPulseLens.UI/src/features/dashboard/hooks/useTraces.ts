@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { TraceSummary, Trace } from "../../../types/telemetry";
-import { getTraceSummaries, getTrace, subscribeToLiveTraceSummaries } from "../../../api/telemetryApi";
+import { getTraceSummaries, getTrace, openLiveTraceConnection } from "../../../api/telemetryApi";
 
 export const useTraces = () => {
   const [summaries, setSummaries] = useState<TraceSummary[]>([]);
@@ -30,7 +30,7 @@ export const useTraces = () => {
   }, []);
 
   useEffect(() => {
-    const eventSource = subscribeToLiveTraceSummaries({
+    const eventSource = openLiveTraceConnection({
       onTrace: (traceSummary) => {
         setLiveTracesError(null);
         setSummaries((currentSummaries) => [

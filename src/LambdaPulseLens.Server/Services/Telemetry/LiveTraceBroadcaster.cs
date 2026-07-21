@@ -44,7 +44,7 @@ internal sealed class LiveTraceBroadcaster : ILiveTraceBroadcaster
         }
     }
 
-    //broadcasts a trace summary to all connected SSE subscribers
+    //broadcasts a trace summary to all connected SSE subscribers for a specific userId
     public void Broadcast(TraceSummary traceSummary)
     {
         if (traceSummary.UserId != null && _subscribers.TryGetValue(traceSummary.UserId, out var userConnections))
