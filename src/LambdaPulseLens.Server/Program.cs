@@ -453,15 +453,38 @@ var liveTracesEndpoint = new Endpoint
 
             await webContext.WebResponse.FlushStream(cancellationToken);
 
+            //heartbeat to prevent reverse proxies from closing the connection due to inactivity.
+            var heartbeatInterval = TimeSpan.FromSeconds(10);
+
             //loop until the client disconnects or the server shuts down
-            await foreach (var traceSummary in channelReader.ReadAllAsync(cancellationToken))
+            while (!cancellationToken.IsCancellationRequested)
             {
-                var traceSummarySerialized = JsonSerializer.Serialize(traceSummary, WebResponseExtensions.CamelCase);
+                //wait for either a trace to be available or the heartbeat interval to elapse
+                var traceAvailableTask = channelReader.WaitToReadAsync(cancellationToken).AsTask();
+                var heartbeatTask = Task.Delay(heartbeatInterval, cancellationToken);
 
-                var message = $"event: trace\nid: {traceSummary.Id}\ndata: {traceSummarySerialized}\n\n";
+                //either trace is available or heartbeat interval has elapsed
+                var completedTask = await Task.WhenAny(traceAvailableTask, heartbeatTask);
 
-                await webContext.WebResponse.WriteToStream(message, cancellationToken);
-                await webContext.WebResponse.FlushStream(cancellationToken);
+                //send a heartbeat to the client
+                if (completedTask == heartbeatTask)
+                {
+                    await webContext.WebResponse.WriteToStream(": heartbeat\n\n", cancellationToken);
+                    await webContext.WebResponse.FlushStream(cancellationToken);
+                }
+                //send trace summaries to the client
+                else
+                {
+                    while (channelReader.TryRead(out var traceSummary))
+                    {
+                        var traceSummarySerialized = JsonSerializer.Serialize(traceSummary, WebResponseExtensions.CamelCase);
+
+                        var message = $"event: trace\nid: {traceSummary.Id}\ndata: {traceSummarySerialized}\n\n";
+
+                        await webContext.WebResponse.WriteToStream(message, cancellationToken);
+                        await webContext.WebResponse.FlushStream(cancellationToken);
+                    }
+                }
             }
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
