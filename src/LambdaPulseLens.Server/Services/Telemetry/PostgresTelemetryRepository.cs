@@ -1,4 +1,4 @@
-﻿using LambdaPulse.Engine.Features.Logging;
+﻿using LambdaPulse.Features.Logging;
 using Npgsql;
 using NpgsqlTypes;
 using System.Globalization;

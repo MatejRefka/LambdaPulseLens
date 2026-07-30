@@ -1,4 +1,4 @@
-﻿using LambdaPulse.Engine.Features.Logging;
+﻿using LambdaPulse.Features.Logging;
 using System.Text.Json;
 
 namespace LambdaPulse.Server.Services.Logging;

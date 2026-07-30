@@ -1,4 +1,4 @@
-﻿using LambdaPulse.Engine.Features.Logging;
+﻿using LambdaPulse.Features.Logging;
 using System.Threading.Channels;
 
 namespace LambdaPulse.Server.Services.Telemetry;
