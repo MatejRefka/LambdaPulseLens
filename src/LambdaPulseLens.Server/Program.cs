@@ -4,6 +4,7 @@ using LambdaPulse.Features.Routing;
 using LambdaPulse.Features.Security;
 using LambdaPulse.Features.State.Cache;
 using LambdaPulse.Hosting;
+using LambdaPulse.Server.Configuration;
 using LambdaPulse.Server.Services.Auth;
 using LambdaPulse.Server.Services.State;
 using LambdaPulse.Server.Services.Telemetry;
@@ -15,6 +16,9 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 
 #region Instantiations
+
+//LambdaPulse engine configuration
+ConfigProvider configProvider = new();
 
 //Postgres storing trace logs
 var postgresConfig = new PostgresConfig { ConnectionString = Environment.GetEnvironmentVariable("LAMBDAPULSE_POSTGRES_CONNECTION") ?? throw new InvalidOperationException("LAMBDAPULSE_POSTGRES_CONNECTION environment variable is not set.") };
@@ -529,7 +533,8 @@ var webServer = ServerBuilder.Build(
         //Redis connection manager; one per server instance
         container.AddSingleton<IConnectionMultiplexer>(redisConnectionManager);
         container.OverrideSingleton<ICacheStore, RedisCacheStore>();
-    }
+    },
+    config: configProvider.Config
 );
 
 await webServer.StartServer();
