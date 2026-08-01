@@ -6,7 +6,7 @@ internal interface ITelemetryRepository
 {
     Task<TraceSummary> InsertTrace(Trace trace, CancellationToken cancellationToken = default);
 
-    Task LinkAnonymousSessionToUser(string? preSessionToken, string? anonymousSessionToken, long userId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<TraceSummary>> LinkAnonymousSessionToUser(string? preSessionToken, string? anonymousSessionToken, long userId, CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<TraceSummary>> GetTraceSummaries(long userId, CancellationToken cancellationToken = default);
 

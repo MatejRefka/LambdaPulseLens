@@ -54,7 +54,12 @@ internal sealed class TraceRecorder : ITraceRecorder, IAsyncDisposable
             {
                 if (long.TryParse(trace.UserId, CultureInfo.InvariantCulture, out var userId))
                 {
-                    await _repository.LinkAnonymousSessionToUser(trace.PreSessionToken, trace.AnonymousSessionToken, userId);
+                    var associatedTraces = await _repository.LinkAnonymousSessionToUser(trace.PreSessionToken, trace.AnonymousSessionToken, userId);
+
+                    foreach (var associatedTrace in associatedTraces)
+                    {
+                        _liveTraceBroadcaster.Broadcast(associatedTrace);
+                    }
                 }
 
                 //insert trace into Postgres

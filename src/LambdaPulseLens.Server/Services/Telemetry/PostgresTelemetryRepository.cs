@@ -124,7 +124,7 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
         }
     }
 
-    public async Task LinkAnonymousSessionToUser(string? preSessionToken, string? anonymousSessionToken, long userId, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<TraceSummary>> LinkAnonymousSessionToUser(string? preSessionToken, string? anonymousSessionToken, long userId, CancellationToken cancellationToken = default)
     {
         var parsedPreSessionId = Guid.TryParse(preSessionToken, out var preSessionId) ? preSessionId : (Guid?)null;
         var parsedAnonymousSessionId = Guid.TryParse(anonymousSessionToken, out var anonymousSessionId) ? anonymousSessionId : (Guid?)null;
@@ -132,24 +132,49 @@ internal sealed class PostgresTelemetryRepository : ITelemetryRepository
         //both tokens are invalid, do not link
         if (!parsedPreSessionId.HasValue && !parsedAnonymousSessionId.HasValue)
         {
-            return;
+            return [];
         }
 
         await using var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync(cancellationToken);
 
-        var associateTraceSql = @"UPDATE telemetry.traces
-                                  SET associated_user_id = @UserId
-                                  WHERE associated_user_id IS NULL
-                                  AND ((@PreSessionId IS NOT NULL AND pre_session_id = @PreSessionId)
-                                  OR (@AnonymousSessionId IS NOT NULL AND anonymous_session_id = @AnonymousSessionId));";
+        var associateTraceSql = @"WITH associated_traces AS (
+                                      UPDATE telemetry.traces
+                                      SET associated_user_id = @UserId
+                                      WHERE associated_user_id IS NULL
+                                      AND ((@PreSessionId IS NOT NULL AND pre_session_id = @PreSessionId)
+                                      OR (@AnonymousSessionId IS NOT NULL AND anonymous_session_id = @AnonymousSessionId))
+                                      RETURNING id, timestamp_start, duration_ms, req_method, req_path, req_protocol, res_status_code, res_phrase
+                                  )
+                                  SELECT *
+                                  FROM associated_traces
+                                  ORDER BY id ASC;";
 
         await using var command = new NpgsqlCommand(associateTraceSql, connection);
         command.Parameters.Add(new NpgsqlParameter("UserId", NpgsqlDbType.Bigint) { Value = userId });
         command.Parameters.Add(new NpgsqlParameter("PreSessionId", NpgsqlDbType.Uuid) { Value = parsedPreSessionId.HasValue ? parsedPreSessionId.Value : DBNull.Value });
         command.Parameters.Add(new NpgsqlParameter("AnonymousSessionId", NpgsqlDbType.Uuid) { Value = parsedAnonymousSessionId.HasValue ? parsedAnonymousSessionId.Value : DBNull.Value });
 
-        await command.ExecuteNonQueryAsync(cancellationToken);
+        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+
+        var associatedTraces = new List<TraceSummary>();
+        while (await reader.ReadAsync(cancellationToken))
+        {
+            associatedTraces.Add(new TraceSummary
+            {
+                Id = reader.GetInt64(reader.GetOrdinal("id")).ToString(CultureInfo.InvariantCulture),
+                UserId = userId.ToString(CultureInfo.InvariantCulture),
+                TimestampStart = reader.GetFieldValue<DateTimeOffset>(reader.GetOrdinal("timestamp_start")),
+                DurationMs = reader.GetFloat(reader.GetOrdinal("duration_ms")),
+                RequestMethod = reader.IsDBNull(reader.GetOrdinal("req_method")) ? null : reader.GetString(reader.GetOrdinal("req_method")),
+                RequestPath = reader.IsDBNull(reader.GetOrdinal("req_path")) ? null : reader.GetString(reader.GetOrdinal("req_path")),
+                RequestProtocol = reader.IsDBNull(reader.GetOrdinal("req_protocol")) ? null : reader.GetString(reader.GetOrdinal("req_protocol")),
+                ResponseStatusCode = reader.GetInt32(reader.GetOrdinal("res_status_code")),
+                ResponsePhrase = reader.GetString(reader.GetOrdinal("res_phrase"))
+            });
+        }
+
+        return associatedTraces;
     }
 
     public async Task<IReadOnlyList<TraceSummary>> GetTraceSummaries(long userId, CancellationToken cancellationToken = default)
