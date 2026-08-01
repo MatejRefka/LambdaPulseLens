@@ -16,6 +16,13 @@ export const TraceItem = ({ trace, isSelected, onClick }: TraceItemProps) => {
   const badgeStyleHover = isSelected ? "group-hover:border-surface-60" : "group-hover:border-surface-30";
   const method = trace.requestMethod ?? "Malformed";
   const path = trace.requestPath ?? "Request parse failed";
+  const duration = trace.durationMs.toFixed(0);
+  const timestampStart = new Date(trace.timestampStart);
+  const dateLabel = timestampStart.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: timestampStart.getFullYear() === new Date().getFullYear() ? undefined : "numeric",
+  });
 
   return (
     <button
@@ -35,8 +42,13 @@ export const TraceItem = ({ trace, isSelected, onClick }: TraceItemProps) => {
 
       {/*duration + timestamp*/}
       <div className="text-xs mt-1 flex justify-between text-text-30 font-medium">
-        <span>{trace.durationMs.toFixed(0)}ms</span>
-        <span>{new Date(trace.timestampStart).toLocaleTimeString()}</span>
+        <span>
+          {duration === "0" && "~"}
+          {duration}ms
+        </span>
+        <span>
+          {dateLabel} · {timestampStart.toLocaleTimeString("en-GB")}
+        </span>
       </div>
     </button>
   );
