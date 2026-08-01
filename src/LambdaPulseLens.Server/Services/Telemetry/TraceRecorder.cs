@@ -1,4 +1,5 @@
 ﻿using LambdaPulse.Features.Logging;
+using System.Globalization;
 using System.Threading.Channels;
 
 namespace LambdaPulse.Server.Services.Telemetry;
@@ -51,6 +52,11 @@ internal sealed class TraceRecorder : ITraceRecorder, IAsyncDisposable
         {
             try
             {
+                if (long.TryParse(trace.UserId, CultureInfo.InvariantCulture, out var userId))
+                {
+                    await _repository.LinkAnonymousSessionToUser(trace.PreSessionToken, trace.AnonymousSessionToken, userId);
+                }
+
                 //insert trace into Postgres
                 var traceSummary = await _repository.InsertTrace(trace);
 
