@@ -4,7 +4,7 @@ using NpgsqlTypes;
 using System.Globalization;
 using System.Text.Json;
 
-namespace LambdaPulse.Server.Services.Telemetry;
+namespace LambdaPulseLens.Server.Services.Telemetry;
 
 internal sealed class PostgresTelemetryRepository : ITelemetryRepository
 {

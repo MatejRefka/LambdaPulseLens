@@ -5,40 +5,40 @@ discovery.docker "containers" {
 }
 
 //setup rules for filtering and standardising the Docker labels
-discovery.relabel "lambdapulse_logs" {
+discovery.relabel "lambdapulselens_logs" {
   targets = []
 
-  //only keep logs from containers where label is 'lambdapulse.logging = true'
+  //only keep logs from containers where label is 'lambdapulselens.logging = true'
   rule {
-    source_labels = ["__meta_docker_container_label_lambdapulse_logging"]
+    source_labels = ["__meta_docker_container_label_lambdapulselens_logging"]
     regex = "true"
     action = "keep"
   }
 
-  //strip leading slash from Docker container names and store as a clean label, e.g. /lambdapulse-server container name -> container="lambdapulse-server"
+  //strip leading slash from Docker container names and store as a clean label, e.g. /lambda-pulse-lens-server container name -> container="lambda-pulse-lens-server"
   rule {
     source_labels = ["__meta_docker_container_name"]
     regex = "/(.*)"
     target_label = "container"
   }
 
-  //add static stack label. stack="lambdapulse"
+  //add static stack label. stack="lambda-pulse-lens"
   rule {
     target_label = "stack"
-    replacement  = "lambdapulse"
+    replacement  = "lambda-pulse-lens"
   }
 }
 
 //reads log entries from Docker containers and forwards them to loki.process
-loki.source.docker "lambdapulse" {
+loki.source.docker "lambdapulselens" {
   host = "unix:///var/run/docker.sock"
   targets = discovery.docker.containers.targets
-  relabel_rules = discovery.relabel.lambdapulse_logs.rules
-  forward_to = [loki.process.lambdapulse.receiver]
+  relabel_rules = discovery.relabel.lambdapulselens_logs.rules
+  forward_to = [loki.process.lambdapulselens.receiver]
 }
 
 //apply processing stages to log entries, then forward to loki.write
-loki.process "lambdapulse" {
+loki.process "lambdapulselens" {
   forward_to = [loki.write.local.receiver]
 
   //parse json written by StdoutEngineLogger

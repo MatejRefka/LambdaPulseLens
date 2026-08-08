@@ -4,11 +4,11 @@ using LambdaPulse.Features.Routing;
 using LambdaPulse.Features.Security;
 using LambdaPulse.Features.State.Cache;
 using LambdaPulse.Hosting;
-using LambdaPulse.Server.Configuration;
-using LambdaPulse.Server.Services.Auth;
-using LambdaPulse.Server.Services.State;
-using LambdaPulse.Server.Services.Telemetry;
 using LambdaPulse.Shared.Extensions;
+using LambdaPulseLens.Server.Configuration;
+using LambdaPulseLens.Server.Services.Auth;
+using LambdaPulseLens.Server.Services.State;
+using LambdaPulseLens.Server.Services.Telemetry;
 using StackExchange.Redis;
 using System.Globalization;
 using System.Security.Cryptography;
@@ -21,10 +21,10 @@ using System.Text.RegularExpressions;
 ConfigProvider configProvider = new();
 
 //Postgres storing trace logs
-var postgresConfig = new PostgresConfig { ConnectionString = Environment.GetEnvironmentVariable("LAMBDAPULSE_POSTGRES_CONNECTION") ?? throw new InvalidOperationException("LAMBDAPULSE_POSTGRES_CONNECTION environment variable is not set.") };
+var postgresConfig = new PostgresConfig { ConnectionString = Environment.GetEnvironmentVariable("LAMBDAPULSELENS_POSTGRES_CONNECTION") ?? throw new InvalidOperationException("LAMBDAPULSELENS_POSTGRES_CONNECTION environment variable is not set.") };
 
 //Redis cache
-var redisConnection = Environment.GetEnvironmentVariable("LAMBDAPULSE_REDIS_CONNECTION") ?? throw new InvalidOperationException("LAMBDAPULSE_REDIS_CONNECTION environment variable is not set.");
+var redisConnection = Environment.GetEnvironmentVariable("LAMBDAPULSELENS_REDIS_CONNECTION") ?? throw new InvalidOperationException("LAMBDAPULSELENS_REDIS_CONNECTION environment variable is not set.");
 var redisConnectionManager = await ConnectionMultiplexer.ConnectAsync(redisConnection);
 
 //services

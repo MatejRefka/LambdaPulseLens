@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Threading.Channels;
 
-namespace LambdaPulse.Server.Services.Telemetry;
+namespace LambdaPulseLens.Server.Services.Telemetry;
 
 internal sealed class LiveTraceBroadcaster : ILiveTraceBroadcaster
 {

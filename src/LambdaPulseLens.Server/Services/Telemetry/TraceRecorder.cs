@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Threading.Channels;
 
-namespace LambdaPulse.Server.Services.Telemetry;
+namespace LambdaPulseLens.Server.Services.Telemetry;
 
 internal sealed class TraceRecorder : ITraceRecorder, IAsyncDisposable
 {

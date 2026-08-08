@@ -1,8 +1,8 @@
-﻿using LambdaPulse.Server.Services.Telemetry;
+﻿using LambdaPulseLens.Server.Services.Telemetry;
 using Npgsql;
 using NpgsqlTypes;
 
-namespace LambdaPulse.Server.Services.Auth;
+namespace LambdaPulseLens.Server.Services.Auth;
 
 internal sealed class PostgresAuthRepository : IAuthRepository
 {

@@ -1,6 +1,6 @@
 ﻿using LambdaPulse.Features.Logging;
 
-namespace LambdaPulse.Server.Services.Telemetry;
+namespace LambdaPulseLens.Server.Services.Telemetry;
 
 internal interface ITelemetryRepository
 {

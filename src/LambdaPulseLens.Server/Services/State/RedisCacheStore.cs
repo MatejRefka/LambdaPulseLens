@@ -3,11 +3,11 @@ using LambdaPulse.Features.State.Cache;
 using StackExchange.Redis;
 using System.Text.Json;
 
-namespace LambdaPulse.Server.Services.State;
+namespace LambdaPulseLens.Server.Services.State;
 
 internal sealed class RedisCacheStore : ICacheStore
 {
-    private const string CacheKeyPrefix = "lambdapulse:cache:";
+    private const string CacheKeyPrefix = "lambdapulselens:cache:";
 
     private readonly IDatabase _database;
     private readonly IEngineLogger _engineLogger;

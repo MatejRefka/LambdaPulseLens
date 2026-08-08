@@ -1,7 +1,7 @@
 ﻿using LambdaPulse.Features.Logging;
 using System.Text.Json;
 
-namespace LambdaPulse.Server.Services.Logging;
+namespace LambdaPulseLens.Server.Services.Logging;
 
 internal sealed class StdoutEngineLogger : IEngineLogger
 {

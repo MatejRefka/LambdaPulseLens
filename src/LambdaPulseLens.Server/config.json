@@ -1,0 +1,58 @@
+{
+  "ServerConfig": {
+    "Address": "127.0.0.1",
+    "Port": 8080,
+    "BackLog": 512,
+    "RequestReadTimeoutMS": 120000,
+    "MiddlewareConfig": {
+      "RequestLimitsConfig": {
+        "MaxControlDataSizeBytes": 8192,
+        "MaxHeaderSizeBytes": 32768,
+        "MaxBodySizeBytes": 3000000
+      },
+      "IpBlocklistConfig": {
+        "BlockedIpAddresses": []
+      },
+      "ConnectionConfig": {
+        "RequestExecutionTimeoutMS": null
+      },
+      "HttpsRedirectionConfig": {
+        "IsEnabled": false
+      },
+      "HstsConfig": {
+        "IsEnabled": false,
+        "MaxAge": 31536000,
+        "IncludeSubDomains": false,
+        "Preload": false
+      },
+      "SecurityConfig": {
+        "XContentTypeOptions": true,
+        "ReferrerPolicy": "strict-origin-when-cross-origin",
+        "PermissionsPolicy": null,
+        "CrossOriginOpenerPolicy": null,
+        "CrossOriginResourcePolicy": null,
+        "CrossOriginEmbedderPolicy": null,
+        "RemoveServerHeader": true
+      },
+      "SessionConfig": {
+        "IdleTimeoutMinutes": 20,
+        "AbsoluteTimeoutMinutes": 720,
+        "CookieSecure": false
+      },
+      "StaticFilesConfig": {
+        "FileRootPath": null
+      },
+      "SpaFallbackConfig": {
+        "IndexPageRelativePath": null
+      },
+      "CorsConfig": {
+        "AllowedOrigins": [],
+        "AllowCredentials": false,
+        "ExposedHeaders": [],
+        "AllowedMethods": [],
+        "AllowedHeaders": [],
+        "PreflightMaxAgeSeconds": 600
+      }
+    }
+  }
+}

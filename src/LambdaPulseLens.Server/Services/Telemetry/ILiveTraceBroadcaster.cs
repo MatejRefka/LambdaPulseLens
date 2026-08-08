@@ -1,6 +1,6 @@
 ﻿using System.Threading.Channels;
 
-namespace LambdaPulse.Server.Services.Telemetry;
+namespace LambdaPulseLens.Server.Services.Telemetry;
 
 internal interface ILiveTraceBroadcaster
 {

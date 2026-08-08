@@ -1,4 +1,4 @@
-﻿namespace LambdaPulse.Server.Services.Auth;
+﻿namespace LambdaPulseLens.Server.Services.Auth;
 
 internal sealed class AuthUserRecord
 {

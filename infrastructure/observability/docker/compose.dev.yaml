@@ -1,9 +1,9 @@
-name: lambdapulse-observability
+name: lambda-pulse-lens-observability
 
 services:
   loki:
     image: grafana/loki:3.7.2
-    container_name: lambdapulse-loki
+    container_name: lambda-pulse-lens-loki
     volumes:
       - ../loki/loki.dev.yaml:/etc/loki/loki.dev.yaml:ro ##mount config file into container as read only
       - loki-data:/loki ##mount loki volume into container
@@ -12,13 +12,13 @@ services:
     ports:
       - "3100:3100" ##expose container service to host machine
     labels:
-      lambdapulse.logging: "true" ##advertise for alloy to collect
+      lambdapulselens.logging: "true" ##advertise for alloy to collect
     networks:
-      - lambdapulse-observability ##attach to custom Docker network
+      - lambda-pulse-lens-observability ##attach to custom Docker network
 
   alloy:
     image: grafana/alloy:v1.16.1
-    container_name: lambdapulse-alloy
+    container_name: lambda-pulse-lens-alloy
     depends_on:
       - loki
     volumes:
@@ -27,17 +27,17 @@ services:
     command:
       - run
       - /etc/alloy/config.alloy ##run config file
-      - --server.http.listen-addr=127.0.0.1:12345 ##listen on the entire network within the container
+      - --server.http.listen-addr=0.0.0.0:12345 ##listen on the entire network within the container
     ports:
       - "12345:12345"
     labels:
-      lambdapulse.logging: "true"
+      lambdapulselens.logging: "true"
     networks:
-      - lambdapulse-observability
+      - lambda-pulse-lens-observability
 
   grafana:
     image: grafana/grafana:13.0.1-security-01
-    container_name: lambdapulse-grafana
+    container_name: lambda-pulse-lens-grafana
     volumes:
       - grafana-data:/var/lib/grafana ##holds local internal state
       - ../grafana/provisioning:/etc/grafana/provisioning:ro
@@ -47,15 +47,15 @@ services:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER}
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
     labels:
-      lambdapulse.logging: "true"
+      lambdapulselens.logging: "true"
     depends_on:
       - loki
     networks:
-      - lambdapulse-observability
+      - lambda-pulse-lens-observability
 
 networks:
-  lambdapulse-observability:
-    name: lambdapulse-observability
+  lambda-pulse-lens-observability:
+    name: lambda-pulse-lens-observability
 
 volumes:
   loki-data:

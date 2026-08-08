@@ -21,7 +21,7 @@ export default defineConfig({
     }
   },
   build: {
-    outDir: path.resolve(__dirname, "../LambdaPulse.Server/wwwroot"),
+    outDir: path.resolve(__dirname, "../LambdaPulseLens.Server/wwwroot"),
     emptyOutDir: true
   }
 });
