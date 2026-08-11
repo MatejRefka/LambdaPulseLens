@@ -5,6 +5,7 @@ import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../contexts/useTheme";
 import { Sun, Moon } from "lucide-react";
+import { AppVersionLabel } from "../components/shared/AppVersionLabel";
 
 export const RegisterPage = () => {
   const navigate = useNavigate();
@@ -68,6 +69,8 @@ export const RegisterPage = () => {
           </div>
         </div>
       </div>
+
+      <AppVersionLabel />
     </div>
   );
 };
