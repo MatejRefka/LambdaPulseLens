@@ -20,14 +20,9 @@ internal sealed class ConfigProvider
     {
         var configDirectory = AppContext.BaseDirectory;
         var developmentConfigPath = Path.Combine(configDirectory, "config.dev.json");
-        var configuredConfigPath = Environment.GetEnvironmentVariable("LAMBDAPULSELENS_CONFIG_PATH");
-        var configPath = !string.IsNullOrWhiteSpace(configuredConfigPath)
-            ? Path.IsPathFullyQualified(configuredConfigPath)
-                ? configuredConfigPath
-                : Path.GetFullPath(configuredConfigPath, configDirectory)
-            : File.Exists(developmentConfigPath)
-                ? developmentConfigPath
-                : Path.Combine(configDirectory, "config.json");
+        var configPath = File.Exists(developmentConfigPath)
+            ? developmentConfigPath
+            : Path.Combine(configDirectory, "config.json");
 
         var configNode = JsonNode.Parse(File.ReadAllText(configPath))
             ?? throw new ApplicationException("Unable to parse json config.");

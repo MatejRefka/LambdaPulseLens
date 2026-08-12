@@ -1,6 +1,6 @@
 {
   "ServerConfig": {
-    "Address": "127.0.0.1",
+    "Address": "0.0.0.0",
     "Port": 8080,
     "BackLog": 512,
     "RequestReadTimeoutMS": 120000,
@@ -17,10 +17,10 @@
         "RequestExecutionTimeoutMS": null
       },
       "HttpsRedirectionConfig": {
-        "IsEnabled": false
+        "IsEnabled": true
       },
       "HstsConfig": {
-        "IsEnabled": false,
+        "IsEnabled": true,
         "MaxAge": 31536000,
         "IncludeSubDomains": false,
         "Preload": false
@@ -28,22 +28,22 @@
       "SecurityConfig": {
         "XContentTypeOptions": true,
         "ReferrerPolicy": "strict-origin-when-cross-origin",
-        "PermissionsPolicy": null,
-        "CrossOriginOpenerPolicy": null,
-        "CrossOriginResourcePolicy": null,
+        "PermissionsPolicy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
+        "CrossOriginOpenerPolicy": "same-origin",
+        "CrossOriginResourcePolicy": "same-origin",
         "CrossOriginEmbedderPolicy": null,
         "RemoveServerHeader": true
       },
       "SessionConfig": {
         "IdleTimeoutMinutes": 20,
         "AbsoluteTimeoutMinutes": 720,
-        "CookieSecure": false
+        "CookieSecure": true
       },
       "StaticFilesConfig": {
-        "FileRootPath": null
+        "FileRootPath": "wwwroot"
       },
       "SpaFallbackConfig": {
-        "IndexPageRelativePath": null
+        "IndexPageRelativePath": "index.html"
       },
       "CorsConfig": {
         "AllowedOrigins": [],
