@@ -20,10 +20,12 @@ services:
     volumes:
       - ../alloy/config.dev.alloy:/etc/alloy/config.alloy:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro ##mount Docker socket into Alloy container
+      - alloy-data:/var/lib/alloy/data ##persist log positions across container restarts
     command:
       - run
       - /etc/alloy/config.alloy ##run config file
       - --server.http.listen-addr=0.0.0.0:12345 ##listen on the entire network within the container
+      - --storage.path=/var/lib/alloy/data ##store component positions in the persistent volume
     ports:
       - "127.0.0.1:12345:12345"
     networks:
@@ -51,4 +53,5 @@ networks:
 
 volumes:
   loki-data:
+  alloy-data:
   grafana-data:
