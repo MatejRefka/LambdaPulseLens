@@ -3,7 +3,6 @@ name: lambda-pulse-lens-observability
 services:
   loki:
     image: grafana/loki:3.7.2
-    container_name: lambda-pulse-lens-loki
     volumes:
       - ../loki/loki.dev.yaml:/etc/loki/loki.dev.yaml:ro ##mount config file into container as read only
       - loki-data:/loki ##mount loki volume into container
@@ -14,7 +13,6 @@ services:
 
   alloy:
     image: grafana/alloy:v1.18.0
-    container_name: lambda-pulse-lens-alloy
     depends_on:
       loki:
         condition: service_started
@@ -34,15 +32,30 @@ services:
 
   grafana:
     image: grafana/grafana:13.1.1
-    container_name: lambda-pulse-lens-grafana
     volumes:
       - grafana-data:/var/lib/grafana ##holds local internal state
       - ../grafana/provisioning:/etc/grafana/provisioning:ro
     ports:
       - "127.0.0.1:3000:3000"
     environment:
-      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER}
-      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:?Set GRAFANA_ADMIN_USER in .env}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?Set GRAFANA_ADMIN_PASSWORD in .env}
+      GF_SECURITY_SECRET_KEY: ${GRAFANA_SECRET_KEY:?Set GRAFANA_SECRET_KEY in .env}
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_AUTH_ANONYMOUS_HIDE_VERSION: "true"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_USERS_ALLOW_ORG_CREATE: "false"
+      GF_SECURITY_DISABLE_GRAVATAR: "true"
+      GF_SECURITY_COOKIE_SAMESITE: strict
+      GF_SECURITY_CONTENT_SECURITY_POLICY: "true"
+      GF_SNAPSHOTS_EXTERNAL_ENABLED: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES: "false"
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     depends_on:
       loki:
         condition: service_started
