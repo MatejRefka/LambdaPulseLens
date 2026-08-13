@@ -488,5 +488,5 @@ $RECYCLE.BIN/
 /src/LambdaPulseLens.Server/wwwroot
 
 # Environment variables
-/.env.container.local
+/.env.*.local
 /src/LambdaPulseLens.Server/Properties/launchSettings.json

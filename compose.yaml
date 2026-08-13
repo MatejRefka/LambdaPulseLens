@@ -1,0 +1,81 @@
+name: lambda-pulse-lens
+
+services:
+
+  proxy:
+    build:
+      context: ./infrastructure/nginx
+      dockerfile: Dockerfile
+
+    image: lambda-pulse-lens-proxy:0.1.0-beta.1
+
+    ports:
+      - "127.0.0.1:80:80"
+      - "127.0.0.1:443:443"
+
+    volumes:
+      - type: bind
+        source: ${LENS_CERT_PATH:?Set LENS_CERT_PATH in .env.compose.local}
+        target: /etc/nginx/certs/localhost.pem
+        read_only: true
+
+    depends_on:
+      - lens
+
+
+  lens:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    image: lambda-pulse-lens:0.1.0-beta.1
+
+    environment:
+      LAMBDAPULSELENS_POSTGRES_CONNECTION: "Host=postgres;Port=5432;Database=${POSTGRES_DB:?Set POSTGRES_DB in .env.compose.local};Username=${POSTGRES_USER:?Set POSTGRES_USER in .env.compose.local};Password=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.compose.local};GSS Encryption Mode=Disable"
+      LAMBDAPULSELENS_REDIS_CONNECTION: "redis:6379"
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+      redis:
+        condition: service_healthy
+
+
+  postgres:
+    image: postgres:18.4-bookworm
+
+    shm_size: 128mb
+
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB in .env.compose.local}
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER in .env.compose.local}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.compose.local}
+
+    volumes:
+      - postgres-data:/var/lib/postgresql
+      - ./infrastructure/postgres/init:/docker-entrypoint-initdb.d:ro
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+
+  redis:
+    image: redis:8.2.8-bookworm
+
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+
+volumes:
+  postgres-data:
