@@ -9,6 +9,9 @@ services:
 
     image: lambda-pulse-lens-proxy:0.1.0-beta.1
 
+    labels:
+      lambdapulselens.logging: "true"
+
     ports:
       - "127.0.0.1:80:80"
       - "127.0.0.1:443:443"
@@ -30,6 +33,9 @@ services:
 
     image: lambda-pulse-lens:0.1.0-beta.1
 
+    labels:
+      lambdapulselens.logging: "true"
+
     environment:
       LAMBDAPULSELENS_POSTGRES_CONNECTION: "Host=postgres;Port=5432;Database=${POSTGRES_DB:?Set POSTGRES_DB in .env.compose.local};Username=${POSTGRES_USER:?Set POSTGRES_USER in .env.compose.local};Password=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.compose.local};GSS Encryption Mode=Disable"
       LAMBDAPULSELENS_REDIS_CONNECTION: "redis:6379"
@@ -44,6 +50,9 @@ services:
 
   postgres:
     image: postgres:18.4-bookworm
+
+    labels:
+      lambdapulselens.logging: "true"
 
     shm_size: 128mb
 
@@ -69,6 +78,9 @@ services:
 
   redis:
     image: redis:8.2.8-bookworm
+
+    labels:
+      lambdapulselens.logging: "true"
 
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]

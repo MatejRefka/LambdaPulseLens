@@ -9,15 +9,11 @@ services:
       - loki-data:/loki ##mount loki volume into container
     command:
       - -config.file=/etc/loki/loki.dev.yaml ##use this config
-    ports:
-      - "3100:3100" ##expose container service to host machine
-    labels:
-      lambdapulselens.logging: "true" ##advertise for alloy to collect
     networks:
       - lambda-pulse-lens-observability ##attach to custom Docker network
 
   alloy:
-    image: grafana/alloy:v1.16.1
+    image: grafana/alloy:v1.18.0
     container_name: lambda-pulse-lens-alloy
     depends_on:
       - loki
@@ -29,25 +25,21 @@ services:
       - /etc/alloy/config.alloy ##run config file
       - --server.http.listen-addr=0.0.0.0:12345 ##listen on the entire network within the container
     ports:
-      - "12345:12345"
-    labels:
-      lambdapulselens.logging: "true"
+      - "127.0.0.1:12345:12345"
     networks:
       - lambda-pulse-lens-observability
 
   grafana:
-    image: grafana/grafana:13.0.1-security-01
+    image: grafana/grafana:13.1.1
     container_name: lambda-pulse-lens-grafana
     volumes:
       - grafana-data:/var/lib/grafana ##holds local internal state
       - ../grafana/provisioning:/etc/grafana/provisioning:ro
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     environment:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER}
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
-    labels:
-      lambdapulselens.logging: "true"
     depends_on:
       - loki
     networks:
