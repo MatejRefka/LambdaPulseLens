@@ -1,0 +1,62 @@
+// Discover containers from the local Docker Engine.
+discovery.docker "containers" {
+  host             = "unix:///var/run/docker.sock"
+  refresh_interval = "10s"
+}
+
+// Collect only containers explicitly opted in with
+// lambdapulselens.logging=true.
+discovery.relabel "lambdapulselens_logs" {
+  targets = []
+
+  rule {
+    source_labels = ["__meta_docker_container_label_lambdapulselens_logging"]
+    regex         = "true"
+    action        = "keep"
+  }
+
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(.*)"
+    target_label  = "container"
+  }
+
+  rule {
+    target_label = "stack"
+    replacement  = "lambda-pulse-lens"
+  }
+}
+
+loki.source.docker "lambdapulselens" {
+  host          = "unix:///var/run/docker.sock"
+  targets       = discovery.docker.containers.targets
+  relabel_rules = discovery.relabel.lambdapulselens_logs.rules
+  forward_to    = [loki.process.lambdapulselens.receiver]
+}
+
+loki.process "lambdapulselens" {
+  forward_to = [loki.write.local.receiver]
+
+  stage.json {
+    expressions = {
+      log_level    = "LogLevel",
+      source       = "Source",
+      exceptionType = "ExceptionType",
+    }
+    drop_malformed = false
+  }
+
+  stage.labels {
+    values = {
+      log_level     = "",
+      source        = "",
+      exceptionType = "",
+    }
+  }
+}
+
+loki.write "local" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}

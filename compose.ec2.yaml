@@ -1,0 +1,80 @@
+name: lambda-pulse-lens
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+services:
+  proxy:
+    image: ${ECR_REGISTRY:?Set ECR_REGISTRY in .env.ec2}/lambda-pulse-lens-proxy:${PROXY_IMAGE_TAG:?Set PROXY_IMAGE_TAG in .env.ec2}
+    restart: unless-stopped
+    labels:
+      lambdapulselens.logging: "true"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - type: bind
+        source: /etc/letsencrypt
+        target: /etc/letsencrypt
+        read_only: true
+      - type: bind
+        source: ./certbot/www
+        target: /var/www/certbot
+        read_only: true
+    depends_on:
+      lens:
+        condition: service_started
+    logging: *default-logging
+
+  lens:
+    image: ${ECR_REGISTRY:?Set ECR_REGISTRY in .env.ec2}/lambda-pulse-lens:${LENS_IMAGE_TAG:?Set LENS_IMAGE_TAG in .env.ec2}
+    restart: unless-stopped
+    labels:
+      lambdapulselens.logging: "true"
+    environment:
+      LAMBDAPULSELENS_POSTGRES_CONNECTION: "Host=postgres;Port=5432;Database=${POSTGRES_DB:?Set POSTGRES_DB in .env.ec2};Username=${POSTGRES_USER:?Set POSTGRES_USER in .env.ec2};Password=${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.ec2};GSS Encryption Mode=Disable"
+      LAMBDAPULSELENS_REDIS_CONNECTION: "redis:6379"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    logging: *default-logging
+
+  postgres:
+    image: postgres:18.4-bookworm
+    restart: unless-stopped
+    labels:
+      lambdapulselens.logging: "true"
+    shm_size: 128mb
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB in .env.ec2}
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER in .env.ec2}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.ec2}
+    volumes:
+      - postgres-data:/var/lib/postgresql
+      - ./infrastructure/postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    logging: *default-logging
+
+  redis:
+    image: redis:8.2.8-bookworm
+    restart: unless-stopped
+    labels:
+      lambdapulselens.logging: "true"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    logging: *default-logging
+
+volumes:
+  postgres-data:
