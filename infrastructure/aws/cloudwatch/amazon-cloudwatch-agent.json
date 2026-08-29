@@ -1,0 +1,39 @@
+{
+  "agent": {
+    "metrics_collection_interval": 60,
+    "run_as_user": "root"
+  },
+  "metrics": {
+    "namespace": "LambdaPulseLens",
+    "append_dimensions": {
+      "InstanceId": "${aws:InstanceId}"
+    },
+    "metrics_collected": {
+      "mem": {
+        "measurement": [
+          "mem_used_percent"
+        ],
+        "metrics_collection_interval": 60
+      },
+      "disk": {
+        "measurement": [
+          "used_percent"
+        ],
+        "metrics_collection_interval": 60,
+        "resources": [
+          "/",
+          "/var/lib/docker/volumes/lambda-pulse-lens-observability-loki-ebs-data/_data"
+        ],
+        "drop_device": true,
+        "ignore_file_system_types": [
+          "sysfs",
+          "devtmpfs",
+          "tmpfs",
+          "overlay",
+          "squashfs",
+          "nsfs"
+        ]
+      }
+    }
+  }
+}

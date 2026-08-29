@@ -1,0 +1,25 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "PublishLambdaPulseLensMetrics",
+      "Effect": "Allow",
+      "Action": "cloudwatch:PutMetricData",
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "cloudwatch:namespace": "LambdaPulseLens"
+        }
+      }
+    },
+    {
+      "Sid": "ReadEC2MetricMetadata",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeTags",
+        "ec2:DescribeVolumes"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
