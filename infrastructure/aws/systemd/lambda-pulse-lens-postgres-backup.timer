@@ -1,0 +1,11 @@
+[Unit]
+Description=Run the Lambda Pulse Lens PostgreSQL backup daily
+
+[Timer]
+OnCalendar=*-*-* 02:30:00 UTC
+RandomizedDelaySec=10min
+Persistent=true
+Unit=lambda-pulse-lens-postgres-backup.service
+
+[Install]
+WantedBy=timers.target

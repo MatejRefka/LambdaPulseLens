@@ -1,0 +1,32 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "InspectBackupBucket",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetBucketLocation",
+        "s3:ListBucket"
+      ],
+      "Resource": "arn:aws:s3:::lambda-pulse-lens-backups-948529527750-eu-west-2",
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": [
+            "postgres",
+            "postgres/*"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "WriteAndVerifyPostgresBackups",
+      "Effect": "Allow",
+      "Action": [
+        "s3:AbortMultipartUpload",
+        "s3:GetObject",
+        "s3:PutObject"
+      ],
+      "Resource": "arn:aws:s3:::lambda-pulse-lens-backups-948529527750-eu-west-2/postgres/*"
+    }
+  ]
+}
