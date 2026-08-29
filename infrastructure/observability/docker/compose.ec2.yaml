@@ -90,5 +90,11 @@ networks:
 
 volumes:
   loki-data:
+    name: lambda-pulse-lens-observability-loki-ebs-data
+    driver: local
+    driver_opts:
+      type: ext4
+      o: rw,nosuid,nodev,noexec,noatime
+      device: ${LOKI_DATA_DEVICE:?Set LOKI_DATA_DEVICE in .env}
   alloy-data:
   grafana-data:
