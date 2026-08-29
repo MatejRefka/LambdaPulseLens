@@ -10,6 +10,9 @@ services:
   proxy:
     image: ${ECR_REGISTRY:?Set ECR_REGISTRY in .env.ec2}/lambda-pulse-lens-proxy:${PROXY_IMAGE_TAG:?Set PROXY_IMAGE_TAG in .env.ec2}
     restart: unless-stopped
+    mem_limit: 128m
+    cpus: 0.25
+    pids_limit: 128
     labels:
       lambdapulselens.logging: "true"
     ports:
@@ -32,6 +35,9 @@ services:
   lens:
     image: ${ECR_REGISTRY:?Set ECR_REGISTRY in .env.ec2}/lambda-pulse-lens:${LENS_IMAGE_TAG:?Set LENS_IMAGE_TAG in .env.ec2}
     restart: unless-stopped
+    mem_limit: 512m
+    cpus: 1.0
+    pids_limit: 256
     labels:
       lambdapulselens.logging: "true"
     environment:
@@ -47,6 +53,9 @@ services:
   postgres:
     image: postgres:18.4-bookworm
     restart: unless-stopped
+    mem_limit: 768m
+    cpus: 1.0
+    pids_limit: 256
     labels:
       lambdapulselens.logging: "true"
     shm_size: 128mb
@@ -67,8 +76,30 @@ services:
   redis:
     image: redis:8.2.8-bookworm
     restart: unless-stopped
+    user: redis
     labels:
       lambdapulselens.logging: "true"
+    command:
+      - redis-server
+      - --save
+      - ""
+      - --appendonly
+      - "no"
+      - --maxmemory
+      - 96mb
+      - --maxmemory-policy
+      - allkeys-lru
+    mem_limit: 128m
+    cpus: 0.25
+    pids_limit: 128
+    read_only: true
+    tmpfs:
+      - /data:size=16m,mode=1777
+      - /tmp:size=16m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s

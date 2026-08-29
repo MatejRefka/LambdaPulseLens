@@ -19,6 +19,7 @@ services:
       - observability
     mem_limit: 768m
     cpus: 0.75
+    pids_limit: 128
     security_opt:
       - no-new-privileges:true
     logging: *default-logging
@@ -44,6 +45,7 @@ services:
       - observability
     mem_limit: 256m
     cpus: 0.25
+    pids_limit: 128
     security_opt:
       - no-new-privileges:true
     logging: *default-logging
@@ -78,6 +80,7 @@ services:
       - observability
     mem_limit: 512m
     cpus: 0.50
+    pids_limit: 256
     security_opt:
       - no-new-privileges:true
     cap_drop:
