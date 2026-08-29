@@ -1,0 +1,11 @@
+[Unit]
+Description=Publish Lambda Pulse Lens Docker health metrics every minute
+
+[Timer]
+OnCalendar=*-*-* *:*:00 UTC
+RandomizedDelaySec=5s
+Persistent=true
+Unit=lambda-pulse-lens-docker-monitor.service
+
+[Install]
+WantedBy=timers.target

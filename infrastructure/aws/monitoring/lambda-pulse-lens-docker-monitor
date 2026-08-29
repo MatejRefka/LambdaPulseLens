@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+umask 077
+
+readonly AWS_REGION="${AWS_REGION:-eu-west-2}"
+readonly METRIC_NAMESPACE="${METRIC_NAMESPACE:-LambdaPulseLens}"
+readonly STATE_DIR="${STATE_DIR:-/var/lib/lambda-pulse-lens-monitor}"
+readonly STATE_FILE="${STATE_DIR}/docker-restarts.state"
+readonly LOCK_FILE="${STATE_DIR}/docker-monitor.lock"
+
+readonly EXPECTED_CONTAINERS=(
+  lambda-pulse-lens-lens-1
+  lambda-pulse-lens-postgres-1
+  lambda-pulse-lens-proxy-1
+  lambda-pulse-lens-redis-1
+  lambda-pulse-lens-observability-alloy-1
+  lambda-pulse-lens-observability-grafana-1
+  lambda-pulse-lens-observability-loki-1
+)
+
+for command_name in aws awk curl docker flock mktemp mv; do
+  command -v "${command_name}" >/dev/null 2>&1 || {
+    printf 'Required command is unavailable: %s\n' "${command_name}" >&2
+    exit 1
+  }
+done
+
+install -d -o root -g root -m 700 "${STATE_DIR}"
+
+exec 9>"${LOCK_FILE}"
+flock -n 9 || {
+  printf 'Docker monitor is already running\n' >&2
+  exit 0
+}
+
+metadata_token="$(curl -fsS \
+  --request PUT \
+  --header 'X-aws-ec2-metadata-token-ttl-seconds: 300' \
+  http://169.254.169.254/latest/api/token)"
+
+instance_id="$(curl -fsS \
+  --header "X-aws-ec2-metadata-token: ${metadata_token}" \
+  http://169.254.169.254/latest/meta-data/instance-id)"
+
+temporary_state="$(mktemp "${STATE_DIR}/docker-restarts.state.XXXXXX")"
+cleanup() {
+  rm -f -- "${temporary_state}"
+}
+trap cleanup EXIT
+
+restart_delta=0
+not_running=0
+
+for container_name in "${EXPECTED_CONTAINERS[@]}"; do
+  if ! inspection="$(docker inspect \
+    --format '{{.Id}}|{{.RestartCount}}|{{.State.Status}}' \
+    "${container_name}" 2>/dev/null)"; then
+    printf '%s|||missing\n' "${container_name}" >>"${temporary_state}"
+    not_running=$((not_running + 1))
+    continue
+  fi
+
+  IFS='|' read -r container_id restart_count container_status <<<"${inspection}"
+
+  if [[ "${container_status}" != "running" ]]; then
+    not_running=$((not_running + 1))
+  fi
+
+  previous_id=''
+  previous_restart_count='0'
+
+  if [[ -r "${STATE_FILE}" ]]; then
+    previous_line="$(awk -F'|' -v name="${container_name}" '$1 == name { print; exit }' "${STATE_FILE}")"
+    if [[ -n "${previous_line}" ]]; then
+      IFS='|' read -r _ previous_id previous_restart_count _ <<<"${previous_line}"
+    fi
+  fi
+
+  if [[ "${container_id}" == "${previous_id}" ]] &&
+     (( restart_count > previous_restart_count )); then
+    restart_delta=$((restart_delta + restart_count - previous_restart_count))
+  fi
+
+  printf '%s|%s|%s|%s\n' \
+    "${container_name}" \
+    "${container_id}" \
+    "${restart_count}" \
+    "${container_status}" \
+    >>"${temporary_state}"
+done
+
+metric_data="$(printf \
+  '[{"MetricName":"DockerRestartsDetected","Dimensions":[{"Name":"InstanceId","Value":"%s"}],"Value":%s,"Unit":"Count"},{"MetricName":"DockerContainersNotRunning","Dimensions":[{"Name":"InstanceId","Value":"%s"}],"Value":%s,"Unit":"Count"}]' \
+  "${instance_id}" \
+  "${restart_delta}" \
+  "${instance_id}" \
+  "${not_running}")"
+
+aws cloudwatch put-metric-data \
+  --namespace "${METRIC_NAMESPACE}" \
+  --metric-data "${metric_data}" \
+  --region "${AWS_REGION}"
+
+mv -f -- "${temporary_state}" "${STATE_FILE}"
+trap - EXIT
+
+printf 'Docker monitoring metrics published: restarts=%s not_running=%s\n' \
+  "${restart_delta}" "${not_running}"
