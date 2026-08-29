@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+
+set -Eeuo pipefail
+umask 077
+
+readonly APP_DIR="${APP_DIR:-/opt/lambda-pulse-lens}"
+readonly COMPOSE_FILE="${COMPOSE_FILE:-${APP_DIR}/compose.ec2.yaml}"
+readonly ENV_FILE="${ENV_FILE:-${APP_DIR}/.env.ec2}"
+readonly BACKUP_BUCKET="${BACKUP_BUCKET:-lambda-pulse-lens-backups-948529527750-eu-west-2}"
+readonly BACKUP_PREFIX="${BACKUP_PREFIX:-postgres}"
+readonly AWS_REGION="${AWS_REGION:-eu-west-2}"
+
+for command_name in aws docker sha256sum stat; do
+  command -v "${command_name}" >/dev/null 2>&1 || {
+    printf 'Required command is unavailable: %s\n' "${command_name}" >&2
+    exit 1
+  }
+done
+
+[[ -r "${COMPOSE_FILE}" ]] || {
+  printf 'Compose file is not readable: %s\n' "${COMPOSE_FILE}" >&2
+  exit 1
+}
+
+[[ -r "${ENV_FILE}" ]] || {
+  printf 'Environment file is not readable: %s\n' "${ENV_FILE}" >&2
+  exit 1
+}
+
+timestamp="$(date -u +'%Y-%m-%dT%H-%M-%SZ')"
+date_path="$(date -u +'%Y/%m/%d')"
+backup_name="lambda-pulse-lens-postgres-${timestamp}.dump"
+backup_key="${BACKUP_PREFIX}/${date_path}/${backup_name}"
+checksum_key="${backup_key}.sha256"
+temporary_backup="$(mktemp "/var/tmp/${backup_name}.XXXXXX")"
+temporary_checksum="${temporary_backup}.sha256"
+
+cleanup() {
+  rm -f -- "${temporary_backup}" "${temporary_checksum}"
+}
+trap cleanup EXIT
+
+cd "${APP_DIR}"
+
+printf 'Creating PostgreSQL backup: %s\n' "${backup_name}"
+docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" exec -T postgres \
+  sh -ceu 'exec pg_dump --username="$POSTGRES_USER" --dbname="$POSTGRES_DB" --format=custom --no-owner --no-privileges' \
+  >"${temporary_backup}"
+
+[[ -s "${temporary_backup}" ]] || {
+  printf 'PostgreSQL backup is empty\n' >&2
+  exit 1
+}
+
+printf 'Validating PostgreSQL archive\n'
+docker compose --env-file "${ENV_FILE}" -f "${COMPOSE_FILE}" exec -T postgres \
+  pg_restore --list <"${temporary_backup}" >/dev/null
+
+backup_size="$(stat -c '%s' "${temporary_backup}")"
+backup_digest="$(sha256sum "${temporary_backup}" | awk '{print $1}')"
+printf '%s  %s\n' "${backup_digest}" "${backup_name}" >"${temporary_checksum}"
+
+printf 'Uploading backup to s3://%s/%s\n' "${BACKUP_BUCKET}" "${backup_key}"
+aws s3 cp "${temporary_backup}" "s3://${BACKUP_BUCKET}/${backup_key}" \
+  --region "${AWS_REGION}" \
+  --sse AES256 \
+  --only-show-errors
+
+aws s3 cp "${temporary_checksum}" "s3://${BACKUP_BUCKET}/${checksum_key}" \
+  --region "${AWS_REGION}" \
+  --sse AES256 \
+  --only-show-errors
+
+remote_size="$(aws s3api head-object \
+  --bucket "${BACKUP_BUCKET}" \
+  --key "${backup_key}" \
+  --query ContentLength \
+  --output text \
+  --region "${AWS_REGION}")"
+
+[[ "${remote_size}" == "${backup_size}" ]] || {
+  printf 'Uploaded object size mismatch: local=%s remote=%s\n' "${backup_size}" "${remote_size}" >&2
+  exit 1
+}
+
+printf 'Backup completed: key=%s bytes=%s sha256=%s\n' \
+  "${backup_key}" "${backup_size}" "${backup_digest}"

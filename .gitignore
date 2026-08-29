@@ -264,6 +264,8 @@ Generated_Code/
 # because we have git ;-)
 _UpgradeReport_Files/
 Backup*/
+!infrastructure/aws/backup/
+!infrastructure/aws/backup/**
 UpgradeLog*.XML
 UpgradeLog*.htm
 ServiceFabricBackup/
