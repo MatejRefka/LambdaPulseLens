@@ -44,7 +44,7 @@ RUN dotnet publish -c Release -o /app/publish --no-restore
 
 
 #use .net10 runtime image
-FROM mcr.microsoft.com/dotnet/runtime:${DOTNET_RUNTIME_VERSION}-noble AS final
+FROM mcr.microsoft.com/dotnet/runtime:${DOTNET_RUNTIME_VERSION}-noble-chiseled-extra AS final
 
 #set working dir for the app
 WORKDIR /app

@@ -1,6 +1,8 @@
 ARG NGINX_VERSION=1.30.4
 
-FROM nginx:${NGINX_VERSION}-trixie
+FROM nginx:${NGINX_VERSION}-alpine
+
+RUN apk add --no-cache --upgrade libcrypto3 libssl3 libexpat
 
 COPY nginx.ec2.conf /etc/nginx/nginx.conf
 
