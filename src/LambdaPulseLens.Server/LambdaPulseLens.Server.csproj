@@ -8,7 +8,7 @@
 
     <AssemblyName>LambdaPulseLens.Server</AssemblyName>
     <RootNamespace>LambdaPulseLens.Server</RootNamespace>
-    <Version>0.1.0-beta.1</Version>
+    <Version>0.1.0-beta.6</Version>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
