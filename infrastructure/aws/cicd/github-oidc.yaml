@@ -85,7 +85,7 @@ Resources:
     Type: AWS::IAM::Role
     Properties:
       RoleName: lambda-pulse-lens-github-deployer
-      Description: Deploys Lambda Pulse Lens to the production EC2 instance through SSM.
+      Description: Deploys tagged Lambda Pulse Lens releases to the production EC2 instance through SSM.
       MaxSessionDuration: 3600
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
@@ -97,8 +97,9 @@ Resources:
             Condition:
               StringEquals:
                 "token.actions.githubusercontent.com:aud": sts.amazonaws.com
+              StringLike:
                 "token.actions.githubusercontent.com:sub": !Sub >-
-                  repo:${GitHubOwner}@${GitHubOwnerId}/${GitHubRepository}@${GitHubRepositoryId}:environment:production
+                  repo:${GitHubOwner}@${GitHubOwnerId}/${GitHubRepository}@${GitHubRepositoryId}:ref:refs/tags/v*
       Policies:
         - PolicyName: DeployLambdaPulseLensThroughSsm
           PolicyDocument:

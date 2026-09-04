@@ -208,3 +208,86 @@ jobs:
           if (( release_blocked > 0 )); then
             exit 1
           fi
+
+  deploy:
+    name: Deploy production
+    needs:
+      - validate
+      - publish
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    concurrency:
+      group: lambda-pulse-lens-production
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Configure temporary AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.2.3
+        with:
+          role-to-assume: arn:aws:iam::948529527750:role/lambda-pulse-lens-github-deployer
+          role-session-name: deploy-${{ github.run_id }}
+          aws-region: ${{ env.AWS_REGION }}
+          allowed-account-ids: ${{ env.AWS_ACCOUNT_ID }}
+
+      - name: Deploy through AWS Systems Manager
+        shell: bash
+        env:
+          INSTANCE_ID: i-0f04105dcfac4765a
+          VERSION: ${{ needs.validate.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          script_payload=$(base64 --wrap=0 infrastructure/aws/cicd/deploy.sh)
+          remote_command="printf '%s' '$script_payload' | base64 --decode | bash -s -- '$VERSION'"
+          parameters=$(jq -n --arg command "$remote_command" "{commands: [\$command]}")
+
+          command_id=$(aws ssm send-command \
+            --region "$AWS_REGION" \
+            --instance-ids "$INSTANCE_ID" \
+            --document-name AWS-RunShellScript \
+            --comment "Deploy Lambda Pulse Lens $VERSION from GitHub Actions run $GITHUB_RUN_ID" \
+            --parameters "$parameters" \
+            --query 'Command.CommandId' \
+            --output text)
+
+          set +e
+          aws ssm wait command-executed \
+            --region "$AWS_REGION" \
+            --command-id "$command_id" \
+            --instance-id "$INSTANCE_ID"
+          set -e
+
+          invocation=$(aws ssm get-command-invocation \
+            --region "$AWS_REGION" \
+            --command-id "$command_id" \
+            --instance-id "$INSTANCE_ID" \
+            --output json)
+
+          status=$(jq -r '.Status' <<< "$invocation")
+          standard_output=$(jq -r '.StandardOutputContent' <<< "$invocation")
+          standard_error=$(jq -r '.StandardErrorContent' <<< "$invocation")
+
+          printf '%s\n' "$standard_output"
+          if [[ -n "$standard_error" ]]; then
+            printf '%s\n' "$standard_error" >&2
+          fi
+
+          if [[ "$status" != "Success" ]]; then
+            echo "::error::SSM deployment finished with status '$status'."
+            exit 1
+          fi
+
+          printf '%s\n' \
+            '### Production deployment' \
+            '' \
+            "Deployed Lambda Pulse Lens \`$VERSION\` successfully." \
+            '' \
+            'Health check: https://lambdapulse.app/api/health' >> "$GITHUB_STEP_SUMMARY"
