@@ -1,0 +1,210 @@
+name: Release images
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  AWS_ACCOUNT_ID: "948529527750"
+  AWS_REGION: eu-west-2
+  ECR_REGISTRY: 948529527750.dkr.ecr.eu-west-2.amazonaws.com
+  LENS_REPOSITORY: lambda-pulse-lens
+  PROXY_REPOSITORY: lambda-pulse-lens-proxy
+
+jobs:
+  validate:
+    name: Validate release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Validate release version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          version="${GITHUB_REF_NAME#v}"
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z]+([.-][0-9A-Za-z]+)*)?$ ]]; then
+            echo "::error::Tag '$GITHUB_REF_NAME' is not a supported version tag. Use a tag such as v0.1.0-beta.6."
+            exit 1
+          fi
+
+          project_version=$(sed -n 's:.*<Version>\([^<]*\)</Version>.*:\1:p' src/LambdaPulseLens.Server/LambdaPulseLens.Server.csproj | head -n 1)
+          if [[ "$version" != "$project_version" ]]; then
+            echo "::error::Tag version '$version' does not match server project version '$project_version'."
+            exit 1
+          fi
+
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.400
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24.19.0
+          cache: npm
+          cache-dependency-path: src/LambdaPulseLens.UI/package-lock.json
+
+      - name: Restore server dependencies
+        run: dotnet restore LambdaPulseLens.sln
+
+      - name: Build server
+        run: dotnet build LambdaPulseLens.sln --configuration Release --no-restore
+
+      - name: Install UI dependencies
+        working-directory: src/LambdaPulseLens.UI
+        run: npm ci
+
+      - name: Audit UI dependencies
+        working-directory: src/LambdaPulseLens.UI
+        run: npm audit --audit-level=high
+
+      - name: Lint UI
+        working-directory: src/LambdaPulseLens.UI
+        run: npm run lint
+
+      - name: Build UI
+        working-directory: src/LambdaPulseLens.UI
+        run: npm run build
+
+  publish:
+    name: Publish and scan images
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Configure temporary AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.2.3
+        with:
+          role-to-assume: arn:aws:iam::948529527750:role/lambda-pulse-lens-github-publisher
+          role-session-name: release-${{ github.run_id }}
+          aws-region: ${{ env.AWS_REGION }}
+          allowed-account-ids: ${{ env.AWS_ACCOUNT_ID }}
+
+      - name: Confirm release tags are unused
+        shell: bash
+        env:
+          VERSION: ${{ needs.validate.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          for repository in "$LENS_REPOSITORY" "$PROXY_REPOSITORY"; do
+            if result=$(aws ecr describe-images \
+              --region "$AWS_REGION" \
+              --repository-name "$repository" \
+              --image-ids "imageTag=$VERSION" 2>&1); then
+              echo "::error::ECR tag '$repository:$VERSION' already exists and is immutable."
+              exit 1
+            elif [[ "$result" != *"ImageNotFoundException"* ]]; then
+              echo "$result"
+              exit 1
+            fi
+          done
+
+      - name: Sign in to Amazon ECR
+        shell: bash
+        run: |
+          aws ecr get-login-password --region "$AWS_REGION" |
+            docker login --username AWS --password-stdin "$ECR_REGISTRY"
+
+      - name: Build release images
+        shell: bash
+        env:
+          VERSION: ${{ needs.validate.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          docker build \
+            --label "org.opencontainers.image.revision=$GITHUB_SHA" \
+            --label "org.opencontainers.image.version=$VERSION" \
+            --tag "$ECR_REGISTRY/$LENS_REPOSITORY:$VERSION" \
+            .
+
+          docker build \
+            --file infrastructure/nginx/Dockerfile.ec2 \
+            --label "org.opencontainers.image.revision=$GITHUB_SHA" \
+            --label "org.opencontainers.image.version=$VERSION" \
+            --tag "$ECR_REGISTRY/$PROXY_REPOSITORY:$VERSION" \
+            infrastructure/nginx
+
+      - name: Push immutable release images
+        shell: bash
+        env:
+          VERSION: ${{ needs.validate.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          docker push "$ECR_REGISTRY/$LENS_REPOSITORY:$VERSION"
+          docker push "$ECR_REGISTRY/$PROXY_REPOSITORY:$VERSION"
+
+      - name: Check ECR vulnerability scans
+        shell: bash
+        env:
+          VERSION: ${{ needs.validate.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          printf '%s\n' '### ECR vulnerability scan' '' '| Image | Critical | High | Medium | Low |' '|---|---:|---:|---:|---:|' >> "$GITHUB_STEP_SUMMARY"
+          release_blocked=0
+
+          for repository in "$LENS_REPOSITORY" "$PROXY_REPOSITORY"; do
+            aws ecr wait image-scan-complete \
+              --region "$AWS_REGION" \
+              --repository-name "$repository" \
+              --image-id "imageTag=$VERSION"
+
+            findings_file="$RUNNER_TEMP/$repository-scan.json"
+            aws ecr describe-image-scan-findings \
+              --region "$AWS_REGION" \
+              --repository-name "$repository" \
+              --image-id "imageTag=$VERSION" \
+              --output json > "$findings_file"
+
+            critical=$(jq -r ".imageScanFindings.findingSeverityCounts.CRITICAL // 0" "$findings_file")
+            high=$(jq -r ".imageScanFindings.findingSeverityCounts.HIGH // 0" "$findings_file")
+            medium=$(jq -r ".imageScanFindings.findingSeverityCounts.MEDIUM // 0" "$findings_file")
+            low=$(jq -r ".imageScanFindings.findingSeverityCounts.LOW // 0" "$findings_file")
+
+            printf "| \`%s:%s\` | %s | %s | %s | %s |\n" \
+              "$repository" "$VERSION" "$critical" "$high" "$medium" "$low" >> "$GITHUB_STEP_SUMMARY"
+
+            if (( critical > 0 )); then
+              echo "::error::$repository:$VERSION contains $critical CRITICAL finding(s)."
+              release_blocked=1
+            fi
+
+            if (( high > 0 )); then
+              echo "::warning::$repository:$VERSION contains $high HIGH finding(s). Review them in Amazon ECR."
+            fi
+          done
+
+          if (( release_blocked > 0 )); then
+            exit 1
+          fi
