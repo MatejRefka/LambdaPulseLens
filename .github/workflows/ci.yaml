@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate application
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.400
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24.19.0
+          cache: npm
+          cache-dependency-path: src/LambdaPulseLens.UI/package-lock.json
+
+      - name: Restore server dependencies
+        run: dotnet restore LambdaPulseLens.sln
+
+      - name: Build server
+        run: dotnet build LambdaPulseLens.sln --configuration Release --no-restore
+
+      - name: Install UI dependencies
+        working-directory: src/LambdaPulseLens.UI
+        run: npm ci
+
+      - name: Audit UI dependencies
+        working-directory: src/LambdaPulseLens.UI
+        run: npm audit --audit-level=high
+
+      - name: Lint UI
+        working-directory: src/LambdaPulseLens.UI
+        run: npm run lint
+
+      - name: Build UI
+        working-directory: src/LambdaPulseLens.UI
+        run: npm run build
+
+      - name: Build Lens container
+        run: docker build --tag lambda-pulse-lens:ci .
+
+      - name: Build proxy container
+        run: >-
+          docker build
+          --file infrastructure/nginx/Dockerfile.ec2
+          --tag lambda-pulse-lens-proxy:ci
+          infrastructure/nginx

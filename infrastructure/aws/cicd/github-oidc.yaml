@@ -1,0 +1,132 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: GitHub Actions OIDC provider and least-privilege CI/CD roles for Lambda Pulse Lens.
+
+Parameters:
+  GitHubOwner:
+    Type: String
+    Default: MatejRefka
+  GitHubOwnerId:
+    Type: String
+    Default: "33011306"
+  GitHubRepository:
+    Type: String
+    Default: LambdaPulseLens
+  GitHubRepositoryId:
+    Type: String
+    Default: "1327969682"
+  ProductionInstanceId:
+    Type: String
+    Default: i-0f04105dcfac4765a
+
+Resources:
+  GitHubActionsOidcProvider:
+    Type: AWS::IAM::OIDCProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList:
+        - sts.amazonaws.com
+      Tags:
+        - Key: Project
+          Value: lambda-pulse-lens
+        - Key: ManagedBy
+          Value: CloudFormation
+
+  GitHubReleasePublisherRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: lambda-pulse-lens-github-publisher
+      Description: Pushes tagged Lambda Pulse Lens releases to the two ECR repositories.
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Ref GitHubActionsOidcProvider
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                "token.actions.githubusercontent.com:aud": sts.amazonaws.com
+              StringLike:
+                "token.actions.githubusercontent.com:sub": !Sub >-
+                  repo:${GitHubOwner}@${GitHubOwnerId}/${GitHubRepository}@${GitHubRepositoryId}:ref:refs/tags/v*
+      Policies:
+        - PolicyName: PublishLambdaPulseLensImages
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: AuthenticateToEcr
+                Effect: Allow
+                Action: ecr:GetAuthorizationToken
+                Resource: "*"
+              - Sid: PublishAndInspectReleaseImages
+                Effect: Allow
+                Action:
+                  - ecr:BatchCheckLayerAvailability
+                  - ecr:BatchGetImage
+                  - ecr:CompleteLayerUpload
+                  - ecr:DescribeImageScanFindings
+                  - ecr:DescribeImages
+                  - ecr:GetDownloadUrlForLayer
+                  - ecr:InitiateLayerUpload
+                  - ecr:PutImage
+                  - ecr:StartImageScan
+                  - ecr:UploadLayerPart
+                Resource:
+                  - !Sub arn:${AWS::Partition}:ecr:${AWS::Region}:${AWS::AccountId}:repository/lambda-pulse-lens
+                  - !Sub arn:${AWS::Partition}:ecr:${AWS::Region}:${AWS::AccountId}:repository/lambda-pulse-lens-proxy
+      Tags:
+        - Key: Project
+          Value: lambda-pulse-lens
+        - Key: ManagedBy
+          Value: CloudFormation
+
+  GitHubProductionDeployerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: lambda-pulse-lens-github-deployer
+      Description: Deploys Lambda Pulse Lens to the production EC2 instance through SSM.
+      MaxSessionDuration: 3600
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Federated: !Ref GitHubActionsOidcProvider
+            Action: sts:AssumeRoleWithWebIdentity
+            Condition:
+              StringEquals:
+                "token.actions.githubusercontent.com:aud": sts.amazonaws.com
+                "token.actions.githubusercontent.com:sub": !Sub >-
+                  repo:${GitHubOwner}@${GitHubOwnerId}/${GitHubRepository}@${GitHubRepositoryId}:environment:production
+      Policies:
+        - PolicyName: DeployLambdaPulseLensThroughSsm
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: SendCommandToProductionInstance
+                Effect: Allow
+                Action: ssm:SendCommand
+                Resource:
+                  - !Sub arn:${AWS::Partition}:ssm:${AWS::Region}::document/AWS-RunShellScript
+                  - !Sub arn:${AWS::Partition}:ec2:${AWS::Region}:${AWS::AccountId}:instance/${ProductionInstanceId}
+              - Sid: ReadCommandResult
+                Effect: Allow
+                Action:
+                  - ssm:GetCommandInvocation
+                  - ssm:ListCommandInvocations
+                  - ssm:ListCommands
+                Resource: "*"
+      Tags:
+        - Key: Project
+          Value: lambda-pulse-lens
+        - Key: ManagedBy
+          Value: CloudFormation
+
+Outputs:
+  GitHubOidcProviderArn:
+    Value: !Ref GitHubActionsOidcProvider
+  ReleasePublisherRoleArn:
+    Value: !GetAtt GitHubReleasePublisherRole.Arn
+  ProductionDeployerRoleArn:
+    Value: !GetAtt GitHubProductionDeployerRole.Arn
