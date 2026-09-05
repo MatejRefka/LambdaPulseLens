@@ -142,12 +142,14 @@ jobs:
           set -euo pipefail
 
           docker build \
+            --pull \
             --label "org.opencontainers.image.revision=$GITHUB_SHA" \
             --label "org.opencontainers.image.version=$VERSION" \
             --tag "$ECR_REGISTRY/$LENS_REPOSITORY:$VERSION" \
             .
 
           docker build \
+            --pull \
             --file infrastructure/nginx/Dockerfile.ec2 \
             --label "org.opencontainers.image.revision=$GITHUB_SHA" \
             --label "org.opencontainers.image.version=$VERSION" \
