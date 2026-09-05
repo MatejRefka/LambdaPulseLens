@@ -1,5 +1,6 @@
-﻿using LambdaPulse.Features.Logging;
-using System.Text.Json;
+﻿using System.Text.Json;
+
+using LambdaPulse.Features.Logging;
 
 namespace LambdaPulseLens.Server.Services.Logging;
 

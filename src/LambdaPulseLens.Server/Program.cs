@@ -7,6 +7,7 @@ using LambdaPulse.Hosting;
 using LambdaPulse.Shared.Extensions;
 using LambdaPulseLens.Server.Configuration;
 using LambdaPulseLens.Server.Services.Auth;
+using LambdaPulseLens.Server.Services.Logging;
 using LambdaPulseLens.Server.Services.State;
 using LambdaPulseLens.Server.Services.Telemetry;
 using StackExchange.Redis;
@@ -524,6 +525,8 @@ var webServer = ServerBuilder.Build(
     },
     configureServices: container =>
     {
+        container.OverrideSingleton<IEngineLogger, StdoutEngineLogger>();
+
         container.AddSingleton(postgresConfig);
         container.AddSingleton<ITelemetryRepository, PostgresTelemetryRepository>();
 
