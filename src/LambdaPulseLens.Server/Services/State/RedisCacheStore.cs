@@ -74,7 +74,7 @@ internal sealed class RedisCacheStore : ICacheStore
         }
     }
 
-    public async Task<bool> SetCachedResponse(string key, CachedResponse cachedResponse, CancellationToken cancellationToken = default)
+    public async Task SaveCachedResponse(string key, CachedResponse cachedResponse, CancellationToken cancellationToken = default)
     {
         var redisKey = $"{CacheKeyPrefix}{key}";
 
@@ -86,19 +86,17 @@ internal sealed class RedisCacheStore : ICacheStore
             if (timeToLive <= TimeSpan.Zero)
             {
                 await _database.KeyDeleteAsync(redisKey);
-                return false;
+                return;
             }
 
             var cacheJson = JsonSerializer.Serialize(cachedResponse, _jsonSerializerOptions);
 
             await _database.StringSetAsync(redisKey, cacheJson, timeToLive);
-            return true;
         }
 
         catch (Exception e)
         {
             _engineLogger.Log(LogLevel.Warning, "RedisCacheStore", $"Failed setting cached response. Key: {CacheKeyPrefix}{key}", e);
-            return false;
         }
     }
 }
