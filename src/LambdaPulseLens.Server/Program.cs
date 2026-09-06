@@ -1,20 +1,23 @@
-﻿using LambdaPulse.Features.Authentication;
+﻿using System.Globalization;
+using System.Security.Cryptography;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+
+using LambdaPulse.Features.Authentication;
 using LambdaPulse.Features.Logging;
 using LambdaPulse.Features.Routing;
 using LambdaPulse.Features.Security;
 using LambdaPulse.Features.State.Cache;
 using LambdaPulse.Hosting;
 using LambdaPulse.Shared.Extensions;
+
 using LambdaPulseLens.Server.Configuration;
 using LambdaPulseLens.Server.Services.Auth;
 using LambdaPulseLens.Server.Services.Logging;
 using LambdaPulseLens.Server.Services.State;
 using LambdaPulseLens.Server.Services.Telemetry;
+
 using StackExchange.Redis;
-using System.Globalization;
-using System.Security.Cryptography;
-using System.Text.Json;
-using System.Text.RegularExpressions;
 
 #region Instantiations
 
@@ -51,6 +54,21 @@ var healthCheckEndpoint = new Endpoint
     }
 };
 #endregion Health Check Endpoint
+
+#region Demo Endpoints
+
+var errorEndpoint = new Endpoint
+{
+    Method = "GET",
+    Path = "/api/demo/error",
+    AllowAnonymous = true,
+    ApplicationFunction = async (webContext, cancellationToken) =>
+    {
+        throw new InvalidOperationException("Intentional demonstration error.");
+    }
+};
+
+#endregion Demo Endpoints
 
 #region Auth Endpoints
 
@@ -514,6 +532,7 @@ var webServer = ServerBuilder.Build(
     configureEndpoints: endpointRegistry =>
     {
         endpointRegistry.AddEndpoint(healthCheckEndpoint);
+        endpointRegistry.AddEndpoint(errorEndpoint);
         endpointRegistry.AddEndpoint(csrfEndpoint);
         endpointRegistry.AddEndpoint(registerEndpoint);
         endpointRegistry.AddEndpoint(loginEndpoint);
