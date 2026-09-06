@@ -12,7 +12,7 @@ interface UpstreamPipeProps {
 }
 
 export const UpstreamPipe = ({ middlewares, trace, onLogClick }: UpstreamPipeProps) => {
-  const { getDownstreamStep, getUpstreamStep, hasShortCircuit } = usePipeline(trace);
+  const { getDownstreamStep, getUpstreamStep, hasShortCircuit, isErrorPropagationWire } = usePipeline(trace);
   return (
     <>
       {middlewares.map((middlewareName, index) => {
@@ -25,6 +25,7 @@ export const UpstreamPipe = ({ middlewares, trace, onLogClick }: UpstreamPipePro
 
         const isShortCircuit = hasShortCircuit(middlewareName);
         const isPreviousMiddlewareShortCircuit = previousMiddleware ? hasShortCircuit(previousMiddleware) : false;
+        const isErrorPropagation = isErrorPropagationWire(middlewareName);
 
         const isWireActive = !!upstreamStep && (!!previousUpstreamStep || isPreviousMiddlewareShortCircuit);
         const step = isShortCircuit ? getDownstreamStep(middlewareName) : upstreamStep;
@@ -32,12 +33,18 @@ export const UpstreamPipe = ({ middlewares, trace, onLogClick }: UpstreamPipePro
         return (
           <React.Fragment key={`out-${middlewareName}`}>
             <MiddlewareNode middlewareName={middlewareName} step={step} onLogClick={onLogClick} />
-            {!isLast &&
-              (isShortCircuit ? (
-                <ShortCircuitLink direction="upstream" event={step?.event} />
-              ) : (
-                <Wire isActive={isWireActive} direction="upstream" event={step?.event} />
-              ))}
+            {isShortCircuit ? (
+              <ShortCircuitLink direction="upstream" event={step?.event} showInactiveContinuation={!isLast} />
+            ) : (
+              !isLast && (
+                <Wire
+                  isActive={isWireActive}
+                  direction="upstream"
+                  event={step?.event}
+                  isErrorPropagation={isErrorPropagation}
+                />
+              )
+            )}
           </React.Fragment>
         );
       })}

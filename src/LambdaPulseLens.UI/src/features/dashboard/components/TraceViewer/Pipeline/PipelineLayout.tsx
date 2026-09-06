@@ -14,7 +14,10 @@ interface PipelineLayoutProps {
 }
 
 export const PipelineLayout = ({ trace, onLogClick }: PipelineLayoutProps) => {
-  const { getDownstreamStep, getUpstreamStep } = usePipeline(trace);
+  const { getDownstreamStep, getUpstreamStep, hasShortCircuit, isErrorPropagationWire } = usePipeline(trace);
+  const lastMiddleMiddleware = MIDDLEWARE_10_18[8];
+  const lastMiddleMiddlewareShortCircuited = hasShortCircuit(lastMiddleMiddleware);
+  const errorPropagatesBetweenColumns = isErrorPropagationWire(MIDDLEWARE_1_9[8]);
 
   return (
     //4 rows: flex wire -> pipeline -> termination node -> flex wire
@@ -35,7 +38,13 @@ export const PipelineLayout = ({ trace, onLogClick }: PipelineLayoutProps) => {
 
       {/*row 1 col 4, flex wire*/}
       <div className="row-start-1 col-start-4 flex flex-col h-full">
-        <Wire isActive={!!getUpstreamStep(MIDDLEWARE_10_18[0])} direction="upstream" isFlex showArrow />
+        <Wire
+          isActive={!!getUpstreamStep(MIDDLEWARE_10_18[0])}
+          direction="upstream"
+          isFlex
+          showArrow
+          isErrorPropagation={errorPropagatesBetweenColumns}
+        />
       </div>
 
       {/*row 1 col 5, flex wire with Http Response pill*/}
@@ -57,20 +66,39 @@ export const PipelineLayout = ({ trace, onLogClick }: PipelineLayoutProps) => {
       <div className="row-start-2 col-start-2 flex flex-col">
         <Wire isActive={!!getDownstreamStep(MIDDLEWARE_10_18[0])} direction="downstream" isFlex />
         <DownstreamPipe middlewares={MIDDLEWARE_10_18} trace={trace} onLogClick={onLogClick} />
-        <Wire isActive={!!getDownstreamStep(MIDDLEWARE_10_18[8])} direction="downstream" />
+        {lastMiddleMiddlewareShortCircuited ? (
+          <div className="h-4" aria-hidden="true" />
+        ) : (
+          <Wire isActive={!!getDownstreamStep(lastMiddleMiddleware)} direction="downstream" />
+        )}
       </div>
 
       {/*row 2 col 4, upstream mw 1-10*/}
       <div className="row-start-2 col-start-4 flex flex-col">
-        <Wire isActive={!!getUpstreamStep(MIDDLEWARE_10_18[0])} direction="upstream" isFlex />
+        <Wire
+          isActive={!!getUpstreamStep(MIDDLEWARE_10_18[0])}
+          direction="upstream"
+          isFlex
+          isErrorPropagation={errorPropagatesBetweenColumns}
+        />
         <UpstreamPipe middlewares={MIDDLEWARE_10_18} trace={trace} onLogClick={onLogClick} />
-        <Wire isActive={!!getUpstreamStep(MIDDLEWARE_10_18[8])} direction="upstream" />
+        {lastMiddleMiddlewareShortCircuited ? (
+          <div className="h-4" aria-hidden="true" />
+        ) : (
+          <Wire isActive={!!getUpstreamStep(lastMiddleMiddleware)} direction="upstream" />
+        )}
       </div>
 
       {/*row 2 col 5, upstream mw 11-20*/}
       <div className="row-start-2 col-start-5  flex flex-col">
         <UpstreamPipe middlewares={MIDDLEWARE_1_9} trace={trace} onLogClick={onLogClick} />
-        <Wire isActive={!!getUpstreamStep(MIDDLEWARE_1_9[8])} direction="upstream" isFlex showArrow />
+        <Wire
+          isActive={!!getUpstreamStep(MIDDLEWARE_1_9[8])}
+          direction="upstream"
+          isFlex
+          showArrow
+          isErrorPropagation={errorPropagatesBetweenColumns}
+        />
       </div>
 
       {/*row 3 col 1, filler wire*/}
@@ -89,7 +117,12 @@ export const PipelineLayout = ({ trace, onLogClick }: PipelineLayoutProps) => {
 
       {/*row 3 col 5, filler wire*/}
       <div className="row-start-3 col-start-5  h-full flex flex-col">
-        <Wire isActive={!!getUpstreamStep(MIDDLEWARE_1_9[8])} direction="upstream" isFlex />
+        <Wire
+          isActive={!!getUpstreamStep(MIDDLEWARE_1_9[8])}
+          direction="upstream"
+          isFlex
+          isErrorPropagation={errorPropagatesBetweenColumns}
+        />
       </div>
 
       {/*row 4 col 1, flex wire*/}
@@ -99,7 +132,12 @@ export const PipelineLayout = ({ trace, onLogClick }: PipelineLayoutProps) => {
 
       {/*row 4 col 5, flex wire*/}
       <div className="row-start-4 col-start-5 h-full flex flex-col">
-        <Wire isActive={!!getUpstreamStep(MIDDLEWARE_1_9[8])} direction="upstream" isFlex />
+        <Wire
+          isActive={!!getUpstreamStep(MIDDLEWARE_1_9[8])}
+          direction="upstream"
+          isFlex
+          isErrorPropagation={errorPropagatesBetweenColumns}
+        />
       </div>
     </div>
   );

@@ -7,6 +7,7 @@ interface WireProps {
   event?: ExecutionEvent;
   isFlex?: boolean;
   showArrow?: boolean;
+  isErrorPropagation?: boolean;
 }
 
 export const Wire = ({
@@ -14,14 +15,22 @@ export const Wire = ({
   direction = "downstream",
   event = "success",
   isFlex = false,
-  showArrow = false
+  showArrow = false,
+  isErrorPropagation = false
 }: WireProps) => {
+  const isWireActive = isActive || isErrorPropagation;
+  const wireEvent = isErrorPropagation ? "error" : event;
+
   const getWireColor = () => {
-    if (!isActive) {
+    if (!isWireActive) {
       return "bg-surface-40 opacity-30";
     }
 
-    switch (event) {
+    if (isErrorPropagation) {
+      return "border-l border-dashed border-danger-10 opacity-50";
+    }
+
+    switch (wireEvent) {
       case "short-circuit":
         return "bg-warning-10";
       case "error":
@@ -33,10 +42,11 @@ export const Wire = ({
   };
 
   const getArrowColor = () => {
-    if (!isActive) {
+    if (!isWireActive) {
       return direction === "downstream" ? "border-t-surface-40 opacity-30" : "border-b-surface-40 opacity-30";
     }
-    switch (event) {
+
+    switch (wireEvent) {
       case "short-circuit":
         return direction === "downstream" ? "border-t-warning-20" : "border-b-warning-20";
       case "error":
@@ -49,7 +59,14 @@ export const Wire = ({
 
   return (
     <div className={cn("flex justify-center", isFlex && "flex-1")}>
-      <div className={cn("relative w-0.5", isFlex ? "h-full" : "h-4", getWireColor())}>
+      <div
+        className={cn(
+          "relative",
+          isErrorPropagation ? "w-0" : "w-0.5",
+          isFlex ? "h-full" : "h-4",
+          getWireColor()
+        )}
+      >
         {/*arrow head pointing downstream*/}
         {showArrow && direction === "downstream" && (
           <div

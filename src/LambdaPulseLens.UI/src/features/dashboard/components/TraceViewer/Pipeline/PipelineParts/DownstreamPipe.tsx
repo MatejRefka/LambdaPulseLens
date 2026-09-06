@@ -23,12 +23,15 @@ export const DownstreamPipe = ({ middlewares, trace, onLogClick }: DownstreamPip
         return (
           <React.Fragment key={`in-${middlewareName}`}>
             <MiddlewareNode middlewareName={middlewareName} step={step} onLogClick={onLogClick} />
-            {!isLast &&
-              (isShortCircuit ? (
-                <ShortCircuitLink direction="downstream" event={step?.event} />
-              ) : (
-                <Wire isActive={!!step} direction="downstream" event={step?.event} />
-              ))}
+            {isShortCircuit ? (
+              <ShortCircuitLink
+                direction="downstream"
+                event={step?.event}
+                showInactiveContinuation={!isLast}
+              />
+            ) : (
+              !isLast && <Wire isActive={!!step} direction="downstream" event={step?.event} />
+            )}
           </React.Fragment>
         );
       })}

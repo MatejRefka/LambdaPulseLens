@@ -4,8 +4,13 @@ import { cn } from "../../../../../../utils/cn";
 interface ShortCircuitLinkProps {
   direction?: FlowDirection;
   event?: ExecutionEvent;
+  showInactiveContinuation?: boolean;
 }
-export const ShortCircuitLink = ({ direction, event = "short-circuit" }: ShortCircuitLinkProps) => {
+export const ShortCircuitLink = ({
+  direction,
+  event = "short-circuit",
+  showInactiveContinuation = true
+}: ShortCircuitLinkProps) => {
   //termination node doesn't need a ShortCircuitLink
   if (!direction) {
     return null;
@@ -23,7 +28,9 @@ export const ShortCircuitLink = ({ direction, event = "short-circuit" }: ShortCi
   return (
     <div className="relative w-full h-5 shrink-0">
       {/*preserve the inactive wire*/}
-      <div className="absolute inset-y-0 left-1/2 w-0.5 -ml-px bg-surface-40 opacity-30 z-0"></div>
+      {showInactiveContinuation && (
+        <div className="absolute inset-y-0 left-1/2 w-0.5 -ml-px bg-surface-40 opacity-30 z-0"></div>
+      )}
 
       {direction === "downstream" && (
         <>
