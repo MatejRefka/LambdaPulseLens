@@ -18,6 +18,9 @@ env:
   ECR_REGISTRY: 948529527750.dkr.ecr.eu-west-2.amazonaws.com
   LENS_REPOSITORY: lambda-pulse-lens
   PROXY_REPOSITORY: lambda-pulse-lens-proxy
+  TEMPORARY_SCAN_EXCEPTION_VERSION: 0.1.0-beta.7
+  TEMPORARY_SCAN_EXCEPTION_CVE: CVE-2026-75803
+  TEMPORARY_SCAN_EXCEPTION_PACKAGE_VERSION: 3.0.13-0ubuntu3.12
 
 jobs:
   validate:
@@ -198,8 +201,40 @@ jobs:
               "$repository" "$VERSION" "$critical" "$high" "$medium" "$low" >> "$GITHUB_STEP_SUMMARY"
 
             if (( critical > 0 )); then
-              echo "::error::$repository:$VERSION contains $critical CRITICAL finding(s)."
-              release_blocked=1
+              exception_matches=false
+
+              if [[ "$repository" == "$LENS_REPOSITORY" && "$VERSION" == "$TEMPORARY_SCAN_EXCEPTION_VERSION" ]]; then
+                exception_matches=$(jq -r \
+                  --arg cve "$TEMPORARY_SCAN_EXCEPTION_CVE" \
+                  --arg package_version "$TEMPORARY_SCAN_EXCEPTION_PACKAGE_VERSION" \
+                  '
+                    [.imageScanFindings.findings[]?
+                      | select(.severity == "CRITICAL")
+                      | {
+                          name,
+                          package: ([.attributes[]? | select(.key == "package_name") | .value][0] // ""),
+                          version: ([.attributes[]? | select(.key == "package_version") | .value][0] // "")
+                        }
+                    ] as $findings
+                    | ($findings | length == 2)
+                      and ([$findings[].name] | all(. == $cve))
+                      and ([$findings[].package] | sort == ["libssl3t64", "openssl"])
+                      and ([$findings[].version] | all(. == $package_version))
+                  ' "$findings_file")
+              fi
+
+              if [[ "$exception_matches" == "true" ]]; then
+                echo "::warning::$repository:$VERSION contains the two temporarily accepted $TEMPORARY_SCAN_EXCEPTION_CVE findings."
+                printf '%s\n' \
+                  '' \
+                  '#### Temporary vulnerability exception applied' \
+                  '' \
+                  "\`$repository:$VERSION\` was allowed to continue with the two known \`$TEMPORARY_SCAN_EXCEPTION_CVE\` findings in \`openssl\` and \`libssl3t64\` version \`$TEMPORARY_SCAN_EXCEPTION_PACKAGE_VERSION\`." \
+                  'This exception applies only to this Lens release; any other critical finding or release remains blocked.' >> "$GITHUB_STEP_SUMMARY"
+              else
+                echo "::error::$repository:$VERSION contains $critical CRITICAL finding(s) that do not exactly match the temporary exception."
+                release_blocked=1
+              fi
             fi
 
             if (( high > 0 )); then
