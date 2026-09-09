@@ -19,7 +19,7 @@ Static Files middleware serves the requested image, short-circuiting the remaini
 
 https://github.com/user-attachments/assets/b5455e5c-e802-46d6-8080-32f5ca3e1d4b
 
-First request is a cache miss. Cache middleware builds a cache key and caches the response. Following requests are a cache hit.
+First request is a cache miss. Cache middleware builds a cache key and caches the response. Following requests are a cache hit and the cached response is served.
 
 https://github.com/user-attachments/assets/91624e08-5e11-4b1c-89ef-88bcd62816e9
 
