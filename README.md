@@ -4,7 +4,7 @@ LambdaPulse Lens is a self-hosted dashboard monitoring the engine powering it ([
 
 ## Project Highlights
 
-- Real-time server telemetry via Server Side Events.
+- Live server telemetry streamed via Server-Sent Events.
 - NGINX and Redis wired into the middleware pipeline for HTTPS redirection and response caching
 - Containerized deployment to AWS EC2 using ECR, with releases through GitHub Actions and OIDC
 - Observability with Grafana, Loki, Alloy, and CloudWatch
